@@ -64,13 +64,11 @@ def cnnum_parse(s):
             i += 1
             continue
         if c == "亿":
-            total = (total + section + number) * 100000000
-            section = 0
-            number = 0
-            i += 1
-            continue
+            return Err("cnnum: 超出 0-99999999 范围")
         return Err("cnnum: 非法字符: " + c)
     total = total + section + number
+    if total > 99999999:
+        return Err("cnnum: 超出 0-99999999 范围")
     return Ok(total)
 # 组内数字（<10000）格式化为中文
 def cn_group(n):
