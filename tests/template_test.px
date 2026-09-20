@@ -18,7 +18,8 @@ def main():
         == "no", "if else")
     expect(tmpl_render("{{if missing}}yes{{else}}no{{end}}", data).unwrap()
         == "no", "if 未定义 → else")
-    expect(tmpl_render("{{if empty}}yes{{else}}no{{end}}", data).unwrap() == "no", "if 空 list → else")
+    expect(tmpl_render("{{if empty}}yes{{else}}no{{end}}", data).unwrap()
+        == "no", "if 空 list → else")
     # if 块内变量
     expect(tmpl_render("{{if show}}{{name}}{{end}}", data).unwrap() == "px", "if 块内变量")
     # each
