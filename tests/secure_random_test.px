@@ -17,7 +17,8 @@ def main():
     var t = sr_token(16).unwrap()
     var t2 = sr_token(16).unwrap()
     expect(t != t2, "token 不同")
-    expect(len(t) >= 20 and len(t) <= 24, "token 长度 16 字节 ≈21-22 字符: " + t)
+    expect(len(t) >= 20 and len(t) <= 24,
+        "token 长度 16 字节: " + t)
     expect(not contains(t, "+") and not contains(t, "/") and not contains(t, "="), "base64url 字符集: " + t)
     # sr_int：范围内
     var i = 0
