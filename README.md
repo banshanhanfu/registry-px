@@ -71,7 +71,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 |---|---|---|---|
 | strcase | ✅ 0.1.0 | heck / inflection | 命名风格互转（双模式 PASS） |
 | fractions | ✅ 0.1.0 | fractions.Fraction | 精确有理数（双模式 PASS） |
-| ipaddr | ⏳ | ipaddress / std::net | IP/CIDR 校验与运算 |
+| ipaddr | ✅ 0.1.0 | ipaddress / std::net | IPv4/IPv6/CIDR 校验与运算（双模式 PASS） |
 | dotenv | ⏳ | python-dotenv / dotenvy | .env 解析 |
 | glob | ⏳ | glob / fnmatch | 通配匹配与列举 |
 | checksum | ⏳ | crc32fast / zlib | CRC32 / Adler32 |
