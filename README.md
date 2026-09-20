@@ -18,7 +18,7 @@
 
 | 梯队 | 主题 | 状态 |
 |---|---|---|
-| T0 | 门槛库：uuid / jwt / decimal / csv / cli / log / testkit / workerpool | 📋 规划 |
+| T0 | 门槛库：uuid / jwt / decimal / csv / cli / log / testkit / workerpool | ✅ 8/8 完成 |
 | T1 | 重要库：config / template / validator / retry / toml / datetime / passhash / secure_random / datastruct / concurrent_map / mailparse / stats | 📋 规划 |
 | T2 | 差异化：metrics / tar / fsnotify / big / pg·mysql 驱动 / qrcode / 中文生态 | 📋 规划 |
 
@@ -26,9 +26,26 @@
 
 ## 进度
 
-- [ ] T0 门槛库（8 个）
-- [ ] T1 重要库（12 个）
-- [ ] T2 差异化（按需）
+### T0 门槛库（8/8 ✅）
+
+| 库 | 版本 | 参考 | 验证 |
+|---|---|---|---|
+| uuid | 0.1.0 | google/uuid | 双模式 PASS · golden |
+| jwt | 0.1.0 | golang-jwt/jwt | 双模式 PASS · Python OpenSSL 交叉验证 |
+| decimal | 0.1.0 | shopspring/decimal | 双模式 PASS · Python Decimal 对拍 |
+| csv | 0.1.0 | encoding/csv | 双模式 PASS · Python csv 对拍 |
+| cli | 0.1.0 | flag + cobra 子集 | 双模式 PASS |
+| log | 0.1.0 | log + log/slog | 双模式 PASS |
+| testkit | 0.1.0 | testify + testing | 双模式 PASS |
+| workerpool | 0.1.0 | errgroup + workerpool | 编译模式 PASS（并发需 px build） |
+
+> 每个库遵循官方写库规范：纯函数优先、Result 错误、<500 行、`px fmt`/`px lint` 0 错、
+> 编译（px build）与解释（px run）双模式一致（workerpool 含并发仅编译模式）。
+
+### 待做
+
+- [ ] T1 重要库（12 个）：config / template / validator / retry / toml / datetime / passhash / secure_random / datastruct / concurrent_map / mailparse / stats
+- [ ] T2 差异化（按需）：metrics / tar / fsnotify / big / pg·mysql 驱动 / qrcode / 中文生态
 
 ## 写库规范（引用 PuXian 官方）
 
