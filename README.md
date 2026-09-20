@@ -75,7 +75,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | dotenv | ✅ 0.1.0 | python-dotenv / dotenvy | .env 解析（双模式 PASS） |
 | glob | ✅ 0.1.0 | glob / fnmatch | 通配匹配与列举（双模式 PASS·登记 PX-DEF-014） |
 | checksum | ✅ 0.1.0 | crc32fast / zlib | CRC32 / Adler32（双模式 PASS·Python zlib 对拍·登记 PX-DEF-015） |
-| itertools | ⏳ | itertools | 集合组合子 |
+| itertools | ✅ 0.1.0 | itertools | 集合组合子（双模式 PASS） |
 | base58 | ⏳ | bs58 | Base58 / Base58Check |
 
 > T3b 待命：table / jsonpath / diff / ini / textwrap / bisect / ulid / ansi；专项：bytes_pack / rate / parser / xlsx / pdf。
