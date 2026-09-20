@@ -37,10 +37,11 @@ def main():
     var r3 = val_validate({"name": "ok"}, rules)
     expect(r3.is_err(), "缺字段应 Err")
     # length 区间
+    var rules4 = {"name": "length=3,6", "tags": "length=1,2"}
     var r4 = val_validate({"name": "abcd", "email": "a@b.c", "age": 30, "role": "user", "tags": ["1"]},
-        {"name": "length=3,6", "tags": "length=1,2"})
+        rules4)
     expect(r4.is_ok(), "length 通过")
-    var r5 = val_validate({"name": "ab", "tags": ["1", "2", "3"]}, {"name": "length=3,6", "tags": "length=1,2"})
+    var r5 = val_validate({"name": "ab", "tags": ["1", "2", "3"]}, rules4)
     expect(r5.is_err(), "length 失败")
     # 未知规则 → 失败
     var r6 = val_validate({"name": "x"}, {"name": "unknown_rule"})
