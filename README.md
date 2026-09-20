@@ -76,7 +76,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | glob | ✅ 0.1.0 | glob / fnmatch | 通配匹配与列举（双模式 PASS·登记 PX-DEF-014） |
 | checksum | ✅ 0.1.0 | crc32fast / zlib | CRC32 / Adler32（双模式 PASS·Python zlib 对拍·登记 PX-DEF-015） |
 | itertools | ✅ 0.1.0 | itertools | 集合组合子（双模式 PASS） |
-| base58 | ⏳ | bs58 | Base58 / Base58Check |
+| base58 | ✅ 0.1.0 | bs58 | Base58 / Base58Check（双模式 PASS·Python 对拍·登记 PX-DEF-016/017） |
 
 > T3b 待命：table / jsonpath / diff / ini / textwrap / bisect / ulid / ansi；专项：bytes_pack / rate / parser / xlsx / pdf。
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF-001~012，写库过程中持续追加）。
