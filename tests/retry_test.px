@@ -16,7 +16,7 @@ def flaky(x):
         return Err("boom " + str(n + 1))
     return Ok("ok-" + str(n + 1))
 def always_fail(x):
-    return Err("always")
+    return Err("always:arg=" + str(x))
 def main():
     # 第 1 次成功
     var c1 = {"n": 0}
