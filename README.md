@@ -42,10 +42,23 @@
 > 每个库遵循官方写库规范：纯函数优先、Result 错误、<500 行、`px fmt`/`px lint` 0 错、
 > 编译（px build）与解释（px run）双模式一致（workerpool 含并发仅编译模式）。
 
-### 待做
+### T1 重要库（12/12 ✅）
 
-- [ ] T1 重要库（12 个）：config / template / validator / retry / toml / datetime / passhash / secure_random / datastruct / concurrent_map / mailparse / stats
-- [ ] T2 差异化（按需）：metrics / tar / fsnotify / big / pg·mysql 驱动 / qrcode / 中文生态
+config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash ✓ secure_random ✓ datastruct ✓ concurrent_map ✓ mailparse ✓ stats ✓
+
+### T2 差异化（6/8 ✅ 已完成，2 项待专项）
+
+| 库 | 状态 | 说明 |
+|---|---|---|
+| big | ✅ | 大整数（Python int 对拍） |
+| metrics | ✅ | Prometheus 文本格式 |
+| tar | ✅ | uStar；Python tarfile 互操作 |
+| fsnotify | ✅ | 轮询快照 diff |
+| idcard | ✅ | 身份证校验 GB 11643-1999 |
+| cnnum | ✅ | 中文数字转换 |
+| qrcode / pg·mysql 驱动 | ⏳ 待专项 | 超出<500行生态库单库规模（RS 纠错+扫码验证 / 完整 wire protocol），建议独立里程碑 |
+
+> ⚠️ 语言缺陷登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF-001~012，写库过程中持续追加）
 
 ## 写库规范（引用 PuXian 官方）
 
