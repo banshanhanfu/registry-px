@@ -69,7 +69,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 
 | 库 | 状态 | 参考 | 说明 |
 |---|---|---|---|
-| strcase | ⏳ | heck / inflection | 命名风格互转 |
+| strcase | ✅ 0.1.0 | heck / inflection | 命名风格互转（双模式 PASS） |
 | fractions | ⏳ | fractions.Fraction | 精确有理数 |
 | ipaddr | ⏳ | ipaddress / std::net | IP/CIDR 校验与运算 |
 | dotenv | ⏳ | python-dotenv / dotenvy | .env 解析 |
