@@ -74,7 +74,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | ipaddr | ✅ 0.1.0 | ipaddress / std::net | IPv4/IPv6/CIDR 校验与运算（双模式 PASS） |
 | dotenv | ✅ 0.1.0 | python-dotenv / dotenvy | .env 解析（双模式 PASS） |
 | glob | ✅ 0.1.0 | glob / fnmatch | 通配匹配与列举（双模式 PASS·登记 PX-DEF-014） |
-| checksum | ⏳ | crc32fast / zlib | CRC32 / Adler32 |
+| checksum | ✅ 0.1.0 | crc32fast / zlib | CRC32 / Adler32（双模式 PASS·Python zlib 对拍·登记 PX-DEF-015） |
 | itertools | ⏳ | itertools | 集合组合子 |
 | base58 | ⏳ | bs58 | Base58 / Base58Check |
 
