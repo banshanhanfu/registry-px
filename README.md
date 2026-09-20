@@ -1,10 +1,10 @@
 # PuXian Registry 生态库规划（registry-px）
 
 > PuXian（普贤）生态库的规划与实现仓库。
-> 定位：参考 Go 生态，为 PuXian 规划并落地一批 registry 生态库（纯 `.px` 实现，随
-> `registry/<name>/<version>/<name>.px` 版本化分发，`pxpkg add` 可拉取）。
+> 定位：参考 Go / Rust / Python 生态，为 PuXian 规划并落地一批 registry 生态库（纯 `.px`
+> 实现，随 `registry/<name>/<version>/<name>.px` 版本化分发，`pxpkg add` 可拉取）。
 
-## 为什么参考 Go
+## 为什么参考 Go / Rust / Python
 
 - **基础层已经比 Go 厚**：PuXian 现有 13 个 stdlib + 368 个 runtime native，已覆盖
   Go 标准库的 net/http（甚至超出：HTTP/1.1/2/3+QUIC、WS、SSE、路由/中间件/会话）、
@@ -13,16 +13,23 @@
 - **缺口在第二层**：Go 靠第三方生态补齐的领域库——UUID、JWT、decimal、CSV、
   CLI、日志、测试断言、任务池、配置合并、模板、校验、重试…… 这些正是 PuXian
   生态最应该先补的地基。
+- **T3 增量来自 Rust / Python**：case 转换、集合组合子、网络地址（IP/CIDR）、
+  编码（base58/checksum）、解析类（.env/glob/ini/diff）、展示类（table/ansi），
+  以及精确有理数（fractions）、二分（bisect）等 Python 标准库面。
 
 ## 路线图
 
 | 梯队 | 主题 | 状态 |
 |---|---|---|
 | T0 | 门槛库：uuid / jwt / decimal / csv / cli / log / testkit / workerpool | ✅ 8/8 完成 |
-| T1 | 重要库：config / template / validator / retry / toml / datetime / passhash / secure_random / datastruct / concurrent_map / mailparse / stats | 📋 规划 |
-| T2 | 差异化：metrics / tar / fsnotify / big / pg·mysql 驱动 / qrcode / 中文生态 | 📋 规划 |
+| T1 | 重要库：config / template / validator / retry / toml / datetime / passhash / secure_random / datastruct / concurrent_map / mailparse / stats | ✅ 12/12 完成 |
+| T2 | 差异化：metrics / tar / fsnotify / big / idcard / cnnum | ✅ 6/8 完成（qrcode、pg·mysql 驱动待专项） |
+| T3 | 参考 Rust/Python：strcase / fractions / ipaddr / dotenv / glob / checksum / itertools / base58 … | 📋 规划 |
 
-详细清单与论证见 [`docs/library-plan-go.md`](docs/library-plan-go.md)。
+详细清单与论证：
+- Go 面：[`docs/library-plan-go.md`](docs/library-plan-go.md)
+- Rust 面：[`docs/library-plan-rust.md`](docs/library-plan-rust.md)
+- Python 面：[`docs/library-plan-python.md`](docs/library-plan-python.md)
 
 ## 进度
 
@@ -42,7 +49,7 @@
 > 每个库遵循官方写库规范：纯函数优先、Result 错误、<500 行、`px fmt`/`px lint` 0 错、
 > 编译（px build）与解释（px run）双模式一致（workerpool 含并发仅编译模式）。
 
-### T1 重要库（12/12 ✅）
+### T1 重要库（12/12 ✅、双模式 PASS）
 
 config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash ✓ secure_random ✓ datastruct ✓ concurrent_map ✓ mailparse ✓ stats ✓
 
@@ -58,7 +65,21 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | cnnum | ✅ | 中文数字转换 |
 | qrcode / pg·mysql 驱动 | ⏳ 待专项 | 超出<500行生态库单库规模（RS 纠错+扫码验证 / 完整 wire protocol），建议独立里程碑 |
 
-> ⚠️ 语言缺陷登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF-001~012，写库过程中持续追加）
+### T3 参考 Rust/Python 生态的增量库（0/8 ✅ 首批）
+
+| 库 | 状态 | 参考 | 说明 |
+|---|---|---|---|
+| strcase | ⏳ | heck / inflection | 命名风格互转 |
+| fractions | ⏳ | fractions.Fraction | 精确有理数 |
+| ipaddr | ⏳ | ipaddress / std::net | IP/CIDR 校验与运算 |
+| dotenv | ⏳ | python-dotenv / dotenvy | .env 解析 |
+| glob | ⏳ | glob / fnmatch | 通配匹配与列举 |
+| checksum | ⏳ | crc32fast / zlib | CRC32 / Adler32 |
+| itertools | ⏳ | itertools | 集合组合子 |
+| base58 | ⏳ | bs58 | Base58 / Base58Check |
+
+> T3b 待命：table / jsonpath / diff / ini / textwrap / bisect / ulid / ansi；专项：bytes_pack / rate / parser / xlsx / pdf。
+> ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF-001~012，写库过程中持续追加）。
 
 ## 写库规范（引用 PuXian 官方）
 
