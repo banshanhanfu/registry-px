@@ -138,7 +138,8 @@ def pd_bytes(doc):
         # Page 对象
         offsets.append(len(out))
         out = out + str(page_num) + " 0 obj\n" +
-            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + str(pg["w"]) + " " + str(pg["h"]) +
+            "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " +
+            str(pg["w"]) + " " + str(pg["h"]) +
             "] /Resources << /Font << /F1 3 0 R >> >> /Contents " + str(content_num) + " 0 R >>\nendobj\n"
         # Content 对象（stream 长度按字节计）
         var stream = pd_content_stream(pg)
