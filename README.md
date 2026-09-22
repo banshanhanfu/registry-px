@@ -24,7 +24,7 @@
 | T0 | 门槛库：uuid / jwt / decimal / csv / cli / log / testkit / workerpool | ✅ 8/8 完成 |
 | T1 | 重要库：config / template / validator / retry / toml / datetime / passhash / secure_random / datastruct / concurrent_map / mailparse / stats | ✅ 12/12 完成 |
 | T2 | 差异化：metrics / tar / fsnotify / big / idcard / cnnum | ✅ 6/8 完成（qrcode、pg·mysql 驱动待专项） |
-| T3 | 参考 Rust/Python：strcase / fractions / ipaddr / dotenv / glob / checksum / itertools / base58 … | 📋 规划 |
+| T3 | 参考 Rust/Python：strcase / fractions / ipaddr / dotenv / glob / checksum / itertools / base58 …（T3b 续：table / jsonpath / diff / ini / textwrap / bisect / ulid / ansi） | ✅ T3a 8/8 + T3b 8/8 |
 
 详细清单与论证：
 - Go 面：[`docs/library-plan-go.md`](docs/library-plan-go.md)
@@ -65,7 +65,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | cnnum | ✅ | 中文数字转换 |
 | qrcode / pg·mysql 驱动 | ⏳ 待专项 | 超出<500行生态库单库规模（RS 纠错+扫码验证 / 完整 wire protocol），建议独立里程碑 |
 
-### T3 参考 Rust/Python 生态的增量库（0/8 ✅ 首批）
+### T3 参考 Rust/Python 生态的增量库（T3a 8/8 ✅ 首批 · T3b 8/8 ✅ 第二批）
 
 | 库 | 状态 | 参考 | 说明 |
 |---|---|---|---|
@@ -78,8 +78,21 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | itertools | ✅ 0.1.0 | itertools | 集合组合子（双模式 PASS） |
 | base58 | ✅ 0.1.0 | bs58 | Base58 / Base58Check（双模式 PASS·Python 对拍·登记 PX-DEF-016/017） |
 
-> T3b 待命：table / jsonpath / diff / ini / textwrap / bisect / ulid / ansi；专项：bytes_pack / rate / parser / xlsx / pdf。
-> ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF-001~012，写库过程中持续追加）。
+### T3b 第二批（8/8 ✅）
+
+| 库 | 版本 | 参考 | 验证 |
+|---|---|---|---|
+| table | ✅ 0.1.0 | comfy-table / tabulate | 对齐表格渲染 ASCII/UTF-8（双模式 PASS） |
+| jsonpath | ✅ 0.1.0 | jsonpath-ng / jmespath | JSON 路径取值（键/下标/通配，双模式 PASS） |
+| diff | ✅ 0.1.0 | difflib | LCS 行级 diff + 相似度（双模式 PASS） |
+| ini | ✅ 0.1.0 | configparser | INI 配置解析（双模式 PASS） |
+| textwrap | ✅ 0.1.0 | textwrap | 换行/缩进/去缩进排版（双模式 PASS） |
+| bisect | ✅ 0.1.0 | bisect | 有序序列二分查找/插入（双模式 PASS） |
+| ulid | ✅ 0.1.0 | ulid crate | 可排序唯一 ID（Crockford Base32，双模式 PASS） |
+| ansi | ✅ 0.1.0 | colored / anstream | ANSI 颜色/样式/去转义（双模式 PASS） |
+
+> 专项（待条件）：bytes_pack / rate / parser / xlsx / pdf / functools / faker / shutil 子集。
+> ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 13 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
 
