@@ -1,0 +1,95 @@
+# ============================================================
+# 普贤生态库：registry/qrcode —— QR 码生成
+# ------------------------------------------------------------
+# 纯函数库（无 IO、无状态），编译（px build）与解释（px run）双模式一致。
+# 对齐 Python segno / qrcode 心智（0.1.0 子集：版本 1..10，L/M/Q/H）：
+#   qrcode_encode(s, ec)       → Ok([version, mask, matrix]) | Err   自动选版本+最优掩码
+#   qrcode_encode_at(s, ec, v, mask) → Ok([version, mask, matrix]) | Err  固定版本/掩码（测试与精确控制）
+#   qrcode_ascii(matrix)       → str   "██"/"  " 终端渲染（含 1 模块静区）
+#   qrcode_pbm(matrix, quiet)  → str   PBM 位图（P1；quiet 为静区模块数，默认 4）
+#   qrcode_version(matrix)     → int   矩阵边长对应的版本
+# 矩阵表示：[[bool...]]（行×列，true=深色）；模式自动 numeric/alnum/byte
+# （UTF-8 字节）；内容超出 v1-10 容量 → Err。
+# 实现：qr_core.px（编码/交织/放置/掩码）+ qr_gf.px（Reed-Solomon）+
+# qr_table.px（容量/格式表，与 Python segno 同源）；全矩阵可与 segno 对拍。
+# ============================================================
+import "qr_core.px"
+import "qr_table.px"
+import "qr_gf.px"
+# 纠错级合法性检查
+def qr_check_ec(ec):
+    if ec == "L" or ec == "M" or ec == "Q" or ec == "H":
+        return true
+    return false
+# 自动版本 + 自动掩码
+def qrcode_encode(s, ec):
+    if not qr_check_ec(ec):
+        return Err("qrcode: 未知纠错级: " + ec)
+    return qr_encode_build(s, ec, -1, -1)
+# 固定版本/掩码（掩码 -1 = 自动最优；版本 -1 = 自动）
+def qrcode_encode_at(s, ec, v, mask):
+    return qr_encode_build(s, ec, v, mask)
+# ASCII 渲染（深色 = 两个实心块，浅色 = 两个空格，外圈 4 模块静区）
+def qrcode_ascii(matrix):
+    var out = ""
+    var size = len(matrix)
+    # 上静区
+    var i = 0
+    while i < 4:
+        var j = 0
+        while j < size + 8:
+            out = out + "  "
+            j += 1
+        out = out + "\n"
+        i += 1
+    var r = 0
+    while r < size:
+        var k = 0
+        while k < 4:
+            out = out + "  "
+            k += 1
+        var c = 0
+        while c < size:
+            if matrix[r][c]:
+                out = out + "██"
+            else:
+                out = out + "  "
+            c += 1
+        var k2 = 0
+        while k2 < 4:
+            out = out + "  "
+            k2 += 1
+        out = out + "\n"
+        r += 1
+    var i2 = 0
+    while i2 < 4:
+        var j2 = 0
+        while j2 < size + 8:
+            out = out + "  "
+            j2 += 1
+        out = out + "\n"
+        i2 += 1
+    return out
+# PBM 位图（P1 黑白；含 quiet 模块静区；尺寸 = (size+2q) x (size+2q)）
+def qrcode_pbm(matrix, quiet):
+    var size = len(matrix)
+    var w = size + 2 * quiet
+    var out = "P1\n" + str(w) + " " + str(w) + "\n"
+    var r = 0
+    while r < w:
+        var c = 0
+        while c < w:
+            if r >= quiet and r < quiet + size and c >= quiet and c < quiet + size:
+                if matrix[r - quiet][c - quiet]:
+                    out = out + "1 "
+                else:
+                    out = out + "0 "
+            else:
+                out = out + "0 "
+            c += 1
+        out = out + "\n"
+        r += 1
+    return out
+# 矩阵边长 → 版本
+def qrcode_version(matrix):
+    return (len(matrix) - 17) // 4

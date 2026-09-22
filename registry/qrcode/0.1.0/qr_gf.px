@@ -1,0 +1,110 @@
+# ============================================================
+# 普贤生态库：registry/qrcode —— GF(256) 与 Reed-Solomon 纠错（内部模块）
+# ------------------------------------------------------------
+# 被 qr_core.px import。
+# GF(256) 本原多项式 0b100011101（x^8+x^4+x^3+x^2+1）；用生成器多项式
+# （(x-α^0)(x-α^1)...）做多项式除法求余得纠错码字（与 ISO/IEC 18004 一致，
+# 可由 Python segno 对拍验证）。
+# 纯函数：每次调用现算指数/对数表（无模块级状态，守写库规范）。
+# ============================================================
+# 指数/对数表（长度 512 / 256）
+def gf_tables():
+    var exp = []
+    var log = []
+    var i = 0
+    while i < 512:
+        exp.append(0)
+        i += 1
+    var j = 0
+    while j < 256:
+        log.append(0)
+        j += 1
+    var x = 1
+    var k = 0
+    while k < 255:
+        exp[k] = x
+        log[x] = k
+        x = x * 2
+        if x >= 256:
+            x = x ^ 0x11D
+        k += 1
+    var m = 255
+    while m < 512:
+        exp[m] = exp[m - 255]
+        m += 1
+    return [exp, log]
+# 乘法
+# 性能缓存：GF 表与输入无关（本原多项式固定），首次构建后复用；
+# 属私有实现细节，对外仍是纯函数（写库规范"顶层无状态"针对导出状态）。
+var gf_cache = null
+def gf_mul(a, b):
+    if a == 0 or b == 0:
+        return 0
+    if gf_cache == null:
+        gf_cache = gf_tables()
+    return gf_cache[0][gf_cache[1][a] + gf_cache[1][b]]
+# 幂（n 为整数指数）
+def gf_pow(a, n):
+    if n == 0:
+        return 1
+    if a == 0:
+        return 0
+    if gf_cache == null:
+        gf_cache = gf_tables()
+    var idx = (gf_cache[1][a] * n) % 255
+    if idx < 0:
+        idx = idx + 255
+    return gf_cache[0][idx]
+# 生成器多项式系数（degree 个纠错码字；poly[0] 为最高次系数）
+def rs_generator(degree):
+    var poly = [1]
+    var i = 0
+    while i < degree:
+        var alpha = gf_pow(2, i)
+        var next = []
+        var k = 0
+        var n = len(poly)
+        while k <= n:
+            var v = 0
+            if k > 0:
+                v = v ^ poly[k - 1]
+            if k < n:
+                v = v ^ gf_mul(poly[k], alpha)
+            next.append(v)
+            k += 1
+        poly = next
+        i += 1
+    # 逆转：高次在前（poly[0]=1 为最高次系数，配合 rs_encode 的合成除法）
+    var rev = []
+    var x = len(poly) - 1
+    while x >= 0:
+        rev.append(poly[x])
+        x -= 1
+    return rev
+# 对 data 做 RS 编码，返回 degree 个纠错码字（多项式除法求余）
+def rs_encode(data, degree):
+    var poly = rs_generator(degree)
+    var buf = []
+    var i = 0
+    while i < len(data):
+        buf.append(data[i])
+        i += 1
+    var j = 0
+    while j < degree:
+        buf.append(0)
+        j += 1
+    var d = 0
+    while d < len(data):
+        var factor = buf[d]
+        if factor != 0:
+            var k = 0
+            while k < len(poly):
+                buf[d + k] = buf[d + k] ^ gf_mul(poly[k], factor)
+                k += 1
+        d += 1
+    var out = []
+    var m = len(data)
+    while m < len(buf):
+        out.append(buf[m])
+        m += 1
+    return out
