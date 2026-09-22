@@ -100,7 +100,7 @@ def sh_mkdirs(path):
                 return Err("shutil: 中间路径是文件 " + cur)
             i += 1
             continue
-        var r = mkdir(cur)
+        mkdir(cur)
         i += 1
     return Ok(0)
 # 列目录（existent 守卫）
