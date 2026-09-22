@@ -23,7 +23,7 @@
 |---|---|---|
 | T0 | 门槛库：uuid / jwt / decimal / csv / cli / log / testkit / workerpool | ✅ 8/8 完成 |
 | T1 | 重要库：config / template / validator / retry / toml / datetime / passhash / secure_random / datastruct / concurrent_map / mailparse / stats | ✅ 12/12 完成 |
-| T2 | 差异化：metrics / tar / fsnotify / big / idcard / cnnum | ✅ 7/8 完成（pg·mysql 驱动待专项） |
+| T2 | 差异化：metrics / tar / fsnotify / big / idcard / cnnum / qrcode | ✅ 7/8 完成（pg·mysql 驱动待专项） |
 | T3 | 参考 Rust/Python：strcase / fractions / ipaddr / dotenv / glob / checksum / itertools / base58 …（T3b 续 + T3c 专项） | ✅ T3a 8/8 + T3b 8/8 + T3c 8/8 |
 
 详细清单与论证：
@@ -53,7 +53,7 @@
 
 config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash ✓ secure_random ✓ datastruct ✓ concurrent_map ✓ mailparse ✓ stats ✓
 
-### T2 差异化（6/8 ✅ 已完成，2 项待专项）
+### T2 差异化（7/8 ✅ 已完成，1 项待专项：pg·mysql 驱动）
 
 | 库 | 状态 | 说明 |
 |---|---|---|
