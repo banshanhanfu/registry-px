@@ -23,7 +23,7 @@
 |---|---|---|
 | T0 | 门槛库：uuid / jwt / decimal / csv / cli / log / testkit / workerpool | ✅ 8/8 完成 |
 | T1 | 重要库：config / template / validator / retry / toml / datetime / passhash / secure_random / datastruct / concurrent_map / mailparse / stats | ✅ 12/12 完成 |
-| T2 | 差异化：metrics / tar / fsnotify / big / idcard / cnnum | ✅ 6/8 完成（qrcode、pg·mysql 驱动待专项） |
+| T2 | 差异化：metrics / tar / fsnotify / big / idcard / cnnum | ✅ 7/8 完成（pg·mysql 驱动待专项） |
 | T3 | 参考 Rust/Python：strcase / fractions / ipaddr / dotenv / glob / checksum / itertools / base58 …（T3b 续 + T3c 专项） | ✅ T3a 8/8 + T3b 8/8 + T3c 8/8 |
 
 详细清单与论证：
@@ -63,7 +63,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | fsnotify | ✅ | 轮询快照 diff |
 | idcard | ✅ | 身份证校验 GB 11643-1999 |
 | cnnum | ✅ | 中文数字转换 |
-| qrcode / pg·mysql 驱动 | ⏳ 待专项 | 超出<500行生态库单库规模（RS 纠错+扫码验证 / 完整 wire protocol），建议独立里程碑 |
+| qrcode | ✅ 已专项（encode+decode，v1-10，RS 纠错） | registry/qrcode/0.1.0；scan 验证面给到 decode+RS 纠错；pg·mysql 驱动仍待专项 |
 
 ### T3 参考 Rust/Python 生态的增量库（T3a 8/8 ✅ · T3b 8/8 ✅ · T3c 专项 8/8 ✅）
 

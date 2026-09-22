@@ -5,13 +5,15 @@
 # 对齐 Python segno / qrcode 心智（0.1.0 子集：版本 1..10，L/M/Q/H）：
 #   qrcode_encode(s, ec)       → Ok([version, mask, matrix]) | Err   自动选版本+最优掩码
 #   qrcode_encode_at(s, ec, v, mask) → Ok([version, mask, matrix]) | Err  固定版本/掩码（测试与精确控制）
+#   qrcode_decode(matrix)      → Ok(str) | Err   解码（RS 纠错自动修正 ≤ 容量一半错误码字）
 #   qrcode_ascii(matrix)       → str   "██"/"  " 终端渲染（含 1 模块静区）
 #   qrcode_pbm(matrix, quiet)  → str   PBM 位图（P1；quiet 为静区模块数，默认 4）
 #   qrcode_version(matrix)     → int   矩阵边长对应的版本
 # 矩阵表示：[[bool...]]（行×列，true=深色）；模式自动 numeric/alnum/byte
 # （UTF-8 字节）；内容超出 v1-10 容量 → Err。
-# 实现：qr_core.px（编码/交织/放置/掩码）+ qr_gf.px（Reed-Solomon）+
-# qr_table.px（容量/格式表，与 Python segno 同源）；全矩阵可与 segno 对拍。
+# 实现：qr_core.px（编码/交织/放置/掩码 + 解码/解除交织/去掩码）+ qr_gf.px
+# （Reed-Solomon 编码 + 译码：Syndrome→BM→Chien→Forney）+ qr_table.px
+# （容量/格式表，与 Python segno 同源）；全矩阵可与 segno 对拍（encode/decode 双向）。
 # ============================================================
 import "qr_core.px"
 import "qr_table.px"
@@ -93,3 +95,8 @@ def qrcode_pbm(matrix, quiet):
 # 矩阵边长 → 版本
 def qrcode_version(matrix):
     return (len(matrix) - 17) // 4
+
+# 解码：矩阵 → Ok(字符串) | Err（decode 侧；与 qrcode_encode 互为逆）
+# 支持 v1-10、L/M/Q/H、numeric/alphanumeric/byte；RS 纠错自动修正（≤ 容量一半错误）
+def qrcode_decode(matrix):
+    return qr_decode_matrix(matrix)

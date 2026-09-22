@@ -163,4 +163,71 @@ def main():
     expect(pbm_lines[1] == "29 29", "pbm size 29x29")
     var pbm_rows = pbm.split("\n")
     expect(len(pbm_rows) == 32, "pbm row count (2 header + 29 rows + trailing empty)")
+    # ===================== decode 侧 =====================
+    # ---- segno golden 矩阵 decode 回原文（双向兼容） ----
+    var d1 = qrcode_decode(rows_to_matrix(g1))
+    expect(d1.is_ok(), "decode golden A/L/v1")
+    expect(d1.unwrap() == "A", "decode golden A text")
+    var d2 = qrcode_decode(rows_to_matrix(g2))
+    expect(d2.is_ok(), "decode golden HELLO/Q/v2")
+    expect(d2.unwrap() == "HELLO WORLD", "decode golden HELLO text")
+    var d3 = qrcode_decode(rows_to_matrix(g3))
+    expect(d3.is_ok(), "decode golden 123/L/v2")
+    expect(d3.unwrap() == "1234567890", "decode golden 123 text")
+    # ---- round-trip：encode → decode 一致（多版本/纠错级/模式） ----
+    var rt_cases = ["A", "HELLO WORLD", "1234567890", "hello, 普贤"]
+    var rt_ecs = ["L", "M", "Q", "H"]
+    var ri = 0
+    while ri < len(rt_cases):
+        var rj = 0
+        while rj < len(rt_ecs):
+            var rr = qrcode_encode(rt_cases[ri], rt_ecs[rj])
+            expect(rr.is_ok(), "rt encode " + rt_cases[ri] + " " + rt_ecs[rj])
+            var rd = qrcode_decode(rr.unwrap()[2])
+            expect(rd.is_ok(), "rt decode " + rt_cases[ri] + " " + rt_ecs[rj])
+            expect(rd.unwrap() == rt_cases[ri], "rt equal " + rt_cases[ri] + " " + rt_ecs[rj])
+            rj += 1
+        ri += 1
+    # ---- RS 纠错：v1 M（ecc=10，容量 5 错误码字）注入 3 个分散位 ----
+    var re = qrcode_encode("HELLO WORLD", "M")
+    var orig = re.unwrap()[2]
+    var corrupt = []
+    var ci = 0
+    while ci < len(orig):
+        var row = []
+        var cj = 0
+        while cj < len(orig[ci]):
+            row.append(orig[ci][cj])
+            cj += 1
+        corrupt.append(row)
+        ci += 1
+    corrupt[10][10] = not corrupt[10][10]
+    corrupt[10][19] = not corrupt[10][19]
+    corrupt[19][10] = not corrupt[19][10]
+    var cd = qrcode_decode(corrupt)
+    expect(cd.is_ok(), "decode corrupted matrix (RS correct)")
+    expect(cd.unwrap() == "HELLO WORLD", "RS corrected text")
+    # ---- 超容量破坏 → 返回 Err 不崩溃 ----
+    var bomb = []
+    vi = 0
+    while vi < len(orig):
+        var brow = []
+        var vj = 0
+        while vj < len(orig[vi]):
+            brow.append(orig[vi][vj])
+            vj += 1
+        bomb.append(brow)
+        vi += 1
+    var cnt = 0
+    var rr2 = 9
+    while rr2 < 14 and cnt < 20:
+        var cc2 = 9
+        while cc2 < 14 and cnt < 20:
+            bomb[rr2][cc2] = not bomb[rr2][cc2]
+            cnt += 1
+            cc2 += 1
+        rr2 += 1
+    var bd = qrcode_decode(bomb)
+    if bd.is_ok() and bd.unwrap() != "HELLO WORLD":
+        expect(false, "over-capacity decode must Err or equal")
     print("qrcode: PASS")
