@@ -24,7 +24,7 @@
 | T0 | 门槛库：uuid / jwt / decimal / csv / cli / log / testkit / workerpool | ✅ 8/8 完成 |
 | T1 | 重要库：config / template / validator / retry / toml / datetime / passhash / secure_random / datastruct / concurrent_map / mailparse / stats | ✅ 12/12 完成 |
 | T2 | 差异化：metrics / tar / fsnotify / big / idcard / cnnum | ✅ 6/8 完成（qrcode、pg·mysql 驱动待专项） |
-| T3 | 参考 Rust/Python：strcase / fractions / ipaddr / dotenv / glob / checksum / itertools / base58 …（T3b 续：table / jsonpath / diff / ini / textwrap / bisect / ulid / ansi） | ✅ T3a 8/8 + T3b 8/8 |
+| T3 | 参考 Rust/Python：strcase / fractions / ipaddr / dotenv / glob / checksum / itertools / base58 …（T3b 续 + T3c 专项） | ✅ T3a 8/8 + T3b 8/8 + T3c 8/8 |
 
 详细清单与论证：
 - Go 面：[`docs/library-plan-go.md`](docs/library-plan-go.md)
@@ -65,7 +65,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | cnnum | ✅ | 中文数字转换 |
 | qrcode / pg·mysql 驱动 | ⏳ 待专项 | 超出<500行生态库单库规模（RS 纠错+扫码验证 / 完整 wire protocol），建议独立里程碑 |
 
-### T3 参考 Rust/Python 生态的增量库（T3a 8/8 ✅ 首批 · T3b 8/8 ✅ 第二批）
+### T3 参考 Rust/Python 生态的增量库（T3a 8/8 ✅ · T3b 8/8 ✅ · T3c 专项 8/8 ✅）
 
 | 库 | 状态 | 参考 | 说明 |
 |---|---|---|---|
@@ -91,8 +91,22 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | ulid | ✅ 0.1.0 | ulid crate | 可排序唯一 ID（Crockford Base32，双模式 PASS） |
 | ansi | ✅ 0.1.0 | colored / anstream | ANSI 颜色/样式/去转义（双模式 PASS） |
 
-> 专项（待条件）：bytes_pack / rate / parser / xlsx / pdf / functools / faker / shutil 子集。
-> ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 13 条有效）。
+### T3c 专项（8/8 ✅）
+
+| 库 | 版本 | 参考 | 验证 |
+|---|---|---|---|
+
+| bytes_pack | ✅ 0.1.0 | Python struct / byteorder | 二进制 pack/unpack（大小端/重复/有符号；规避 PX-DEF-019/020，登记 PX-DEF-018/019/020） |
+| rate | ✅ 0.1.0 | governor / x/time/rate | 令牌桶限流（无状态 API，双模式 PASS） |
+| functools | ✅ 0.1.0 | functools | partial/compose/memoize/negate（双模式 PASS） |
+| shutil | ✅ 0.1.0 | shutil 子集 | 文件复制/移动/删树/mkdirs（双模式 PASS） |
+| faker | ✅ 0.1.0 | Faker（中文子集） | 假数据：姓名/手机号/邮箱/句子/UUID（双模式 PASS） |
+| parser | ✅ 0.1.0 | nom / parsimonious | 解析器组合子：char/str/seq/alt/many/sep_by/ident/int（双模式 PASS） |
+| xlsx | ✅ 0.1.0 | openpyxl（最小写器） | OpenXML 工作簿写出（编译轨 PASS · Python zipfile 对拍 · 登记 PX-DEF-021） |
+| pdf | ✅ 0.1.0 | printpdf / reportlab（最小写器） | PDF 1.4 文本写出（双模式 PASS · Python 结构校验） |
+
+> 专项清单至此清空；qrcode / pg·mysql 驱动仍为独立里程碑（见 T2）。
+> ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
 
