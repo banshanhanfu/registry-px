@@ -230,4 +230,28 @@ def main():
     var bd = qrcode_decode(bomb)
     if bd.is_ok() and bd.unwrap() != "HELLO WORLD":
         expect(false, "over-capacity decode must Err or equal")
+    # ---- SVG 输出 ----
+    var svgr = qrcode_encode("https://example.com", "M")
+    var svgm = svgr.unwrap()[2]
+    var svg = qrcode_svg(svgm, 4, 4)
+    expect(contains(svg, "<?xml"), "svg xml header")
+    expect(contains(svg, "xmlns=\"http://www.w3.org/2000/svg\""), "svg xmlns")
+    expect(contains(svg, "<rect"), "svg rect")
+    var svg_count = 0
+    var si = 0
+    var needle = "fill=\"black\""
+    while si + len(needle) <= len(svg):
+        var sh = true
+        var sj = 0
+        while sj < len(needle):
+            if svg[si + sj] != needle[sj]:
+                sh = false
+                break
+            sj += 1
+        if sh:
+            svg_count += 1
+            si += len(needle)
+        else:
+            si += 1
+    expect(svg_count > 50, "svg dark rect count > 50 (v2)")
     print("qrcode: PASS")

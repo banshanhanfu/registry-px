@@ -1023,9 +1023,9 @@ def qr_parse_data(data, v):
                 bi += 1
             out = out + bytes_to_str(hex_to_bytes(hexs))
     return Ok(out)
-# 矩阵 → 字符串（decode 主入口）
+# 矩阵 → 字符串（decode 主入口；版本由矩阵边长推导，不依赖上层 qrcode.px）
 def qr_decode_matrix(matrix):
-    var v = qrcode_version(matrix)   # 从矩阵边长推版本（qrcode.px 导出）
+    var v = (len(matrix) - 17) // 4
     if v < 1 or v > 10:
         return Err("qrcode: 版本超出 1..10: " + str(v))
     var fmt = qr_decode_format(matrix, v)
