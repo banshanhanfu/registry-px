@@ -125,6 +125,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | datetime（加固） | 0.1.0 | Go time / dateutil | 双模式 PASS · 工作日/Zeller + ISO8601 + 相对时间 |
 | redis | 0.1.0 | go-redis / redis-py | 双模式 PASS · 真实 Redis：SET/GET/INCR/DEL/TTL/MGET/错误恢复 |
 | mqtt | 0.1.0 | paho.mqtt / paho-mqtt | 双模式 PASS · 真实 mosquitto：订阅/QoS0 发布/跨连接收发/通配符 |
+| percent | 0.1.0 | urllib.parse / url.QueryEscape | 双模式 PASS · RFC 3986 编码解码（Python 对拍） |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
