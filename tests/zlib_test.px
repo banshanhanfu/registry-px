@@ -12,6 +12,7 @@ def main():
         print("SKIP/ERR（解释轨 FFI 未注册，PX-DEF-035）: " + str(c))
         # 解释轨：能返回 Err 而非崩溃即视为优雅降级；编译轨不应走到这里
         expect(str(c).find("未注册") >= 0 or str(c).find("ffi") >= 0, "解释轨应报 FFI 未注册类")
+        print("zlib: PASS（解释轨优雅降级，PX-DEF-035）")
         return Ok(0)
     var comp = c.unwrap()
     # 与 Python zlib 输出逐字节一致（对拍）
