@@ -132,6 +132,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | bitset | 0.1.0 | math/bits / bitvec | 双模式 PASS · 位向量置/清/翻/查/popcount |
 | bloom | 0.1.0 | willf/bloom / pybloom | 双模式 PASS · 布隆过滤器（sha256 派生位） |
 | properties | 0.1.0 | java.util.Properties | 双模式 PASS · =/: 分隔 + 注释/续行/转义 |
+| nanoid | 0.1.0 | go-nanoid / pynanoid | 双模式 PASS · 64 字符 URL 安全 ID（无取模偏差） |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
