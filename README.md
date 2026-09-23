@@ -119,6 +119,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | trie | 0.1.0 | marisa-trie | 双模式 PASS · 精确/前缀/子树收集（支持中文） |
 | edist | 0.1.0 | Levenshtein / jellyfish | 双模式 PASS · 编辑距离/Hamming/相似度 |
 | natsort | 0.1.0 | natsort / natord | 双模式 PASS · 自然排序（补零键 + 下标稳定） |
+| slug | 0.1.0 | python-slugify / gosimple/slug | 双模式 PASS · ASCII 小写 + CJK 保留 |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
