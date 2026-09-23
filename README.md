@@ -121,6 +121,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | natsort | 0.1.0 | natsort / natord | 双模式 PASS · 自然排序（补零键 + 下标稳定） |
 | slug | 0.1.0 | python-slugify / gosimple/slug | 双模式 PASS · ASCII 小写 + CJK 保留 |
 | thousep | 0.1.0 | num2words / humanize / num-format | 双模式 PASS · 千分位/序数（任意长度安全） |
+| zlib | 0.1.0 | compress/zlib | 编译轨 PASS（Python 逐字节对拍）· 解释轨 FFI 缺表优雅 Err（PX-DEF-035） |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
