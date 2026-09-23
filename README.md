@@ -23,7 +23,7 @@
 |---|---|---|
 | T0 | 门槛库：uuid / jwt / decimal / csv / cli / log / testkit / workerpool | ✅ 8/8 完成 |
 | T1 | 重要库：config / template / validator / retry / toml / datetime / passhash / secure_random / datastruct / concurrent_map / mailparse / stats | ✅ 12/12 完成 |
-| T2 | 差异化：metrics / tar / fsnotify / big / idcard / cnnum / qrcode | ✅ 7/8 完成（pg·mysql 驱动待专项） |
+| T2 | 差异化：metrics / tar / fsnotify / big / idcard / cnnum / qrcode / pg / mysql | ✅ 8/8 完成 |
 | T3 | 参考 Rust/Python：strcase / fractions / ipaddr / dotenv / glob / checksum / itertools / base58 …（T3b 续 + T3c 专项） | ✅ T3a 8/8 + T3b 8/8 + T3c 8/8 |
 
 详细清单与论证：
@@ -53,7 +53,7 @@
 
 config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash ✓ secure_random ✓ datastruct ✓ concurrent_map ✓ mailparse ✓ stats ✓
 
-### T2 差异化（7/8 ✅ 已完成，1 项待专项：pg·mysql 驱动）
+### T2 差异化（8/8 ✅ 已完成）
 
 | 库 | 状态 | 说明 |
 |---|---|---|
@@ -63,7 +63,9 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | fsnotify | ✅ | 轮询快照 diff |
 | idcard | ✅ | 身份证校验 GB 11643-1999 |
 | cnnum | ✅ | 中文数字转换 |
-| qrcode | ✅ 已专项（encode+decode，v1-10，RS 纠错） | registry/qrcode/0.1.0；scan 验证面给到 decode+RS 纠错；pg·mysql 驱动仍待专项 |
+| qrcode | ✅ 已专项（encode+decode，v1-10，RS 纠错） | registry/qrcode/0.1.0；scan 验证面给到 decode+RS 纠错 |
+| pg | ✅ 0.1.0 | lib/pq（wire protocol v3，md5/SCRAM-SHA-256 认证，真实 PG13 双模式 PASS，登记 PX-DEF-027~030） |
+| mysql | ✅ 0.1.0 | go-sql-driver/mysql（握手/AuthSwitch/native_password，库内自实现 SHA1，真实 MariaDB 双模式 PASS，登记 PX-DEF-026） |
 
 ### T3 参考 Rust/Python 生态的增量库（T3a 8/8 ✅ · T3b 8/8 ✅ · T3c 专项 8/8 ✅）
 
@@ -105,7 +107,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | xlsx | ✅ 0.1.0 | openpyxl（最小写器） | OpenXML 工作簿写出（编译轨 PASS · Python zipfile 对拍 · 登记 PX-DEF-021） |
 | pdf | ✅ 0.1.0 | printpdf / reportlab（最小写器） | PDF 1.4 文本写出（双模式 PASS · Python 结构校验） |
 
-> 专项清单至此清空；qrcode / pg·mysql 驱动仍为独立里程碑（见 T2）。
+> 专项清单至此清空；T2 全部完成（qrcode / pg / mysql 均为独立里程碑）。
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）

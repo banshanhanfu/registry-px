@@ -62,6 +62,17 @@ def main():
     var q8 = pg_query(c, "SELECT 1 AS one")
     var r8 = q8.unwrap()
     expect(r8["rows"][0][0] == "1", "recover query ok")
+    # SCRAM-SHA-256 认证路径（PG 13 默认）
+    var conn2 = pg_connect("127.0.0.1", 5432, "px_scram", "scram_secret_789",
+        "pxtest", {"timeout_ms": 5000})
+    if conn2.is_err():
+        print("FAIL: scram connect: " + str(conn2))
+        exit(1)
+    var c2 = conn2.unwrap()
+    var q9 = pg_query(c2, "SELECT current_user AS u")
+    var r9 = q9.unwrap()
+    expect(r9["rows"][0][0] == "px_scram", "scram user")
+    pg_close(c2)
     pg_close(c)
     print("pg_test: PASS")
     return Ok(0)

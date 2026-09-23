@@ -132,7 +132,7 @@ def pg_scram_attrs(s):
 # 流程：SASLInitialResponse(mech\0 len cfirst) → R(11) server-first
 #       → SASLResponse(cfinal) → R(12) server-final
 def pg_auth_scram(fd, user, password):
-    var nonce = "px" + str(random_int(1000000, 9999999))
+    var nonce = "px" + str(random_int(9999999))
     var cfirst_bare = "n=" + user + ",r=" + nonce
     var cfirst = "n,," + cfirst_bare
     # SASLInitialResponse: mech 字符串 + int32 长度 + 初始响应
