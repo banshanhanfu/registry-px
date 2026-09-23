@@ -108,6 +108,12 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | pdf | ✅ 0.1.0 | printpdf / reportlab（最小写器） | PDF 1.4 文本写出（双模式 PASS · Python 结构校验） |
 
 > 专项清单至此清空；T2 全部完成（qrcode / pg / mysql 均为独立里程碑）。
+
+### 追加：重点缺口小件（2026-09-24 起，对照 Go/Python/Rust 生态缺口普查）
+
+| 库 | 版本 | 参考 | 验证 |
+|---|---|---|---|
+| totp | 0.1.0 | RFC 4226/6238、pquerna/otp、pyotp | 双模式 PASS · RFC 官方向量（HOTP 10 组 + TOTP 6 组） |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
