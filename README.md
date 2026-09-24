@@ -138,6 +138,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | cache | 0.1.0 | cachetools / groupcache | 双模式 PASS · TTL + LRU 淘汰 |
 | units | 0.1.0 | pint / uom | 双模式 PASS · 长度/质量/时间/数据/温度换算 |
 | money | 0.1.0 | money / babel | 双模式 PASS · 金额格式/解析（5 币种） |
+| strength | 0.1.0 | zxcvbn | 双模式 PASS · 密码评分/熵估计（启发式） |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
