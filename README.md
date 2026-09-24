@@ -159,6 +159,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | readstat | 0.1.0 | textstat / readability | 双模式 PASS · Flesch 可读性测度 |
 | markdown | 0.1.0 | goldmark / markdown | 双模式 PASS · Markdown→纯文本渲染 + 链路提取 |
 | pop3 | 0.1.0 | go-imap / poplib | 双模式 PASS · POP3 客户端（STAT/LIST/RETR，真实服务） |
+| statx | 0.1.0 | gonum/stat / statistics | 双模式 PASS · 描述统计/分位数/Pearson/线性回归 |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m204；m204 复查：M201/M202 已修复 PX-DEF-021/031/032/033/034/035（详见该文件））。
 
 ## 写库规范（引用 PuXian 官方）
