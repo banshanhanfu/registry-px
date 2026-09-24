@@ -145,6 +145,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | walk | 0.1.0 | filepath.Walk / walkdir | 双模式 PASS · 递归遍历（深度限制） |
 | msgpack | 0.1.0 | msgpack-lite | 双模式 PASS · 编解码（Python 逐字节对拍） |
 | htmlparse | 0.1.0 | x/net/html / html.parser | 双模式 PASS · 标签树/属性/文本/注释 |
+| graph | 0.1.0 | petgraph / networkx | 双模式 PASS · BFS/DFS/拓扑/Dijkstra |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
