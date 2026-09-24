@@ -147,6 +147,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | htmlparse | 0.1.0 | x/net/html / html.parser | 双模式 PASS · 标签树/属性/文本/注释 |
 | graph | 0.1.0 | petgraph / networkx | 双模式 PASS · BFS/DFS/拓扑/Dijkstra |
 | barcode | 0.1.0 | python-barcode / boombuler/barcode | 双模式 PASS · EAN-13 生成（python-barcode 对拍） |
+| punycode | 0.1.0 | RFC 3492 / idna | 双模式 PASS · Punycode/IDNA（CPython 对拍） |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
