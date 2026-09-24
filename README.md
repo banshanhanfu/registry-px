@@ -141,6 +141,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | strength | 0.1.0 | zxcvbn | 双模式 PASS · 密码评分/熵估计（启发式） |
 | progress | 0.1.0 | tqdm / indicatif | 双模式 PASS · 进度条渲染 |
 | dist | 0.1.0 | rand_distr / random | 双模式 PASS · 均匀/正态/指数/泊松采样 |
+| dirs | 0.1.0 | dirs / appdirs | 双模式 PASS · XDG 目录探测 |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
