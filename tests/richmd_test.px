@@ -5,9 +5,9 @@ def expect(cond, msg):
         print("FAIL: " + msg)
         exit(1)
 def main():
-    var md = "# 标题\n\n## 二级\n\n段落 with **粗体** and `代码`\n\n"
+    var md = ("# 标题\n\n## 二级\n\n段落 with **粗体** and `代码`\n\n"
         +"- 甲\n- 乙\n\n> 引用一行\n\n```\ncode line 1\n```\n\n"
-        +"1. 第一\n2. 第二\n\n---\n"
+        +"1. 第一\n2. 第二\n\n---\n")
     var r = mdr_render(md).unwrap()
     # 应包含 ANSI 序列
     expect(r.contains("\u{1b}[1m"), "bold esc")
