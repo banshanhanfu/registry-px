@@ -15,7 +15,8 @@
 #     用完临时目录建议先 tf_remove_file 各文件再 tf_remove_dir。
 # ============================================================
 def o_seq():
-    return str(now_ms() % 1000000000)
+    # now_ms + random 双料降碰撞概率（无全局状态，遵守写库规范）
+    return str(now_ms() % 1000000000) + "_" + str(random() % 1000000)
 # 唯一临时目录（自动 mkdir）
 def tf_tempdir(prefix):
     var p = prefix
