@@ -152,6 +152,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | quickcheck | 0.1.0 | proptest / hypothesis | 双模式 PASS · 随机属性测试 |
 | bench | 0.1.0 | criterion / timeit | 双模式 PASS · 微基准计时 |
 | captcha | 0.1.0 | dchest/captcha | 双模式 PASS · 数字验证码（ASCII 渲染 + 加噪） |
+| ftp | 0.1.0 | jlaffaye/ftp / ftplib | 双模式 PASS · PASV/LIST/RETR/STOR（真实 pyftpdlib） |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
