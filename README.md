@@ -62,7 +62,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | tar | ✅ | uStar；Python tarfile 互操作 |
 | fsnotify | ✅ | 轮询快照 diff |
 | idcard | ✅ | 身份证校验 GB 11643-1999 |
-| cnnum | ✅ | 中文数字转换 |
+| cnnum | ✅ | 中文数字转换 + 人民币金额大写 cn_amount_str |
 | qrcode | ✅ 已专项（encode+decode，v1-10，RS 纠错） | registry/qrcode/0.1.0；scan 验证面给到 decode+RS 纠错 |
 | pg | ✅ 0.1.0 | lib/pq（wire protocol v3，md5/SCRAM-SHA-256 认证 + 扩展查询协议 pg_query_params 参数化查询，真实 PG13 双模式 PASS，登记 PX-DEF-027~030） |
 | mysql | ✅ 0.1.0 | go-sql-driver/mysql（握手/AuthSwitch/native_password + 预处理语句 mysql_query_params 二进制结果集，原生 SHA1/SHA256，真实 MariaDB 双模式 PASS，登记 PX-DEF-026、031） |
