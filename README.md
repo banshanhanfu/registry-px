@@ -65,6 +65,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | cnnum | ✅ | 中文数字转换 + 人民币金额大写 cn_amount_str |
 | hant | 0.1.0 | OpenCC / hanziconv | 双模式 PASS · 简繁保守单字子集（双向可逆+语境敏感过滤） |
 | richmd | 0.1.0 | rich / glamour | 双模式 PASS · Markdown→ANSI 富文本（标题/列表/引用/代码块/行内样式/链接 + 剥 ANSI） |
+| mongodb | 0.1.0 | go-mongo-driver / pymongo | 双模式 PASS · OP_MSG 客户端（hello/ping/insert/find+getMore/count，真实 mongod 7.0） |
 | qrcode | ✅ 已专项（encode+decode，v1-10，RS 纠错） | registry/qrcode/0.1.0；scan 验证面给到 decode+RS 纠错 |
 | pg | ✅ 0.1.0 | lib/pq（wire protocol v3，md5/SCRAM-SHA-256 认证 + 扩展查询协议 pg_query_params 参数化查询，真实 PG13 双模式 PASS，登记 PX-DEF-027~030） |
 | mysql | ✅ 0.1.0 | go-sql-driver/mysql（握手/AuthSwitch/native_password + 预处理语句 mysql_query_params 二进制结果集，原生 SHA1/SHA256，真实 MariaDB 双模式 PASS，登记 PX-DEF-026、031） |
