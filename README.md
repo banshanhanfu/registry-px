@@ -149,6 +149,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | barcode | 0.1.0 | python-barcode / boombuler/barcode | 双模式 PASS · EAN-13 生成（python-barcode 对拍） |
 | punycode | 0.1.0 | RFC 3492 / idna | 双模式 PASS · Punycode/IDNA（CPython 对拍） |
 | oauth2 | 0.1.0 | x/oauth2 / authlib | 双模式 PASS · 令牌获取（mock 端点） |
+| quickcheck | 0.1.0 | proptest / hypothesis | 双模式 PASS · 随机属性测试 |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
