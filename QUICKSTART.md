@@ -2,7 +2,7 @@
 
 > 本文档记录在 **openEuler 22.03 LTS（aarch64）** 上安装 PuXian 的实测过程：
 > 遇到的问题、解决路径、经验教训与语言语法注意事项。
-> 版本基线：**v0.2.0-m183**（2026-09-22 · 编译器已自举 · 三轨语义一致）。
+> 版本基线：**v0.2.0-m206**（2026-09-24 · 编译器已自举 · 三轨语义一致）。
 
 ## 1. 快速安装
 
@@ -19,7 +19,7 @@ sudo yum install puxian         # RHEL7 / CentOS7
 
 ```bash
 # 1. 从 GitHub Releases 下载 aarch64 原生引导包（全静态、零 glibc 依赖）
-TAG=v0.2.0-m183
+TAG=v0.2.0-m206
 curl -fL -O "https://github.com/NanzhanGroup/PuXian/releases/download/${TAG}/puxian-bootstrap-aarch64-${TAG}.tar.gz"
 
 # 2. 校验 sha256（官方 sha256sums.txt 或镜像 version.json 均可对）
