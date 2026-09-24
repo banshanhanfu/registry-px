@@ -18,7 +18,8 @@ def main():
     expect(d4["b"] == true, "v bool")
     var d5 = bson_decode(hex_to_bytes("100000000166001f85eb51b81e094000")).unwrap()
     expect(feq(d5["f"], 3.14), "v double")
-    var d6 = bson_decode(hex_to_bytes("2400000004617272001a0000001030000100000010310002000000103200030000000000")).unwrap()
+    var d6 = bson_decode(hex_to_bytes("2400000004617272001a000000"
+        +"1030000100000010310002000000103200030000000000")).unwrap()
     expect(type(d6["arr"]) == "list" and d6["arr"][0] == 1 and d6["arr"][2] == 3, "v array")
     var d7 = bson_decode(hex_to_bytes("16000000036f000e0000000278000200000079000000")).unwrap()
     expect(type(d7["o"]) == "dict" and d7["o"]["x"] == "y", "v nested")
