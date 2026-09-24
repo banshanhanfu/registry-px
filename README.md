@@ -143,6 +143,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | dist | 0.1.0 | rand_distr / random | 双模式 PASS · 均匀/正态/指数/泊松采样 |
 | dirs | 0.1.0 | dirs / appdirs | 双模式 PASS · XDG 目录探测 |
 | walk | 0.1.0 | filepath.Walk / walkdir | 双模式 PASS · 递归遍历（深度限制） |
+| msgpack | 0.1.0 | msgpack-lite | 双模式 PASS · 编解码（Python 逐字节对拍） |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
