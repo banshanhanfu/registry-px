@@ -156,6 +156,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | luhn | 0.1.0 | stdnum | 双模式 PASS · Luhn 校验/测试卡号生成 |
 | pwgen | 0.1.0 | secrets / go-password | 双模式 PASS · 口令生成（四类必含 + 熵估计） |
 | snowflake | 0.1.0 | bwmarrin/snowflake | 双模式 PASS · 41+10+12 分布式 ID |
+| readstat | 0.1.0 | textstat / readability | 双模式 PASS · Flesch 可读性测度 |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m182；001/004/011 已由官方修复移除，当前 17 条有效）。
 
 ## 写库规范（引用 PuXian 官方）
