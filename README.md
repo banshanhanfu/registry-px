@@ -66,6 +66,10 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | hant | 0.1.0 | OpenCC / hanziconv | 双模式 PASS · 简繁保守单字子集（双向可逆+语境敏感过滤） |
 | richmd | 0.1.0 | rich / glamour | 双模式 PASS · Markdown→ANSI 富文本（标题/列表/引用/代码块/行内样式/链接 + 剥 ANSI） |
 | mongodb | 0.1.0 | go-mongo-driver / pymongo | 双模式 PASS · OP_MSG 客户端（hello/ping/insert/find+getMore/count，真实 mongod 7.0） |
+| sched | 0.1.0 | schedule / robfig/cron | 双模式 PASS · 时间片轮询调度器（周期任务+计数） |
+| tempfile | 0.1.0 | tempfile / ioutil.TempFile | 双模式 PASS · 临时目录/文件/写读/清理 |
+| targz | 0.1.0 | archive/tar + gzip | 双模式 PASS · uStar tar.gz 联合流（Python tarfile 互通） |
+| imap | 0.1.0 | go-imap / imaplib | 双模式 PASS · IMAP4 客户端（LOGIN/LIST/SELECT/FETCH literal，本地 mock） |
 | qrcode | ✅ 已专项（encode+decode，v1-10，RS 纠错） | registry/qrcode/0.1.0；scan 验证面给到 decode+RS 纠错 |
 | pg | ✅ 0.1.0 | lib/pq（wire protocol v3，md5/SCRAM-SHA-256 认证 + 扩展查询协议 pg_query_params 参数化查询，真实 PG13 双模式 PASS，登记 PX-DEF-027~030） |
 | mysql | ✅ 0.1.0 | go-sql-driver/mysql（握手/AuthSwitch/native_password + 预处理语句 mysql_query_params 二进制结果集，原生 SHA1/SHA256，真实 MariaDB 双模式 PASS，登记 PX-DEF-026、031） |
