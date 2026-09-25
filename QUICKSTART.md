@@ -2,7 +2,7 @@
 
 > 本文档记录在 **openEuler 22.03 LTS（aarch64）** 上安装 PuXian 的实测过程：
 > 遇到的问题、解决路径、经验教训与语言语法注意事项。
-> 版本基线：**v0.2.0-m206**（2026-09-24 · 编译器已自举 · 三轨语义一致）。
+> 版本基线：**v0.2.0-m212**（2026-09-26 · 编译器已自举 · 三轨语义一致）。
 
 ## 1. 快速安装
 
@@ -19,7 +19,7 @@ sudo yum install puxian         # RHEL7 / CentOS7
 
 ```bash
 # 1. 从 GitHub Releases 下载 aarch64 原生引导包（全静态、零 glibc 依赖）
-TAG=v0.2.0-m206
+TAG=v0.2.0-m212
 curl -fL -O "https://github.com/NanzhanGroup/PuXian/releases/download/${TAG}/puxian-bootstrap-aarch64-${TAG}.tar.gz"
 
 # 2. 校验 sha256（官方 sha256sums.txt 或镜像 version.json 均可对）
@@ -57,6 +57,9 @@ px --version
 4. **编译时提示"VM 版编译器在本机不可执行"不是错误**：是 aarch64 官方通道的设计（VM 轨件仅 x86_64 侧产出），工具自动回退 C 轨，别被提示吓到。
 5. **三轨语义一致是项目红线**：解释（`px run`）/ VM 字节码（默认 `px build`）/ C 文本轨（`px build --c`）行为一致，若发现分叉按官方口径报 issue（带最小复现单文件）。
 6. **验收不要只看 `--version`**：写 hello / fib / Result / 并发示例跑 `px run` + `px build` + 产物直跑，再扫一遍工具链子命令，才算环境可用（见 §5）。
+7. **装前先查镜像 `version.json` 拿权威最新 tag**：`soft.xiusoft.cn/puxian/version.json` 的 `tag` 字段是官方同步的
+   "当前最新"（2026-09-26 实测已到 **v0.2.0-m212**，比本文档先前基线 m206 新）；文档里的 TAG 只代表写作时点，
+   安装"最新版"前以它为准。
 
 ## 4. 语法注意事项（写 .px 前先读）
 
@@ -107,7 +110,7 @@ ldd build/hello || true                         # 无 not found / not a dynamic 
 px fmt hello.px --check                         # 格式化
 px lint hello.px --strict                       # 静态检查
 px test hello.px                                # 测试框架
-px mcp                                          # MCP 服务器（stdio，8 工具）
+px mcp                                          # MCP 服务器（stdio，9 工具：run/fmt/lint/test/bench/doc/ast/build/version）
 ```
 
 ## 6. 相关链接
