@@ -173,6 +173,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | pinyin | 0.1.0 | 汉字转拼音 / pypinyin | 双模式 PASS · 中文拼音常用字子集（230 字、字级转换、未知字保留） |
 | semaphore | 0.1.0 | x/sync/semaphore / threading.Semaphore | 编译模式 PASS · 计数信号量（阻塞/非阻塞/归还校验） |
 | actor | 0.1.0 | Akka / actix / erlang | 编译模式 PASS · Actor 邮箱模式（ac_new/send/call/stop，FIFO 免锁） |
+| mock | 0.1.0 | httptest / unittest.mock | 编译模式 PASS · HTTP 桩服务器 + 测试请求客户端（路由/404/405/请求日志/注入式假时钟） |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m212；M201/M202 修复项 m212 复查保持，PX-DEF-036/037 官方速查表已记载（详见该文件））。
 
 ## 写库规范（引用 PuXian 官方）
