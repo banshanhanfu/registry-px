@@ -169,6 +169,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | statx | 0.1.0 | gonum/stat / statistics | 双模式 PASS · 描述统计/分位数/Pearson/线性回归 |
 | dns | 0.1.0 | miekg/dns / dnspython | 双模式 PASS · UDP DNS 客户端（A/AAAA/CNAME/NS/MX/TXT/PTR，真实解析器） |
 | bson | 0.1.0 | pymongo / bson | 双模式 PASS · BSON 编解码（doc/array/string/int32/64/double/bool/null/bytes/oid/datetime，Python bson 逐字节对拍） |
+| holidays | 0.1.0 | workalendar / holidays | 双模式 PASS · 中国法定节假日/工作日历（2024-2025 官方数据 + 自含 Zeller 日期算法） |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m212；M201/M202 修复项 m212 复查保持，PX-DEF-036/037 官方速查表已记载（详见该文件））。
 
 ## 写库规范（引用 PuXian 官方）
