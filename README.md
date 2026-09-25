@@ -120,6 +120,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | protobuf | 0.1.0 | protobuf wire | 双模式 PASS · wire format 动态编解码（varint/zigzag/fixed/float/double/嵌套/未知跳过） |
 | sqlparse | 0.1.0 | sqlparser / sqlparse 子集 | 双模式 PASS · SELECT 子集解析 AST（WHERE/ORDER/LIMIT/DISTINCT/别名） |
 | x509 | 0.1.0 | crypto/x509 子集 | 双模式 PASS · 证书 DER/PEM 解析 + RSA 验签（cryptography 对拍） |
+| bcrypt | 0.1.0 | bcrypt $2a$ | 编译模式 PASS · 纯 .px EksBlowfish（python bcrypt 逐字节对拍，cost4/10 向量） |
 | pdf | ✅ 0.1.0 | printpdf / reportlab（最小写器） | PDF 1.4 文本写出（双模式 PASS · Python 结构校验） |
 
 > 专项清单至此清空；T2 全部完成（qrcode / pg / mysql 均为独立里程碑）。
