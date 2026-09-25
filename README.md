@@ -113,6 +113,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | parser | ✅ 0.1.0 | nom / parsimonious | 解析器组合子：char/str/seq/alt/many/sep_by/ident/int（双模式 PASS） |
 | xlsx | ✅ 0.1.0 / 0.2.0 | openpyxl / excelize | OpenXML 工作簿写读（0.1.0 读写；0.2.0 命名样式 + 公式单元格，双模式 PASS） |
 | tdtest | 0.1.0 | testify / go testing 表驱动 | 双模式 PASS · 表驱动测试（want/check 谓词、失败明细聚合） |
+| seg | 0.1.0 | jieba 子集 | 双模式 PASS · 中文分词（正向最大匹配 + 动态词典注入） |
 | pdf | ✅ 0.1.0 | printpdf / reportlab（最小写器） | PDF 1.4 文本写出（双模式 PASS · Python 结构校验） |
 
 > 专项清单至此清空；T2 全部完成（qrcode / pg / mysql 均为独立里程碑）。
