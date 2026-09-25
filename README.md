@@ -111,7 +111,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | shutil | ✅ 0.1.0 | shutil 子集 | 文件复制/移动/删树/mkdirs（双模式 PASS） |
 | faker | ✅ 0.1.0 | Faker（中文子集） | 假数据：姓名/手机号/邮箱/句子/UUID（双模式 PASS） |
 | parser | ✅ 0.1.0 | nom / parsimonious | 解析器组合子：char/str/seq/alt/many/sep_by/ident/int（双模式 PASS） |
-| xlsx | ✅ 0.1.0 | openpyxl / excelize | OpenXML 工作簿写读（xsx_write/xsx_read：共享字符串/行内串/数字/bool/公式缓存，双模式 PASS） |
+| xlsx | ✅ 0.1.0 / 0.2.0 | openpyxl / excelize | OpenXML 工作簿写读（0.1.0 读写；0.2.0 命名样式 + 公式单元格，双模式 PASS） |
 | pdf | ✅ 0.1.0 | printpdf / reportlab（最小写器） | PDF 1.4 文本写出（双模式 PASS · Python 结构校验） |
 
 > 专项清单至此清空；T2 全部完成（qrcode / pg / mysql 均为独立里程碑）。
