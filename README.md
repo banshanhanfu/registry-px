@@ -60,7 +60,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | big | ✅ | 大整数（Python int 对拍） |
 | metrics | ✅ | Prometheus 文本格式 |
 | tar | ✅ | uStar；Python tarfile 互操作 |
-| fsnotify | ✅ | 轮询快照 diff |
+| fsnotify | ✅ 0.1.0 / 0.2.0 | 轮询快照 diff | 双模式 PASS · 0.1.0 单层；0.2.0 递归快照 + 事件序列 + 扩展名/子串过滤 |
 | idcard | ✅ | 身份证校验 GB 11643-1999 |
 | cnnum | ✅ | 中文数字转换 + 人民币金额大写 cn_amount_str |
 | hant | 0.1.0 | OpenCC / hanziconv | 双模式 PASS · 简繁保守单字子集（双向可逆+语境敏感过滤） |
