@@ -118,6 +118,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | netprobe | 0.1.0 | go-ping / netcat 子集 | 双模式 PASS · TCP 端口探测/批量扫描/banner（tcp_connect_ex 安全变体） |
 | lz4 | 0.1.0 | lz4 block | 双模式 PASS · LZ4 block 纯 .px 编解码（与 Python lz4.block 双向互通） |
 | protobuf | 0.1.0 | protobuf wire | 双模式 PASS · wire format 动态编解码（varint/zigzag/fixed/float/double/嵌套/未知跳过） |
+| sqlparse | 0.1.0 | sqlparser / sqlparse 子集 | 双模式 PASS · SELECT 子集解析 AST（WHERE/ORDER/LIMIT/DISTINCT/别名） |
 | pdf | ✅ 0.1.0 | printpdf / reportlab（最小写器） | PDF 1.4 文本写出（双模式 PASS · Python 结构校验） |
 
 > 专项清单至此清空；T2 全部完成（qrcode / pg / mysql 均为独立里程碑）。
