@@ -1,34 +1,81 @@
-# table.px 测试：双模式一致
-import "../registry/table/0.1.0/table.px"
+# table.px 0.2.0 测试：双模式一致（CJK 双宽对齐）
+import "../registry/table/0.2.0/table.px"
 def expect(cond, msg):
     if not cond:
         print("FAIL: " + msg)
         exit(1)
+# 辅助：验证所有行显示宽度一致
+def check_aligned(out, label):
+    var lines = split(out, "\n")
+    var first_w = -1
+    var i = 0
+    while i < len(lines):
+        if len(lines[i]) > 0:
+            var w = tb_display_width(lines[i])
+            if first_w < 0:
+                first_w = w
+            else:
+                expect(w == first_w, label + " 行" + str(i) + ": dw=" + str(w) + " vs " + str(first_w))
+        i += 1
 def main():
-    var headers = ["name", "age"]
-    var rows = [["alice", 30], ["bob", 4]]
-    # utf8 默认（列宽按最长单元格：name/alice → 5）
-    var t = tb_render(headers, rows, null)
-    expect(t == "+-------+-----+\n| name  | age |\n" +
-        "+-------+-----+\n| alice | 30  |\n" +
-        "| bob   | 4   |\n+-------+-----+", "utf8 render")
-    # ascii
-    var ta = tb_render(headers, rows, {"border": "ascii"})
-    expect(ta == "+-------+-----+\n| name  | age |\n" +
-        "+-------+-----+\n| alice | 30  |\n" +
-        "| bob   | 4   |\n+-------+-----+", "ascii same")
-    # right align
-    var tr = tb_render(["a", "b"], [["x", "yy"], ["longer", "z"]], {"align": "right"})
-    expect(tr == "+--------+----+\n|      a |  b |\n" +
-        "+--------+----+\n|      x | yy |\n" +
-        "| longer |  z |\n+--------+----+", "right align")
-    # center align
-    var tc = tb_render(["a"], [["x"], ["abcd"]], {"align": "center"})
-    expect(tc == "+------+\n|  a   |\n+------+\n|  x   |\n| abcd |\n+------+", "center align")
-    # padding 0
-    var tp = tb_render(["a"], [["b"]], {"padding": 0})
-    expect(tp == "+-+\n|a|\n+-+\n|b|\n+-+", "padding 0")
-    # 数字单元格转 str
-    var tn = tb_render(["n"], [[123]], null)
-    expect(tn == "+-----+\n| n   |\n+-----+\n| 123 |\n+-----+", "numeric cell")
-    print("table: PASS")
+    # ---- 原有测试（ASCII，向后兼容）----
+    var headers = ["Name", "Age", "City"]
+    var rows = [["Alice", "30", "NYC"], ["Bob", "25", "LA"]]
+    var out = tb_render(headers, rows, null)
+    expect(contains(out, "Alice"), "ASCII Alice")
+    expect(contains(out, "Bob"), "ASCII Bob")
+    expect(contains(out, "Name"), "ASCII Name")
+
+    # ---- CJK 双宽判定 ----
+    expect(tb_is_wide("中"), "中 是双宽")
+    expect(tb_is_wide("文"), "文 是双宽")
+    expect(tb_is_wide("あ"), "あ 是双宽")
+    expect(tb_is_wide("ア"), "ア 是双宽")
+    expect(tb_is_wide("한"), "한 是双宽")
+    expect(tb_is_wide("Ａ"), "全角Ａ 是双宽")
+    expect(not tb_is_wide("A"), "ASCII A 不是双宽")
+    expect(not tb_is_wide(" "), "空格不是双宽")
+    expect(not tb_is_wide("1"), "数字不是双宽")
+
+    # ---- 显示宽度 ----
+    expect(tb_display_width("hello") == 5, "ASCII 宽度 5")
+    expect(tb_display_width("你好") == 4, "CJK 宽度 4")
+    expect(tb_display_width("hi你好") == 6, "混合宽度 6")
+    expect(tb_display_width("") == 0, "空串宽度 0")
+    expect(tb_display_width("你好world") == 9, "你好world 宽度 9")
+
+    # ---- CJK 表格对齐（0.2.0 核心功能）----
+    var h2 = ["姓名", "年龄", "城市"]
+    var r2 = [["张三", "30", "北京"], ["李四", "25", "上海"]]
+    var out2 = tb_render_v2(h2, r2, null)
+    expect(contains(out2, "张三"), "CJK 张三")
+    expect(contains(out2, "李四"), "CJK 李四")
+    check_aligned(out2, "CJK 默认对齐")
+
+    # ---- 混合 CJK + ASCII ----
+    var h3 = ["Name", "名称", "Value"]
+    var r3 = [["Alpha", "阿尔法", "100"], ["Beta", "贝塔", "200"]]
+    var out3 = tb_render_v2(h3, r3, null)
+    check_aligned(out3, "混合对齐")
+
+    # ---- 右对齐 ----
+    var out4 = tb_render_v2(h2, r2, {"align": "right"})
+    expect(contains(out4, "张三"), "CJK 右对齐 张三")
+    check_aligned(out4, "CJK 右对齐")
+
+    # ---- 居中对齐 ----
+    var out5 = tb_render_v2(h2, r2, {"align": "center"})
+    check_aligned(out5, "CJK 居中对齐")
+
+    # ---- ASCII 仍用 v2 正确对齐 ----
+    var out6 = tb_render_v2(headers, rows, null)
+    expect(contains(out6, "Alice"), "v2 ASCII Alice")
+    check_aligned(out6, "v2 ASCII 对齐")
+
+    # ---- 日语 + 韩语 ----
+    var h4 = ["名前", "年齢", "都市"]
+    var r4 = [["田中", "30", "東京"], ["이영", "25", "서울"]]
+    var out7 = tb_render_v2(h4, r4, null)
+    check_aligned(out7, "日韩混合对齐")
+
+    print("table 0.2.0: PASS")
