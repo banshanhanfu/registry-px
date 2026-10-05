@@ -61,7 +61,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | metrics | ✅ | Prometheus 文本格式 |
 | tar | ✅ | uStar；Python tarfile 互操作 |
 | fsnotify | ✅ 0.1.0 / 0.2.0 | 轮询快照 diff | 双模式 PASS · 0.1.0 单层；0.2.0 递归快照 + 事件序列 + 扩展名/子串过滤 |
-| idcard | ✅ | 身份证校验 GB 11643-1999 |
+| idcard | ✅ 0.1.0 / 0.2.0 | 身份证校验 GB 11643-1999 | 双模式 PASS · 0.1.0 仅 18 位；0.2.0 新增 15 位旧号 + 地区码表(34省级+城市) + 15→18 升级 |
 | cnnum | ✅ | 中文数字转换 + 人民币金额大写 cn_amount_str |
 | hant | 0.1.0 | OpenCC / hanziconv | 双模式 PASS · 简繁保守单字子集（双向可逆+语境敏感过滤） |
 | richmd | 0.1.0 | rich / glamour | 双模式 PASS · Markdown→ANSI 富文本（标题/列表/引用/代码块/行内样式/链接 + 剥 ANSI） |

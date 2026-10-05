@@ -1,11 +1,11 @@
-# idcard.px 测试：双模式一致（GB 11643-1999；golden 由 Python 生成）
-import "../registry/idcard/0.1.0/idcard.px"
+# idcard.px 0.2.0 测试：双模式一致（GB 11643-1999；15/18 位 + 地区码表）
+import "../registry/idcard/0.2.0/idcard.px"
 def expect(cond, msg):
     if not cond:
         print("FAIL: " + msg)
         exit(1)
 def main():
-    # Python golden：合法号码（校验码正确）
+    # ---- 18 位原有测试 ----
     var ok_id = "110101199001011237"
     var r = idcard_validate(ok_id)
     expect(r.is_ok(), "合法号 Ok: " + str(r))
@@ -13,9 +13,15 @@ def main():
     expect(info["province"] == "11", "地区 11")
     expect(info["birth"] == "19900101", "生日")
     expect(info["gender"] == "male", "性别 male（第17位=3 奇）")
-    # 女性：第17位偶
+    expect(info["type"] == "18", "类型 18")
+    expect(info["province_name"] == "北京", "省名 北京")
+
+    # 女性 + 城市名
     var r2 = idcard_validate("440300200010014567")
-    expect(r2.is_ok() and r2.unwrap()["gender"] == "female", "女性: " + str(r2)[0:50])
+    expect(r2.is_ok() and r2.unwrap()["gender"] == "female", "女性")
+    expect(r2.unwrap()["province_name"] == "广东", "省名 广东")
+    expect(r2.unwrap()["city_name"] == "深圳市", "城市名 深圳市")
+
     # 校验码错误
     expect(idcard_validate("110101199001011236").is_err(), "校验码错 Err")
     # 末位改 X 但期望 7 → Err
@@ -24,11 +30,78 @@ def main():
     expect(idcard_validate("110101").is_err(), "短号 Err")
     expect(idcard_validate("11010119900101123A").is_err(), "字母校验位（非X）Err")
     expect(idcard_validate("010101199001011237").is_err(), "地区首位0 Err")
-    # 非法生日（2月30日 / 闰年2月29 OK）
+    # 非法生日
     expect(idcard_validate("110101199002301237").is_err(), "2月30日 Err")
     var lr = idcard_valid_date_probe("20000229")
     expect(lr, "2000 闰年 2/29 合法")
     expect(not idcard_valid_date_probe("19000229"), "1900 非闰年 2/29 非法")
-    print("idcard: PASS")
+
+    # ---- 15 位旧号测试 ----
+    # 110101 660101 123 → 北京 1966-01-01 顺序123（末位3=男）
+    var r15 = idcard_validate("110101660101123")
+    expect(r15.is_ok(), "15位合法号 Ok: " + str(r15))
+    var info15 = r15.unwrap()
+    expect(info15["type"] == "15", "类型 15")
+    expect(info15["birth"] == "19660101", "15位生日 19660101")
+    expect(info15["gender"] == "male", "15位性别 male（末位3 奇）")
+    expect(info15["province_name"] == "北京", "15位省名 北京")
+
+    # 15位女性：440300 800101 456 → 深圳 1980-01-01 末位6=女
+    var r15f = idcard_validate("440300800101456")
+    expect(r15f.is_ok(), "15位女性 Ok: " + str(r15f))
+    expect(r15f.unwrap()["gender"] == "female", "15位性别 female")
+    expect(r15f.unwrap()["birth"] == "19800101", "15位生日 19800101")
+
+    # 15位两位年 99 → 1999
+    var r15_old = idcard_validate("110101990101123")
+    expect(r15_old.is_ok(), "15位99年 Ok")
+    expect(r15_old.unwrap()["birth"] == "19990101", "15位生日 19990101（99→1999）")
+
+    # 15位 00 → 1900
+    var r15_00 = idcard_validate("110101000101123")
+    expect(r15_00.is_ok(), "15位00年 Ok")
+    expect(r15_00.unwrap()["birth"] == "19000101", "15位生日 19000101（00→1900）")
+
+    # 15位错误
+    expect(idcard_validate("110101660230123").is_err(), "15位 2月30日 Err")
+    expect(idcard_validate("11010166010112A").is_err(), "15位含字母 Err")
+    expect(idcard_validate("010101660101123").is_err(), "15位地区首位0 Err")
+    expect(idcard_validate("110101660101").is_err(), "15位过短 Err")
+
+    # ---- 15→18 升级 ----
+    var up = idcard_upgrade15to18("110101660101123")
+    expect(up.is_ok(), "升级 Ok: " + str(up))
+    var id18 = up.unwrap()
+    expect(len(id18) == 18, "升级后18位")
+    expect(id18[0:6] == "110101", "升级地区码保留")
+    expect(id18[6:14] == "19660101", "升级生日展开")
+    # 升级后再校验
+    var verify = idcard_validate(id18)
+    expect(verify.is_ok(), "升级后18位校验通过: " + str(verify))
+    expect(verify.unwrap()["gender"] == "male", "升级后性别保持 male")
+
+    # 升级女性
+    var upf = idcard_upgrade15to18("440300800101456")
+    expect(upf.is_ok(), "升级女性 Ok")
+    var id18f = upf.unwrap()
+    expect(id18f[6:14] == "19800101", "升级女性生日 19800101")
+    var verifyf = idcard_validate(id18f)
+    expect(verifyf.is_ok(), "升级女性后校验通过")
+    expect(verifyf.unwrap()["gender"] == "female", "升级女性后性别保持")
+
+    # 升级错误输入
+    expect(idcard_upgrade15to18("110101").is_err(), "升级过短 Err")
+    expect(idcard_upgrade15to18("11010166010112A").is_err(), "升级含字母 Err")
+
+    # ---- 地区码表：上海 ----
+    var sh17 = "31010119900101123"
+    var sh_check = idc_checksum(sh17)
+    var sh_id = sh17 + sh_check
+    var r_sh = idcard_validate(sh_id)
+    expect(r_sh.is_ok(), "上海合法号: " + str(r_sh))
+    expect(r_sh.unwrap()["province_name"] == "上海", "省名 上海")
+    expect(r_sh.unwrap()["city_name"] == "上海市", "城市名 上海市")
+
+    print("idcard 0.2.0: PASS")
 def idcard_valid_date_probe(s):
     return idc_valid_date(s)
