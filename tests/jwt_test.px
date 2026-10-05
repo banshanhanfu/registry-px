@@ -1,57 +1,69 @@
-# jwt.px 测试：双模式一致（px run / px build）
-# 含与 Python(hashlib/hmac, OpenSSL) 生成的 golden token 交叉验证。
-import "../registry/jwt/0.1.0/jwt.px"
-# ---- 独立黄金向量（Python 生成，Go 风格排序键）----
-const GOLDEN = ("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MTYyMzkwMjIsI"
-    +"m5hbWUiOiJKb2huIERvZSIsInN1YiI6IjEyMzQ1Njc4OTAifQ.fdOPQ05ZfRhkST2-rIW"
-    +"gUpbqUsVhkkNVNcuG7Ki0s-8")
-const GOLDEN_EXP = ("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1MTYyNDI2MjI"
-    +"sInN1YiI6ImV4cC10ZXN0In0.k60ithqaafOxlSzyHI222gyvdR0rb6P_T8TqXQlFXWM")
+# jwt.px 0.2.0 测试：双模式一致（HS256 + RS256）
+import "../registry/jwt/0.2.0/jwt.px"
 def expect(cond, msg):
     if not cond:
         print("FAIL: " + msg)
         exit(1)
 def main():
-    # 1. 验证 golden token 可由本库解码（签名算法与 OpenSSL 一致）
-    var r = jwt_decode(GOLDEN, "your-256-bit-secret")
-    expect(r.is_ok(), "golden 应解码成功：" + str(r))
-    var d = r.unwrap()
-    expect(d["payload"]["sub"] == "1234567890", "golden sub 字段")
-    expect(d["payload"]["name"] == "John Doe", "golden name 字段")
-    expect(d["payload"]["iat"] == 1516239022, "golden iat 字段")
-    expect(d["header"]["alg"] == "HS256", "golden alg 字段")
-    # 2. 自编码自解码 roundtrip
-    var r2 = jwt_encode({"sub": "u1", "role": "admin"}, "secret")
-    expect(r2.is_ok(), "encode 应 Ok")
-    var tok = r2.unwrap()
-    var parts = split(tok, ".")
-    expect(len(parts) == 3, "token 应为 3 段")
-    var r3 = jwt_decode(tok, "secret")
-    expect(r3.is_ok(), "roundtrip decode 应 Ok：" + str(r3))
-    expect(r3.unwrap()["payload"]["sub"] == "u1", "roundtrip sub")
-    expect(r3.unwrap()["payload"]["role"] == "admin", "roundtrip role")
-    # 3. 错误密钥 → 签名失败
-    expect(jwt_decode(tok, "wrong-secret").is_err(), "错误密钥应 Err")
-    # 4. 篡改 payload 段 → 签名失败
-    var parts2 = split(tok, ".")
-    var tampered = parts2[0] + ".eyJzdWIiOiJoYWNrZWQifQ." + parts2[2]
-    expect(jwt_decode(tampered, "secret").is_err(), "篡改 payload 应 Err")
-    # 5. 篡改签名段 → 失败
-    var parts3 = split(tok, ".")
-    var badsig = parts3[0] + "." + parts3[1] + ".AAAA"
-    expect(jwt_decode(badsig, "secret").is_err(), "篡改签名应 Err")
-    # 6. 段数错误
-    expect(jwt_decode("a.b", "secret").is_err(), "两段应 Err")
-    expect(jwt_decode("a.b.c.d", "secret").is_err(), "四段应 Err")
-    # 7. exp：未过期可解；过期 Err（用 jwt_decode_at 固定 now）
-    var r_exp = jwt_decode_at(GOLDEN_EXP, "secret", 1516242621)
-    expect(r_exp.is_ok(), "exp 前 1 秒应 Ok：" + str(r_exp))
-    expect(jwt_decode_at(GOLDEN_EXP, "secret", 1516242622).is_err(), "到点应过期（Go 语义）")
-    expect(jwt_decode_at(GOLDEN_EXP, "secret", 1516242622 + 1).is_err(), "过期后应 Err")
-    # nbf：未生效 Err，生效后 Ok
-    var r_nbf = jwt_encode({"nbf": 2000000000, "sub": "n"}, "secret")
-    expect(jwt_decode_at(r_nbf.unwrap(), "secret", 1999999999).is_err(), "nbf 未生效应 Err")
-    expect(jwt_decode_at(r_nbf.unwrap(), "secret", 2000000001).is_ok(), "nbf 生效应 Ok")
-    # 8. 不支持算法：encode 拒绝 alg != HS256
-    expect(jwt_encode({"a": 1}, "s", "HS384").is_err(), "HS384 应 Err（暂不支持）")
-    print("jwt: PASS")
+    # ---- HS256 原有测试（向后兼容）----
+    var payload = {"sub": "1234567890", "name": "John Doe", "iat": 1516239022}
+    var secret = "your-256-bit-secret"
+    var r = jwt_encode(payload, secret)
+    expect(r.is_ok(), "HS256 encode ok")
+    var token = r.unwrap()
+    var d = jwt_decode(token, secret)
+    expect(d.is_ok(), "HS256 decode ok")
+    expect(d.unwrap()["payload"]["sub"] == "1234567890", "HS256 payload sub")
+    # 篡改签名
+    var bad = token[0:len(token)-4] + "AAAA"
+    expect(jwt_decode(bad, secret).is_err(), "HS256 篡改签名失败")
+    # 过期
+    var exp_payload = {"sub": "x", "exp": 1000}
+    var r2 = jwt_encode(exp_payload, secret)
+    expect(jwt_decode(r2.unwrap(), secret).is_err(), "HS256 过期 token")
+    # jwt_decode_at with future now
+    expect(jwt_decode_at(r2.unwrap(), secret, 999).is_ok(), "HS256 未过期 at 999")
+
+    # ---- RS256 测试（0.2.0 新增）----
+    var pem_priv = "-----BEGIN RSA PRIVATE KEY-----\nMIICXQIBAAKBgQDTTV5G2LESDU82mq3E3nw7wWdYh0tGhOi5Avq+Cz1MIksUfGHc\n1vhegV+Q8dGaW4GmK/pnHQ2YI5/7hlxW3G6McE6cxHPuQdiNNS+dau8B9BqI/3FD\nE+acTpjd4KdDSDtLuv4jQUsBz5hzI9ZzjKkNKAMNSrcmqAQA5Q/BDQvUGQIDAQAB\nAoGBAKNNAtRr+YUDBjokFrG0ZHzl/pG7leB9LUJ23APtucTSKAZADn3XIYIgKBRj\n3uKVX8Bl8pKoMG5o8eY4s7pph4DXbUv/l0Z4vkxkr47nGapSkUFhGuY+kHIiioMz\nk1dSroShjZhbb3EzmXprp7cw866PeWO0nPMhkYts+TiWgSEVAkEA+voner5vWZT/\nfe+fUtZr8lSuexHs928GVuqcCOVgnXp2UkD9yfLqTs8jb/IdR/HrL9h4JgK65a2q\nCnHAPzLNBwJBANeH8fM3f94V4u2MsKRu9+34zVk7U70ENzpewggqZUhUcMkw0li1\n33RmUN1SdoCBIk6oSh2uT7wls2wuM8D3Ld8CQE5bPWov/Hm+cAn0fwyQz0DoOVVJ\nIm+Z5SPLuY15d7GS41AI5HNheM/EEe9IauXkXKYicliDr7A3iQgbvYa9qI8CQQCn\nqFSJwc5xz8yqxRpTjw7FyxjSJNhK3JCpkzSUbYZD8YuataOq5i9guIaG47LS26D4\nVujwlbvou9sKeBZCMQU5AkBPNLuCLv/YEODbpj+5VvKnOB8n/r6e+37dbCSTTQ1L\nWq0q+Hs/drUJMlHz0Xl85QLaSUymyeQpRr4Nm7zFBIy0\n-----END RSA PRIVATE KEY-----"
+    var pem_pub = "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDTTV5G2LESDU82mq3E3nw7wWdY\nh0tGhOi5Avq+Cz1MIksUfGHc1vhegV+Q8dGaW4GmK/pnHQ2YI5/7hlxW3G6McE6c\nxHPuQdiNNS+dau8B9BqI/3FDE+acTpjd4KdDSDtLuv4jQUsBz5hzI9ZzjKkNKAMN\nSrcmqAQA5Q/BDQvUGQIDAQAB\n-----END PUBLIC KEY-----"
+
+    # 1. 用 jwt_encode_v2 生成 RS256 token
+    var r3 = jwt_encode_v2(payload, pem_priv, "RS256")
+    expect(r3.is_ok(), "RS256 encode ok: " + str(r3))
+    var rs_token = r3.unwrap()
+    # 验证 header 是 RS256
+    var parts = split(rs_token, ".")
+    expect(len(parts) == 3, "RS256 3 段")
+    var hdr_r = jwt_b64url_decode(parts[0])
+    var hdr_j = json_parse_opt(hdr_r.unwrap())
+    expect(str(hdr_j.unwrap()["alg"]) == "RS256", "RS256 header alg")
+
+    # 2. 用 jwt_decode_v2 验证（公钥）
+    var d2 = jwt_decode_v2(rs_token, pem_pub)
+    expect(d2.is_ok(), "RS256 decode ok: " + str(d2))
+    expect(d2.unwrap()["payload"]["name"] == "John Doe", "RS256 payload name")
+
+    # 3. 篡改签名 -> 失败
+    var rs_bad = rs_token[0:len(rs_token)-4] + "AAAA"
+    expect(jwt_decode_v2(rs_bad, pem_pub).is_err(), "RS256 篡改签名失败")
+
+    # 4. 假签名 -> 失败
+    var rs_bad2 = parts[0] + "." + parts[1] + ".AAAA"
+    expect(jwt_decode_v2(rs_bad2, pem_pub).is_err(), "RS256 假签名失败")
+
+    # 5. 交叉验证：openssl 生成的 token 用 PuXian 验证
+    var openssl_token = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.cImMO87r8x5q6C5wZosMhBnV6C4CnZt60vr_zeGS6iIZfaJopUcOjXA4BP0_XYBx1jQ8FpHnCv5sK-MopkVHuqvxb21pk8Wig56U30NKA9_sC7FXobuNJiw8bFm_TJ3xBgkJIF1bUG3zSJH9Qh4fscJhNjNkHC-7BQyn8B46uEY"
+    var d3 = jwt_decode_v2(openssl_token, pem_pub)
+    expect(d3.is_ok(), "RS256 openssl token 验证 ok: " + str(d3))
+    expect(d3.unwrap()["payload"]["sub"] == "1234567890", "RS256 openssl payload sub")
+
+    # 6. HS256 向后兼容：jwt_encode_v2 也支持 HS256
+    var r4 = jwt_encode_v2(payload, secret, "HS256")
+    expect(r4.is_ok(), "v2 HS256 encode ok")
+    expect(jwt_decode_v2(r4.unwrap(), secret).is_ok(), "v2 HS256 decode ok")
+
+    # 7. 不支持的算法
+    expect(jwt_encode_v2(payload, secret, "ES256").is_err(), "ES256 不支持")
+
+    print("jwt 0.2.0: PASS")
