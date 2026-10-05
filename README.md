@@ -80,7 +80,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 |---|---|---|---|
 | strcase | ✅ 0.1.0 | heck / inflection | 命名风格互转（双模式 PASS） |
 | fractions | ✅ 0.1.0 | fractions.Fraction | 精确有理数（双模式 PASS） |
-| ipaddr | ✅ 0.1.0 | ipaddress / std::net | IPv4/IPv6/CIDR 校验与运算（双模式 PASS） |
+| ipaddr | ✅ 0.1.0 / 0.2.0 | ipaddress / std::net | IPv4/IPv6/CIDR 校验与运算 · 0.2.0 新增 IPv4 内嵌 IPv6（RFC 4291）+ ipv6_is_ipv4_mapped + ipv6_extract_v4 |
 | dotenv | ✅ 0.1.0 | python-dotenv / dotenvy | .env 解析（双模式 PASS） |
 | glob | ✅ 0.1.0 | glob / fnmatch | 通配匹配与列举（双模式 PASS·登记 PX-DEF-014） |
 | checksum | ✅ 0.1.0 | crc32fast / zlib | CRC32 / Adler32（双模式 PASS·Python zlib 对拍·登记 PX-DEF-015） |

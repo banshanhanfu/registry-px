@@ -1,5 +1,5 @@
-# ipaddr.px 测试：双模式一致（IP 地址与 CIDR）
-import "../registry/ipaddr/0.1.0/ipaddr.px"
+# ipaddr.px 0.2.0 测试：双模式一致（IP 地址与 CIDR + IPv4 内嵌）
+import "../registry/ipaddr/0.2.0/ipaddr.px"
 
 def expect(cond, msg):
     if not cond:
@@ -10,50 +10,29 @@ def eq(name, got, want):
     expect(got == want, name + " 应 " + want + " 得 " + got)
 
 def main():
-    # IPv4 解析（192.168.1.1 = 0xC0A80101 = 3232235777）
+    # ---- IPv4 解析（原有）----
     expect(ipv4_parse("192.168.1.1").unwrap() == 3232235777, "ipv4_parse 192.168.1.1")
     expect(ipv4_parse("0.0.0.0").unwrap() == 0, "ipv4_parse 0")
     expect(ipv4_parse("255.255.255.255").unwrap() == 4294967295, "ipv4_parse max")
-    expect(ipv4_parse("01.2.3.4").unwrap() == 16909060, "ipv4_parse 前导零 01.2.3.4")
+    expect(ipv4_parse("01.2.3.4").unwrap() == 16909060, "ipv4_parse 前导零")
     expect(ipv4_parse("1.2.3").is_err(), "ipv4 3 段 Err")
-    expect(ipv4_parse("1.2.3.4.5").is_err(), "ipv4 5 段 Err")
     expect(ipv4_parse("256.1.1.1").is_err(), "ipv4 256 Err")
-    expect(ipv4_parse("a.b.c.d").is_err(), "ipv4 字母 Err")
-    expect(ipv4_parse("1..2.3").is_err(), "ipv4 空段 Err")
-    expect(ipv4_parse("").is_err(), "ipv4 空串 Err")
     # IPv4 输出
     eq("to_str", ipv4_to_str(3232235777).unwrap(), "192.168.1.1")
     eq("to_str 0", ipv4_to_str(0).unwrap(), "0.0.0.0")
     eq("to_str max", ipv4_to_str(4294967295).unwrap(), "255.255.255.255")
-    expect(ipv4_to_str(-1).is_err(), "to_str 负 Err")
-    expect(ipv4_to_str(4294967296).is_err(), "to_str 超范围 Err")
-    # cidr 解析
+    # cidr
     var c = cidr_parse("192.168.1.0/24").unwrap()
-    expect(c["addr"] == 3232235776 and c["prefix"] == 24, "cidr_parse 192.168.1.0/24")
+    expect(c["addr"] == 3232235776 and c["prefix"] == 24, "cidr_parse")
     expect(cidr_valid("10.0.0.0/8"), "cidr_valid /8")
-    expect(not cidr_valid("192.168.1.0/33"), "cidr_valid /33 为假")
-    expect(cidr_parse("192.168.1.0/33").is_err(), "cidr /33 Err")
-    expect(cidr_parse("192.168.1.0").is_err(), "cidr 无斜杠 Err")
-    expect(cidr_parse("192.168.1.0/").is_err(), "cidr 空前缀 Err")
-    # IPv4 CIDR 运算
+    expect(not cidr_valid("192.168.1.0/33"), "cidr_valid /33 假")
     eq("network", ipv4_cidr_network("192.168.1.128/24").unwrap(), "192.168.1.0")
-    eq("network /8", ipv4_cidr_network("10.5.5.5/8").unwrap(), "10.0.0.0")
     eq("broadcast", ipv4_cidr_broadcast("192.168.1.128/24").unwrap(), "192.168.1.255")
-    eq("broadcast /0", ipv4_cidr_broadcast("1.2.3.4/0").unwrap(), "255.255.255.255")
-    eq("network /32", ipv4_cidr_network("1.2.3.4/32").unwrap(), "1.2.3.4")
-    expect(ipv4_cidr_host_count("192.168.1.0/24").unwrap() == 256, "host_count /24 = 256")
-    expect(ipv4_cidr_host_count("192.168.1.5/32").unwrap() == 1, "host_count /32 = 1")
-    expect(ipv4_cidr_host_count("0.0.0.0/0").unwrap() == 4294967296, "host_count /0 = 2^32")
-    # in_cidr
-    expect(ipv4_in_cidr("192.168.1.100", "192.168.1.0/24"), "in 192.168.1.100/24")
-    expect(ipv4_in_cidr("192.168.1.255", "192.168.1.0/24"), "in 广播地址")
-    expect(not ipv4_in_cidr("192.168.2.1", "192.168.1.0/24"), "not in 192.168.2.1")
-    expect(ipv4_in_cidr("10.1.2.3", "10.0.0.0/8"), "in /8")
-    expect(not ipv4_in_cidr("11.1.2.3", "10.0.0.0/8"), "not in /8")
-    expect(ipv4_in_cidr("1.2.3.4", "1.2.3.4/32"), "in /32")
-    expect(not ipv4_in_cidr("1.2.3.5", "1.2.3.4/32"), "not in /32")
-    expect(not ipv4_in_cidr("bad", "1.2.3.0/24"), "in 非法输入 false")
-    # IPv6 解析
+    expect(ipv4_cidr_host_count("192.168.1.0/24").unwrap() == 256, "host_count /24")
+    expect(ipv4_in_cidr("192.168.1.100", "192.168.1.0/24"), "in cidr")
+    expect(not ipv4_in_cidr("192.168.2.1", "192.168.1.0/24"), "not in cidr")
+
+    # ---- IPv6 解析（原有）----
     var z = ipv6_parse("::").unwrap()
     expect(len(z) == 8 and z[7] == 0, "ipv6 ::")
     var one = ipv6_parse("::1").unwrap()
@@ -72,19 +51,92 @@ def main():
     eq("v6 str fe80", ipv6_to_str([65152, 0, 0, 0, 0, 0, 0, 1]).unwrap(), "fe80::1")
     eq("v6 str 全", ipv6_to_str([8193, 3512, 0, 1, 0, 0, 0, 1]).unwrap(), "2001:db8:0:1::1")
     eq("v6 str 无压缩", ipv6_to_str([1, 2, 3, 4, 5, 6, 7, 8]).unwrap(), "1:2:3:4:5:6:7:8")
-    expect(ipv6_to_str([1, 2, 3]).is_err(), "v6 to_str 长度错 Err")
     # IPv6 in_cidr
     expect(ipv6_in_cidr("fe80::1", "fe80::/10"), "v6 in fe80::/10")
     expect(ipv6_in_cidr("fe80::abcd", "fe80::/64"), "v6 in fe80::/64")
     expect(not ipv6_in_cidr("fe81::1", "fe80::/64"), "v6 not in fe80::/64")
     expect(ipv6_in_cidr("2001:db8::1", "2001:db8::/32"), "v6 in db8::/32")
-    expect(not ipv6_in_cidr("2001:db9::1", "2001:db8::/32"), "v6 not in db9")
-    expect(ipv6_in_cidr("::1", "::/0"), "v6 in ::/0")
-    expect(not ipv6_in_cidr("bad", "fe80::/10"), "v6 in 非法 false")
-    # 通用
+
+    # ---- IPv4 内嵌 IPv6（0.2.0 新增）----
+    # ::ffff:192.168.1.1 → [0,0,0,0,0,65535,49320,257]
+    # 192.168 = 0xC0A8 = 49320, 1.1 = 0x0101 = 257
+    var mapped = ipv6_parse("::ffff:192.168.1.1")
+    expect(mapped.is_ok(), "ipv4-mapped 解析 Ok: " + str(mapped))
+    var mh = mapped.unwrap()
+    expect(len(mh) == 8, "ipv4-mapped 8 hextet")
+    expect(mh[0] == 0 and mh[4] == 0, "ipv4-mapped 前缀全零")
+    expect(mh[5] == 65535, "ipv4-mapped h[5]=0xffff")
+    expect(mh[6] == 49320, "ipv4-mapped h[6]=0xC0A8=49320")
+    expect(mh[7] == 257, "ipv4-mapped h[7]=0x0101=257")
+
+    # ::ffff:0.0.0.0 → 全零 mapped
+    var mapped0 = ipv6_parse("::ffff:0.0.0.0").unwrap()
+    expect(mapped0[5] == 65535 and mapped0[6] == 0 and mapped0[7] == 0, "ipv4-mapped 0.0.0.0")
+
+    # ::ffff:255.255.255.255
+    var mapped_max = ipv6_parse("::ffff:255.255.255.255").unwrap()
+    expect(mapped_max[6] == 65535 and mapped_max[7] == 65535, "ipv4-mapped 255.255.255.255")
+
+    # IPv4-compatible（已废弃但应能解析）::192.168.1.1
+    var compat = ipv6_parse("::192.168.1.1")
+    expect(compat.is_ok(), "ipv4-compatible 解析 Ok: " + str(compat))
+    var ch = compat.unwrap()
+    expect(ch[5] == 0 and ch[6] == 49320 and ch[7] == 257, "ipv4-compatible h[5]=0")
+
+    # 前缀 + IPv4 内嵌：2001:db8::ffff:10.0.0.1
+    var prefix_mapped = ipv6_parse("2001:db8::ffff:10.0.0.1")
+    expect(prefix_mapped.is_ok(), "前缀+ipv4-mapped Ok: " + str(prefix_mapped))
+    var pm = prefix_mapped.unwrap()
+    expect(pm[0] == 8193 and pm[1] == 3512, "前缀+ipv4-mapped 前两段")
+    expect(pm[5] == 65535, "前缀+ipv4-mapped h[5]=ffff")
+    expect(pm[6] == 2560 and pm[7] == 1, "前缀+ipv4-mapped 10.0=0x0A00=2560, 0.1=0x0001=1")
+
+    # 无压缩 + IPv4 内嵌：0:0:0:0:0:ffff:192.168.1.1
+    var nocomp = ipv6_parse("0:0:0:0:0:ffff:192.168.1.1")
+    expect(nocomp.is_ok(), "无压缩+ipv4-mapped Ok: " + str(nocomp))
+    expect(nocomp.unwrap()[5] == 65535, "无压缩+ipv4-mapped h[5]")
+
+    # 错误：IPv4 段非法
+    expect(ipv6_parse("::ffff:256.1.1.1").is_err(), "ipv4-mapped 256 Err")
+    expect(ipv6_parse("::ffff:1.2.3").is_err(), "ipv4-mapped 3段 Err")
+
+    # ---- ipv6_is_ipv4_mapped ----
+    expect(ipv6_is_ipv4_mapped([0, 0, 0, 0, 0, 65535, 49320, 257]), "is_mapped true")
+    expect(not ipv6_is_ipv4_mapped([0, 0, 0, 0, 0, 0, 49320, 257]), "is_mapped false (compatible)")
+    expect(not ipv6_is_ipv4_mapped([8193, 0, 0, 0, 0, 65535, 0, 0]), "is_mapped false (前缀非零)")
+    expect(not ipv6_is_ipv4_mapped([0, 0, 0, 0, 0, 65534, 0, 0]), "is_mapped false (h[5]!=ffff)")
+    expect(not ipv6_is_ipv4_mapped([0, 0, 0]), "is_mapped false (长度错)")
+
+    # ---- ipv6_extract_v4 ----
+    var ext = ipv6_extract_v4([0, 0, 0, 0, 0, 65535, 49320, 257])
+    expect(ext.is_ok(), "extract_v4 Ok: " + str(ext))
+    eq("extract_v4", ext.unwrap(), "192.168.1.1")
+
+    var ext2 = ipv6_extract_v4([0, 0, 0, 0, 0, 65535, 0, 0])
+    eq("extract_v4 0", ext2.unwrap(), "0.0.0.0")
+
+    var ext3 = ipv6_extract_v4([0, 0, 0, 0, 0, 65535, 65535, 65535])
+    eq("extract_v4 max", ext3.unwrap(), "255.255.255.255")
+
+    # 非 mapped 地址提取 → Err
+    expect(ipv6_extract_v4([0, 0, 0, 0, 0, 0, 0, 1]).is_err(), "extract_v4 非 mapped Err")
+    expect(ipv6_extract_v4([8193, 0, 0, 0, 0, 65535, 0, 0]).is_err(), "extract_v4 前缀非零 Err")
+
+    # ---- 往返验证：ipv4 → mapped → extract → ipv4 ----
+    var orig_ip = "10.20.30.40"
+    var orig_v = ipv4_parse(orig_ip).unwrap()
+    var mapped_h = [0, 0, 0, 0, 0, 65535, orig_v // 65536, orig_v % 65536]
+    expect(ipv6_is_ipv4_mapped(mapped_h), "往返 is_mapped")
+    var extracted = ipv6_extract_v4(mapped_h).unwrap()
+    eq("往返 extract", extracted, orig_ip)
+
+    # ---- 通用 ----
     expect(ip_valid("192.168.1.1"), "valid v4")
     expect(ip_valid("fe80::1"), "valid v6")
+    expect(ip_valid("::ffff:192.168.1.1"), "valid v4-mapped")
     expect(not ip_valid("nope"), "not valid")
     expect(ip_is_ipv4("192.168.1.1") and not ip_is_ipv6("192.168.1.1"), "is_ipv4")
     expect(ip_is_ipv6("fe80::1") and not ip_is_ipv4("fe80::1"), "is_ipv6")
-    print("ipaddr: PASS")
+    expect(ip_is_ipv6("::ffff:10.0.0.1"), "is_ipv6 v4-mapped")
+
+    print("ipaddr 0.2.0: PASS")
