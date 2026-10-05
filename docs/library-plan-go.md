@@ -2,7 +2,7 @@
 
 > 目标：为 PuXian（普贤）规划一组 registry 生态库（纯 `.px` 实现），按优先级落地，
 > 让语言从"作者自证"走向"生态可用"。
-> 依据：PuXian 0.2.0-m155 aarch64 实测 + 官方仓库（spec.md / native_index.json /
+> 依据：PuXian 0.2.274 aarch64 实测 + 官方仓库（spec.md / native_index.json /
 > ECOSYSTEM.md / ECOSYSTEM_GAPS.md / ROADMAP.md）。
 
 ## 1. 现状盘点：PuXian 已有 ≈ Go 标准库的哪些部分

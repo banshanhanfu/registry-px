@@ -2,7 +2,7 @@
 
 > 目标：继 `library-plan-go.md`（T0/T1/T2）之后，以 **Rust 生态**为第二参照系，
 > 规划 T3 一批纯 `.px` 生态库，补齐 Go 规划未覆盖的字符串/网络/编码/集合工具面。
-> 依据：PuXian 0.2.0-m155 aarch64 实测 + 现有 26 个 registry 库的落库经验。
+> 依据：PuXian 0.2.274 aarch64 实测 + 现有 122 个 registry 库的落库经验。
 
 ## 1. 现状盘点：PuXian 已有 ≈ Rust 生态的哪些部分
 

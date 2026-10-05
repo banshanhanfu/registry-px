@@ -6,7 +6,7 @@
 
 ## 为什么参考 Go / Rust / Python
 
-- **基础层已经比 Go 厚**：PuXian 现有 13 个 stdlib + 368 个 runtime native，已覆盖
+- **基础层已经比 Go 厚**：PuXian 现有 27 个 stdlib + 368 个 runtime native，已覆盖
   Go 标准库的 net/http（甚至超出：HTTP/1.1/2/3+QUIC、WS、SSE、路由/中间件/会话）、
   SQLite、json/xml/base64/hex、regexp、strings、time、crypto（AES/RSA/Ed25519/
   MD5/SHA256/HMAC/PBKDF2）、zip/gzip、os 与 os/exec 等。
@@ -183,7 +183,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | semaphore | 0.1.0 | x/sync/semaphore / threading.Semaphore | 编译模式 PASS · 计数信号量（阻塞/非阻塞/归还校验） |
 | actor | 0.1.0 | Akka / actix / erlang | 编译模式 PASS · Actor 邮箱模式（ac_new/send/call/stop，FIFO 免锁） |
 | mock | 0.1.0 | httptest / unittest.mock | 编译模式 PASS · HTTP 桩服务器 + 测试请求客户端（路由/404/405/请求日志/注入式假时钟） |
-> ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.0-m212；M201/M202 修复项 m212 复查保持，PX-DEF-036/037 官方速查表已记载（详见该文件））。
+> ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.274；M201/M202 修复项 m274 复查保持，PX-DEF-036/037 官方速查表已记载（详见该文件））。
 
 ## 写库规范（引用 PuXian 官方）
 

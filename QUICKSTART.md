@@ -2,7 +2,7 @@
 
 > 本文档记录在 **openEuler 22.03 LTS（aarch64）** 上安装 PuXian 的实测过程：
 > 遇到的问题、解决路径、经验教训与语言语法注意事项。
-> 版本基线：**v0.2.0-m212**（2026-09-26 · 编译器已自举 · 三轨语义一致）。
+> 版本基线：**v0.2.274**（2026-10-06 · 编译器已自举 · 三轨语义一致）。
 
 ## 1. 快速安装
 
@@ -19,7 +19,7 @@ sudo yum install puxian         # RHEL7 / CentOS7
 
 ```bash
 # 1. 从 GitHub Releases 下载 aarch64 原生引导包（全静态、零 glibc 依赖）
-TAG=v0.2.0-m212
+TAG=v0.2.274
 curl -fL -O "https://github.com/NanzhanGroup/PuXian/releases/download/${TAG}/puxian-bootstrap-aarch64-${TAG}.tar.gz"
 
 # 2. 校验 sha256（官方 sha256sums.txt 或镜像 version.json 均可对）
@@ -48,6 +48,7 @@ px --version
 | 3 | `px --version` 正常但编译报 VM 件不可执行 | aarch64 引导包**不含 VM 轨件**（`pxc_vm`/`pxi_vm` 由 x86_64 侧产出）；属官方设计 | 自动落 C 轨（提示信息即说明），产物语义与 VM 轨等价，无需处理；`--print-plan` 可核对编译计划 |
 | 4 | 官方 `tools/install.sh` aarch64 直接 exit 1 | 脚本架构检测只放行 x86_64 | 手动安装：参照包内 `README-aarch64.md`，布局对齐官方（`/usr/local/share/puxian/<tag>` + bin 软链） |
 | 5 | 引导包是"静态零依赖" | 旧版包（≤m167）的 pxc 是动态件，需 GLIBC_2.38；新版（≥M168）全静态 | 选 M168 之后的包；装完用 `file` / `ldd` 验证：`statically linked`、无 interpreter |
+| 6 | GitHub Releases 下载 aarch64 引导包极慢（国内 ~30KB/s） | GitHub CDN 国内访问慢 | 先从镜像 `soft.xiusoft.cn/puxian/releases/` 下载**源码 tarball**（~70MB / 8s），解压后用**现有 aarch64 bootstrap 二进制**替换包内 x86_64 件即可升级 |
 
 ## 3. 经验教训
 
@@ -58,8 +59,10 @@ px --version
 5. **三轨语义一致是项目红线**：解释（`px run`）/ VM 字节码（默认 `px build`）/ C 文本轨（`px build --c`）行为一致，若发现分叉按官方口径报 issue（带最小复现单文件）。
 6. **验收不要只看 `--version`**：写 hello / fib / Result / 并发示例跑 `px run` + `px build` + 产物直跑，再扫一遍工具链子命令，才算环境可用（见 §5）。
 7. **装前先查镜像 `version.json` 拿权威最新 tag**：`soft.xiusoft.cn/puxian/version.json` 的 `tag` 字段是官方同步的
-   "当前最新"（2026-09-26 实测已到 **v0.2.0-m212**，比本文档先前基线 m206 新）；文档里的 TAG 只代表写作时点，
+   "当前最新"（2026-10-06 实测已到 **v0.2.274**，比本文档先前基线 m212 新）；文档里的 TAG 只代表写作时点，
    安装"最新版"前以它为准。
+8. **aarch64 升级捷径（源码包 + 现有 bootstrap）**：镜像无 aarch64 引导包时，下源码 tarball（`releases/puxian-<ver>.tar.gz`，sha256 见 `version.json` 的 `tarball_sha256`），解压后把现有 `bootstrap/` 下 aarch64 静态件覆盖包内 x86_64 件——`tools/`/`runtime/`/`stdlib/` 是架构无关的，只有 `bootstrap/*` 是架构相关。比从 GitHub 直连快 100 倍。
+9. **tag 格式变化（v0.2.274 起）**：旧 tag 形如 `v0.2.0-m212`，新 tag 形如 `v0.2.274`（去掉了 `0.0-m` 前缀）；下载 URL 和 `PX_PREFIX` 目录名随之变化，升级脚本 / CI 中硬编码旧格式的需同步改。
 
 ## 4. 语法注意事项（写 .px 前先读）
 

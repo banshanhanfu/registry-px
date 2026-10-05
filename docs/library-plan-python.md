@@ -2,7 +2,7 @@
 
 > 目标：继 `library-plan-go.md`（T0/T1/T2）与 `library-plan-rust.md`（T3 Rust 面）之后，
 > 以 **Python 标准库 + 常用第三方**为第三参照系，规划 T3 的解析/算法/数据面生态库。
-> 依据：PuXian 0.2.0-m155 aarch64 实测 + 现有 26 个 registry 库的落库经验。
+> 依据：PuXian 0.2.274 aarch64 实测 + 现有 122 个 registry 库的落库经验。
 
 ## 1. 现状盘点：PuXian 已有 ≈ Python 标准库的哪些部分
 
