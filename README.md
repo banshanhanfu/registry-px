@@ -57,7 +57,7 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 
 | 库 | 状态 | 说明 |
 |---|---|---|
-| big | ✅ | 大整数（Python int 对拍） |
+| big | ✅ 0.1.0 / 0.2.0 | 大整数（Python int 对拍） | 0.2.0 新增 hex/bin 输入输出（big_from_hex/big_to_hex/big_from_bin/big_to_bin） |
 | metrics | ✅ | Prometheus 文本格式 |
 | tar | ✅ | uStar；Python tarfile 互操作 |
 | fsnotify | ✅ 0.1.0 / 0.2.0 | 轮询快照 diff | 双模式 PASS · 0.1.0 单层；0.2.0 递归快照 + 事件序列 + 扩展名/子串过滤 |

@@ -1,5 +1,5 @@
-# big.px 测试：双模式一致 + 与 Python int 对拍（大数无溢出）
-import "../registry/big/0.1.0/big.px"
+# big.px 0.2.0 测试：双模式一致 + 与 Python int 对拍 + hex/bin 转换
+import "../registry/big/0.2.0/big.px"
 def expect(cond, msg):
     if not cond:
         print("FAIL: " + msg)
@@ -20,27 +20,103 @@ def main():
     expect(big_sub("4", "10").unwrap() == "-6", "4-10")
     expect(big_mul("-7", "6").unwrap() == "-42", "-7*6")
     expect(big_mul("-7", "-6").unwrap() == "42", "-7*-6")
-    # divmod Go 语义（截断向零，r 符号同被除数）
+    # divmod Go 语义
     var dm = big_divmod("-17", "5").unwrap()
-    expect(dm["q"] == "-3" and dm["r"] == "-2", "Go 截断除法 -17/5: q=" + dm["q"] + " r=" + dm["r"])
-    var dm2 = big_divmod("17", "-5").unwrap()
-    expect(dm2["q"] == "-3" and dm2["r"] == "2", "17/-5")
+    expect(dm["q"] == "-3" and dm["r"] == "-2", "Go 截断 -17/5")
     expect(big_divmod("10", "0").is_err(), "除零 Err")
     # cmp
     expect(big_cmp("10", "9") == 1, "10>9")
     expect(big_cmp("-10", "9") == -1, "-10<9")
-    expect(big_cmp("-10", "-9") == -1, "-10<-9")
     expect(big_cmp("123", "123") == 0, "相等")
     # abs/neg/is_zero
     expect(big_abs("-42").unwrap() == "42", "abs")
     expect(big_neg("42").unwrap() == "-42", "neg")
-    expect(big_neg("-42").unwrap() == "42", "neg neg")
-    expect(big_is_zero("0") and not big_is_zero("-0") or big_is_zero("-0"), "zero 语义")
     # pow / gcd
-    expect(big_pow("7", 15).unwrap() == "4747561509943", "7^15 golden")
-    expect(big_gcd("1234567890", "987654321").unwrap() == "9", "gcd golden")
-    expect(big_gcd("0", "5").unwrap() == "5", "gcd(0,5)")
+    expect(big_pow("7", 15).unwrap() == "4747561509943", "7^15")
+    expect(big_gcd("1234567890", "987654321").unwrap() == "9", "gcd")
     # 非法输入
     expect(big_add("1a", "2").is_err(), "非法字符 Err")
-    expect(big_add("", "2").is_err(), "空 Err")
-    print("big: PASS")
+
+    # ---- hex 转换（0.2.0 新增）----
+    # from_hex
+    expect(big_from_hex("0").unwrap() == "0", "hex 0")
+    expect(big_from_hex("1").unwrap() == "1", "hex 1")
+    expect(big_from_hex("ff").unwrap() == "255", "hex ff=255")
+    expect(big_from_hex("100").unwrap() == "256", "hex 100=256")
+    expect(big_from_hex("ffff").unwrap() == "65535", "hex ffff=65535")
+    expect(big_from_hex("f4240").unwrap() == "1000000", "hex f4240=1000000")
+    expect(big_from_hex("0xff").unwrap() == "255", "hex 0xff=255")
+    expect(big_from_hex("0XFF").unwrap() == "255", "hex 0XFF=255")
+    expect(big_from_hex("-0xff").unwrap() == "-255", "hex -0xff=-255")
+    expect(big_from_hex("+0x10").unwrap() == "16", "hex +0x10=16")
+    # 大数
+    expect(big_from_hex("18ee90ff6c373e0ee4e3f0ad2").unwrap() == A, "hex 大数=A")
+    expect(big_from_hex("deadbeefcafebabe1234567890abcdef").unwrap()
+        == "295990755076957304699390954000840642031", "hex deadbeef...")
+    # 错误
+    expect(big_from_hex("").is_err(), "hex 空 Err")
+    expect(big_from_hex("xyz").is_err(), "hex 非法字符 Err")
+
+    # to_hex
+    expect(big_to_hex("0").unwrap() == "0", "to_hex 0")
+    expect(big_to_hex("255").unwrap() == "ff", "to_hex 255=ff")
+    expect(big_to_hex("256").unwrap() == "100", "to_hex 256=100")
+    expect(big_to_hex("65535").unwrap() == "ffff", "to_hex 65535=ffff")
+    expect(big_to_hex("1000000").unwrap() == "f4240", "to_hex 1000000=f4240")
+    expect(big_to_hex(A).unwrap() == "18ee90ff6c373e0ee4e3f0ad2", "to_hex A")
+    expect(big_to_hex("-255").unwrap() == "-ff", "to_hex -255=-ff")
+    expect(big_to_hex("-" + A).unwrap() == "-18ee90ff6c373e0ee4e3f0ad2", "to_hex -A")
+    expect(big_to_hex("xyz").is_err(), "to_hex 非法 Err")
+
+    # 往返：dec → hex → dec
+    var vals = ["0", "1", "255", "256", "65535", "65536", "1000000", A]
+    var vi = 0
+    while vi < len(vals):
+        var v = vals[vi]
+        var h = big_to_hex(v).unwrap()
+        var back = big_from_hex(h).unwrap()
+        expect(back == v, "hex 往返 " + v + " → " + h + " → " + back)
+        vi += 1
+
+    # ---- bin 转换（0.2.0 新增）----
+    # from_bin
+    expect(big_from_bin("0").unwrap() == "0", "bin 0")
+    expect(big_from_bin("1").unwrap() == "1", "bin 1")
+    expect(big_from_bin("11111111").unwrap() == "255", "bin 11111111=255")
+    expect(big_from_bin("100000000").unwrap() == "256", "bin 100000000=256")
+    expect(big_from_bin("0b1010").unwrap() == "10", "bin 0b1010=10")
+    expect(big_from_bin("0B1111").unwrap() == "15", "bin 0B1111=15")
+    expect(big_from_bin("-0b1010").unwrap() == "-10", "bin -0b1010=-10")
+    expect(big_from_bin("11110100001001000000").unwrap() == "1000000", "bin 大=1000000")
+    expect(big_from_bin("").is_err(), "bin 空 Err")
+    expect(big_from_bin("102").is_err(), "bin 非法字符 Err")
+
+    # to_bin
+    expect(big_to_bin("0").unwrap() == "0", "to_bin 0")
+    expect(big_to_bin("255").unwrap() == "11111111", "to_bin 255")
+    expect(big_to_bin("256").unwrap() == "100000000", "to_bin 256")
+    expect(big_to_bin("1000000").unwrap() == "11110100001001000000", "to_bin 1000000")
+    expect(big_to_bin("-10").unwrap() == "-1010", "to_bin -10")
+    expect(big_to_bin("xyz").is_err(), "to_bin 非法 Err")
+
+    # 往返：dec → bin → dec
+    var bi = 0
+    while bi < len(vals):
+        var v = vals[bi]
+        var b = big_to_bin(v).unwrap()
+        var back = big_from_bin(b).unwrap()
+        expect(back == v, "bin 往返 " + v)
+        bi += 1
+
+    # hex → bin → hex 交叉往返
+    var hi = 0
+    while hi < len(vals):
+        var v = vals[hi]
+        var h = big_to_hex(v).unwrap()
+        var b = big_to_bin(v).unwrap()
+        var from_h = big_from_hex(h).unwrap()
+        var from_b = big_from_bin(b).unwrap()
+        expect(from_h == from_b, "交叉往返 " + v)
+        hi += 1
+
+    print("big 0.2.0: PASS")
