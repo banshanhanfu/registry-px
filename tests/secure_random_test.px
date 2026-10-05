@@ -1,5 +1,5 @@
-# secure_random.px 测试：双模式一致（参考 Go crypto/rand）
-import "../registry/secure_random/0.1.0/secure_random.px"
+# secure_random.px 0.2.0 测试：双模式一致（拒绝采样 + 区间/选择/洗牌）
+import "../registry/secure_random/0.2.0/secure_random.px"
 def expect(cond, msg):
     if not cond:
         print("FAIL: " + msg)
@@ -13,23 +13,72 @@ def main():
     # bytes
     var b = sr_bytes(16).unwrap()
     expect(bytes_len(b) == 16, "bytes 长度 16")
-    # token（base64url 无 padding）
+    # token
     var t = sr_token(16).unwrap()
     var t2 = sr_token(16).unwrap()
     expect(t != t2, "token 不同")
-    expect(len(t) >= 20 and len(t) <= 24,
-        "token 长度 16 字节: " + t)
-    expect(not contains(t, "+") and not contains(t, "/")
-        and not contains(t, "="), "base64url 字符集: " + t)
-    # sr_int：范围内
+    expect(len(t) >= 20 and len(t) <= 24, "token 长度: " + t)
+    expect(not contains(t, "+") and not contains(t, "/") and not contains(t, "="), "base64url: " + t)
+
+    # sr_int：范围 + 均匀性
     var i = 0
     var distinct = {}
-    while i < 100:
+    while i < 200:
         var v = sr_int(100).unwrap()
-        expect(v >= 0 and v < 100, "范围")
+        expect(v >= 0 and v < 100, "范围 0..99")
         distinct.set(str(v), true)
         i += 1
-    expect(len(distinct.keys()) >= 2, "抽样有多个不同值")
+    expect(len(distinct.keys()) >= 30, "抽样覆盖 >=30 个不同值（实际 " + str(len(distinct.keys())) + "）")
     expect(sr_int(0).is_err(), "max<=0 Err")
     expect(sr_int(-5).is_err(), "max 负 Err")
-    print("secure_random: PASS")
+    expect(sr_int(1).unwrap() == 0, "max=1 恒 0")
+
+    # sr_int 大范围
+    var big = sr_int(1000000).unwrap()
+    expect(big >= 0 and big < 1000000, "大范围 0..999999")
+
+    # sr_int 2 的幂
+    var p2 = sr_int(256).unwrap()
+    expect(p2 >= 0 and p2 < 256, "范围 0..255")
+
+    # ---- sr_int_range ----
+    var j = 0
+    while j < 100:
+        var v = sr_int_range(50, 150).unwrap()
+        expect(v >= 50 and v < 150, "range 50..149")
+        j += 1
+    expect(sr_int_range(10, 10).is_err(), "range lo==hi Err")
+    expect(sr_int_range(10, 5).is_err(), "range hi<lo Err")
+    var r0 = sr_int_range(0, 1).unwrap()
+    expect(r0 == 0, "range 0..0 恒 0")
+
+    # ---- sr_choice ----
+    var lst = ["apple", "banana", "cherry"]
+    var pick = sr_choice(lst).unwrap()
+    expect(pick == "apple" or pick == "banana" or pick == "cherry", "choice 在列表中: " + pick)
+    expect(sr_choice([]).is_err(), "choice 空列表 Err")
+    var single = sr_choice([42]).unwrap()
+    expect(single == 42, "choice 单元素")
+
+    # ---- sr_shuffle ----
+    var orig = [1, 2, 3, 4, 5]
+    var shuffled = sr_shuffle(orig).unwrap()
+    expect(len(shuffled) == 5, "shuffle 长度保持")
+    # 验证元素相同（排序后比较）
+    var s1 = sorted(orig)
+    var s2 = sorted(shuffled)
+    expect(s1 == s2, "shuffle 元素相同")
+    # 多次洗牌，至少有一次不同顺序
+    var diff = false
+    var k = 0
+    while k < 20:
+        var s = sr_shuffle([1, 2, 3, 4, 5]).unwrap()
+        if s != [1, 2, 3, 4, 5]:
+            diff = true
+        k += 1
+    expect(diff, "shuffle 产生不同排列")
+    # 空列表和单元素
+    expect(len(sr_shuffle([]).unwrap()) == 0, "shuffle 空列表")
+    expect(sr_shuffle([1]).unwrap() == [1], "shuffle 单元素")
+
+    print("secure_random 0.2.0: PASS")
