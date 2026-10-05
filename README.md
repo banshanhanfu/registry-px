@@ -51,7 +51,7 @@
 
 ### T1 重要库（12/12 ✅、双模式 PASS）
 
-config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash ✓ secure_random ✓(0.2.0 拒绝采样) datastruct ✓ concurrent_map ✓ mailparse ✓ stats ✓
+config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash ✓ secure_random ✓(0.2.0 拒绝采样) datastruct ✓ concurrent_map ✓ mailparse ✓(0.2.0 RFC2047) stats ✓
 
 ### T2 差异化（8/8 ✅ 已完成）
 

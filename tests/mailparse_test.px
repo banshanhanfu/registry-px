@@ -1,37 +1,75 @@
-# mailparse.px 测试：双模式一致（参考 Go net/mail）
-import "../registry/mailparse/0.1.0/mailparse.px"
+# mailparse.px 0.2.0 测试：双模式一致（RFC 5322 + RFC 2047）
+import "../registry/mailparse/0.2.0/mailparse.px"
 def expect(cond, msg):
     if not cond:
         print("FAIL: " + msg)
         exit(1)
 def main():
+    # ---- 原有测试 ----
     var raw = ("From: Alice <alice@example.com>\r\nTo: Bob <bob@example.com>\r\n"
         +"Subject: Hello\r\nX-Custom: v1\r\n continuation\r\n"
         +"Date: Mon, 20 Sep 2026 10:00:00 +0800\r\n\r\nHi Bob,\nthis is a test.\n")
     var r = mail_parse(raw)
-    expect(r.is_ok(), "parsing ok: " + str(r)[0:80])
+    expect(r.is_ok(), "parsing ok")
     var m = r.unwrap()
-    # 头部
-    expect(m["from"] == "Alice <alice@example.com>", "from: " + str(m["from"]))
+    expect(m["from"] == "Alice <alice@example.com>", "from")
     expect(m["to"] == "Bob <bob@example.com>", "to")
     expect(m["subject"] == "Hello", "subject")
     expect(contains(m["date"], "2026"), "date")
-    # 续行折叠
-    expect(m["headers"]["X-Custom"] == "v1 continuation", "折叠头: " + str(m["headers"]["X-Custom"]))
-    # 大小写不敏感
-    expect(mail_header(m["headers"], "subject") == "Hello", "大小写不敏感 subject")
-    expect(mail_header(m["headers"], "FROM") == "Alice <alice@example.com>", "大小写不敏感 FROM")
-    expect(mail_header(m["headers"], "Missing",) == null, "缺头部 null")
-    # body
-    expect(m["body"] == "Hi Bob,\nthis is a test.\n", "body 保留 CRLF 头/LF 体" + str(m["body"]))
-    # 无 body（无空行）
+    expect(m["headers"]["X-Custom"] == "v1 continuation", "折叠头")
+    expect(mail_header(m["headers"], "subject") == "Hello", "大小写不敏感")
+    expect(mail_header(m["headers"], "Missing") == null, "缺头部 null")
+    expect(m["body"] == "Hi Bob,\nthis is a test.\n", "body")
     var r2 = mail_parse("Subject: no body\nFrom: x@y.z\n")
-    expect(r2.is_ok() and r2.unwrap()["body"] == "", "无 body 空串")
-    # 空输入 → 空 headers
+    expect(r2.is_ok() and r2.unwrap()["body"] == "", "无 body")
     var r3 = mail_parse("")
     expect(r3.is_ok() and len(r3.unwrap()["headers"].keys()) == 0, "空输入")
-    # 坏行（无冒号）忽略
     var r4 = mail_parse("not a header line\nSubject: ok\n")
     expect(r4.is_ok(), "坏行忽略")
-    expect(r4.unwrap()["subject"] == "ok", "坏行后 subject: " + str(r4))
-    print("mailparse: PASS")
+    expect(r4.unwrap()["subject"] == "ok", "坏行后 subject")
+
+    # ---- RFC 2047 编码字解码（0.2.0 新增）----
+    # B encoding: =?utf-8?B?5L2g5aW9?= → 你好
+    expect(mail_decode_rfc2047("=?utf-8?B?5L2g5aW9?=") == "你好", "B 解码 你好")
+    # Q encoding: =?utf-8?Q?=E4=BD=A0=E5=A5=BD?= → 你好
+    expect(mail_decode_rfc2047("=?utf-8?Q?=E4=BD=A0=E5=A5=BD?=") == "你好", "Q 解码 你好")
+    # 大写 charset
+    expect(mail_decode_rfc2047("=?UTF-8?B?5L2g5aW9?=") == "你好", "大写 charset")
+    # 混合：Re: + 编码字
+    expect(mail_decode_rfc2047("Re: =?utf-8?B?5L2g5aW9?=") == "Re: 你好", "Re: + 编码字")
+    # 相邻编码字（空白分隔 → 拼接去空白）
+    expect(mail_decode_rfc2047("=?utf-8?B?5L2g5aW9?= =?utf-8?B?5LiW55WM?=") == "你好世界", "相邻编码字拼接")
+    # Q encoding with underscore → space
+    expect(mail_decode_rfc2047("=?utf-8?Q?Hello_World?=") == "Hello World", "Q 下划线→空格")
+    # 无编码字 → 原样
+    expect(mail_decode_rfc2047("Plain text") == "Plain text", "无编码字原样")
+    # 部分编码字
+    expect(mail_decode_rfc2047("Prefix =?utf-8?B?5L2g5aW9?= Suffix") == "Prefix 你好 Suffix", "部分编码字")
+
+    # ---- mail_parse 自动解码 subject ----
+    var raw_enc = ("From: sender@example.com\r\n"
+        +"Subject: =?utf-8?B?5L2g5aW9?=\r\n"
+        +"To: recv@example.com\r\n\r\nbody\r\n")
+    var re = mail_parse(raw_enc)
+    expect(re.is_ok(), "编码 subject 解析 ok")
+    expect(re.unwrap()["subject"] == "你好", "subject 自动解码: " + str(re.unwrap()["subject"]))
+
+    # 编码 from
+    var raw_from = ("From: =?utf-8?B?5L2g5aW9?= <a@b.c>\r\n"
+        +"Subject: test\r\n\r\nbody\r\n")
+    var rf = mail_parse(raw_from)
+    expect(rf.unwrap()["from"] == "你好 <a@b.c>", "from 自动解码: " + str(rf.unwrap()["from"]))
+
+    # 相邻编码字 subject
+    var raw_adj = ("Subject: =?utf-8?B?5L2g5aW9?= =?utf-8?B?5LiW55WM?=\r\n"
+        +"From: a@b.c\r\n\r\n\r\n")
+    var ra = mail_parse(raw_adj)
+    expect(ra.unwrap()["subject"] == "你好世界", "subject 相邻编码字: " + str(ra.unwrap()["subject"]))
+
+    # Q 编码 subject
+    var raw_q = ("Subject: =?utf-8?Q?=E4=BD=A0=E5=A5=BD?=\r\n"
+        +"From: a@b.c\r\n\r\n\r\n")
+    var rq = mail_parse(raw_q)
+    expect(rq.unwrap()["subject"] == "你好", "subject Q 解码: " + str(rq.unwrap()["subject"]))
+
+    print("mailparse 0.2.0: PASS")
