@@ -1,0 +1,67 @@
+# dateutil 0.1.0 测试
+import "../registry/dateutil/0.1.0/dateutil.px"
+
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+
+def main():
+    # 闰年
+    expect(du_is_leap_year(2000) == true, "leap 2000")
+    expect(du_is_leap_year(1900) == false, "not leap 1900")
+    expect(du_is_leap_year(2024) == true, "leap 2024")
+    expect(du_is_leap_year(2023) == false, "not leap 2023")
+    # 月天数
+    expect(du_days_in_month(2024, 2) == 29, "days Feb 2024: " + str(du_days_in_month(2024, 2)))
+    expect(du_days_in_month(2023, 2) == 28, "days Feb 2023: " + str(du_days_in_month(2023, 2)))
+    expect(du_days_in_month(2024, 1) == 31, "days Jan: " + str(du_days_in_month(2024, 1)))
+    expect(du_days_in_month(2024, 4) == 30, "days Apr: " + str(du_days_in_month(2024, 4)))
+    # 时间戳转换
+    var ts = du_to_timestamp(2024, 1, 1, 0, 0, 0)
+    var c = du_components(ts)
+    expect(c[0] == 2024, "components year: " + str(c[0]))
+    expect(c[1] == 1, "components month: " + str(c[1]))
+    expect(c[2] == 1, "components day: " + str(c[2]))
+    # 格式化
+    var fmt = du_format(ts, "YYYY-mm-dd HH:MM:SS")
+    expect(fmt == "2024-01-01 00:00:00", "format: " + fmt)
+    # ISO 8601
+    var iso = du_to_iso8601(ts)
+    expect(iso == "2024-01-01T00:00:00Z", "iso8601: " + iso)
+    # 从 ISO 8601 解析
+    var ts2 = du_from_iso8601("2024-06-15T12:30:45Z")
+    var c2 = du_components(ts2)
+    expect(c2[0] == 2024, "from iso year: " + str(c2[0]))
+    expect(c2[1] == 6, "from iso month: " + str(c2[1]))
+    expect(c2[2] == 15, "from iso day: " + str(c2[2]))
+    expect(c2[3] == 12, "from iso hour: " + str(c2[3]))
+    # 加减时间
+    var ts3 = du_add_days(ts, 30)
+    var c3 = du_components(ts3)
+    expect(c3[1] == 1 or c3[1] == 2, "add days month: " + str(c3[1]))
+    # 差值
+    var diff = du_diff_days(ts, ts3)
+    expect(diff == 30, "diff days: " + str(diff))
+    # 星期几
+    # 2024-01-01 是星期一
+    expect(du_day_of_week(2024, 1, 1) == 1, "day of week Jan 1 2024: " + str(du_day_of_week(2024, 1, 1)))
+    # 2024-01-07 是星期日
+    expect(du_day_of_week(2024, 1, 7) == 0, "day of week Jan 7 2024: " + str(du_day_of_week(2024, 1, 7)))
+    # 年中第几天
+    expect(du_day_of_year(2024, 1, 1) == 1, "day of year Jan 1: " + str(du_day_of_year(2024, 1, 1)))
+    expect(du_day_of_year(2024, 2, 1) == 32, "day of year Feb 1: " + str(du_day_of_year(2024, 2, 1)))
+    expect(du_day_of_year(2024, 12, 31) == 366, "day of year Dec 31: " + str(du_day_of_year(2024, 12, 31)))
+    # 儒略日
+    var jd = du_to_julian(2024, 1, 1)
+    var from_jd = du_from_julian(jd)
+    expect(from_jd[0] == 2024, "julian year: " + str(from_jd[0]))
+    expect(from_jd[1] == 1, "julian month: " + str(from_jd[1]))
+    expect(from_jd[2] == 1, "julian day: " + str(from_jd[2]))
+    # 周数
+    expect(du_week_of_year(2024, 1, 1) == 1, "week of year: " + str(du_week_of_year(2024, 1, 1)))
+    # RFC 822
+    var rfc = du_to_rfc822(ts)
+    expect(rfc.contains("2024"), "rfc822 year: " + rfc)
+    expect(rfc.contains("Jan"), "rfc822 month: " + rfc)
+    print("dateutil: PASS")
