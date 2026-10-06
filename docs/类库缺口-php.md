@@ -35,7 +35,7 @@
 | 换行转 br | `nl2br` | textfmt（tf_nl2br / tf_nl2br_xhtml） | ✅ |
 | 分块分割 | `chunk_split` | textfmt（tf_chunk_split） | ✅ |
 | quoted-printable | `quoted_printable_encode` / `decode` | textfmt（tf_qp_encode / tf_qp_decode） | ✅ |
-| uuencode | `convert_uuencode` / `convert_uudecode` | **缺** — uu 编解码 | ⏳ |
+| uuencode | `convert_uuencode` / `convert_uudecode` | uuencode（uu_encode / uu_decode） | ✅ |
 | 字符编码转换 | `iconv` | **缺** — 无编码转换（GBK↔UTF-8 等） | 🚫 |
 | 编码检测 | `mb_detect_encoding` | **缺** — 无编码自动检测 | 🚫 |
 | C 类型检查 | `ctype_alpha` / `ctype_digit` … | ctype（ct_is_alpha / ct_is_digit / ct_is_alnum / ct_is_upper / ct_is_lower / ct_is_space / ct_is_punct / ct_is_xdigit） | ✅ |
