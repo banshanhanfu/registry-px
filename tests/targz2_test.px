@@ -5,11 +5,15 @@ def expect(cond, msg):
         print("FAIL: " + msg)
         exit(1)
 def main():
-    # ---- 0.1.0 回归 ----
-    var files = [{"name": "a.txt", "data": [65, 66, 67]}]
-    var packed = tz_pack(files)
+    # ---- 0.1.0 回归（files 为 dict，键为文件名）----
+    var files = {"a.txt": [65, 66, 67]}
+    var r = tz_pack(files)
+    expect(r.is_ok(), "pack ok")
+    var packed = r.unwrap()
     expect(len(packed) > 0, "pack non-empty")
-    var unpacked = tz_unpack_tar(packed)
+    var ur = tz_unpack(packed)
+    expect(ur.is_ok(), "unpack ok")
+    var unpacked = ur.unwrap()
     expect(len(unpacked) == 1, "unpack 1 file: " + str(len(unpacked)))
     # ---- 0.2.0 list_files ----
     var names = tz_list_files(packed)
