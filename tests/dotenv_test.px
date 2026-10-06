@@ -7,6 +7,8 @@ def expect(cond, msg):
         exit(1)
 
 def main():
+    # 创建测试数据文件
+    write_file_opt("/tmp/dotenv_sample.env", "USER=test\nQUOTED=\"a b\"\n")
     var d = dotenv_parse("A=1\nB=hello world\n# comment\n\nC=\"x y\"\nD='lit'\n")
     expect(d.has("A") and d["A"] == "1", "A=1")
     expect(d.has("B") and d["B"] == "hello world", "B=hello world")

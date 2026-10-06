@@ -7,6 +7,12 @@ def expect(cond, msg):
         exit(1)
 
 def main():
+    # 创建测试目录结构
+    mkdir("/tmp/globd")
+    mkdir("/tmp/globd/sub")
+    write_file_opt("/tmp/globd/a.log", "")
+    write_file_opt("/tmp/globd/b.txt", "")
+    write_file_opt("/tmp/globd/sub/c.log", "")
     # 基础通配
     expect(glob_match("*.log", "a.log"), "*.log 匹配 a.log")
     expect(glob_match("*.log", "a.txt") == false, "*.log 不匹配 a.txt")

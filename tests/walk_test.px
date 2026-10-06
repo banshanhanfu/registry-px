@@ -1,4 +1,4 @@
-# walk.px 测试：递归目录遍历（需预置 fixture，双模式一致）
+# walk.px 测试：递归目录遍历（自建 fixture，双模式一致）
 import "../registry/walk/0.1.0/walk.px"
 def expect(cond, msg):
     if not cond:
@@ -12,7 +12,15 @@ def has_path(entries, p):
         i += 1
     return false
 def main():
+    # 创建测试目录结构
     var root = "/tmp/wk_src"
+    mkdir(root)
+    mkdir(root + "/sub")
+    mkdir(root + "/sub/deep")
+    write_file_opt(root + "/a.txt", "a")
+    write_file_opt(root + "/b.log", "b")
+    write_file_opt(root + "/sub/c.txt", "c")
+    write_file_opt(root + "/sub/deep/d.txt", "d")
     var w = wk_walk(root)
     if w.is_err():
         print("FAIL: walk: " + str(w))
