@@ -1,0 +1,32 @@
+# currency 0.1.0 测试
+import "../registry/currency/0.1.0/currency.px"
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+def main():
+    var rates = {"USD->EUR": 0.85, "USD->JPY": 110.0, "EUR->GBP": 0.88, "EUR->USD": 1.18}
+    var c = cur_new(rates)
+    # direct
+    var r1 = cur_convert(c, "USD", "EUR", 100)
+    expect(r1 == 85.0, "USD->EUR: " + str(r1))
+    # same
+    var r2 = cur_convert(c, "USD", "USD", 100)
+    expect(r2 == 100.0, "same: " + str(r2))
+    # reverse
+    var r3 = cur_convert(c, "EUR", "USD", 85)
+    expect(r3 > 99.0 and r3 < 101.0, "EUR->USD: " + str(r3))
+    # via USD
+    var r4 = cur_convert(c, "EUR", "JPY", 100)
+    expect(r4 != null, "EUR->JPY via USD: " + str(r4))
+    # add rate
+    cur_add_rate(c, "GBP", "CHF", 1.15)
+    var r5 = cur_convert(c, "GBP", "CHF", 100)
+    expect(r5 > 114.0 and r5 < 116.0, "GBP->CHF: " + str(r5))
+    # format
+    var s = cur_format(1234.5, "USD")
+    expect(s.len() > 0, "format: " + s)
+    # list
+    var ks = cur_list(c)
+    expect(len(ks) >= 3, "list has rates: " + str(len(ks)))
+    print("currency: PASS")

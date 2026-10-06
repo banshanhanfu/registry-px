@@ -1,0 +1,27 @@
+# fileinfo 0.1.0 测试
+import "../registry/fileinfo/0.1.0/fileinfo.px"
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+def main():
+    var fi = fi_new("/home/user/docs/report.txt")
+    expect(fi_get_path(fi) == "/home/user/docs/report.txt", "path")
+    expect(fi_get_filename(fi) == "report.txt", "filename: " + fi_get_filename(fi))
+    expect(fi_get_basename(fi) == "report", "basename: " + fi_get_basename(fi))
+    expect(fi_get_extension(fi) == "txt", "extension: " + fi_get_extension(fi))
+    expect(fi_get_dirname(fi) == "/home/user/docs", "dirname: " + fi_get_dirname(fi))
+    # no extension
+    var fi2 = fi_new("/tmp/Makefile")
+    expect(fi_get_filename(fi2) == "Makefile", "no ext filename")
+    expect(fi_get_extension(fi2) == "", "no ext: " + fi_get_extension(fi2))
+    expect(fi_get_basename(fi2) == "Makefile", "no ext basename")
+    # root dir
+    var fi3 = fi_new("/file.txt")
+    expect(fi_get_dirname(fi3) == "/", "root dirname: " + fi_get_dirname(fi3))
+    # relative
+    var fi4 = fi_new("script.py")
+    expect(fi_get_filename(fi4) == "script.py", "relative filename")
+    expect(fi_get_extension(fi4) == "py", "relative ext")
+    expect(fi_get_dirname(fi4) == ".", "relative dirname: " + fi_get_dirname(fi4))
+    print("fileinfo: PASS")

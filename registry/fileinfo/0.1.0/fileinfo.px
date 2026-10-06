@@ -1,0 +1,40 @@
+# fileinfo.px — 文件信息对象（对应 PHP SplFileInfo）
+# 版本: 0.1.0
+# 依赖: 无
+def _fi_rfind(s, ch):
+    var j = s.len() - 1
+    while j >= 0 and s[j] != ch:
+        j -= 1
+    return j
+def fi_new(path):
+    return {"_path": path}
+def fi_get_path(fi):
+    return fi["_path"]
+def fi_get_filename(fi):
+    var path = fi["_path"]
+    var sep = _fi_rfind(path, "/")
+    if sep >= 0:
+        return path[sep + 1:]
+    return path
+def fi_get_extension(fi):
+    var name = fi_get_filename(fi)
+    var dot = _fi_rfind(name, ".")
+    if dot > 0:
+        return name[dot + 1:]
+    return ""
+def fi_get_basename(fi):
+    var name = fi_get_filename(fi)
+    var dot = _fi_rfind(name, ".")
+    if dot > 0:
+        return name[:dot]
+    return name
+def fi_get_dirname(fi):
+    var path = fi["_path"]
+    var sep = _fi_rfind(path, "/")
+    if sep > 0:
+        return path[:sep]
+    if sep == 0:
+        return "/"
+    return "."
+def fi_to_string(fi):
+    return fi["_path"]

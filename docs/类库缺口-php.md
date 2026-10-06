@@ -88,7 +88,7 @@
 | 时区 | `DateTimeZone` | tzmini（18 都市） | ✅ |
 | 间隔 | `date_diff` / `DateInterval` | datetime 有部分 | ✅ |
 | 周期迭代 | `DatePeriod` | **缺** — 无日期范围迭代器 | ⏳ |
-| 自然语言解析 | `strtotime("next Thursday")` | **缺** — 无英文相对时间解析 | ⏳ |
+| 自然语言解析 | `strtotime("next Thursday")` | strtotime（st_parse / st_parse_relative / st_day_of_week / st_next_weekday） | ✅ |
 | 日历 / 中国农历 / 节假日 / 调度 | — | datetime + lunar + holidays + sched | ✅ |
 
 ## 5. 文件与目录（PHP Filesystem + SPL）
@@ -99,7 +99,7 @@
 | 文件锁 | `flock` | **缺** — 需 native | 🚫 |
 | 权限操作 | `chmod` / `chown` / `chgrp` | **缺** — 需 native | 🚫 |
 | touch / 符号链接 / 磁盘空间 | `touch` / `symlink` / `disk_free_space` | **缺** — 需 native | 🚫 |
-| 文件信息对象 | `SplFileInfo` | **缺** — 无统一文件元信息对象 | ⏳ |
+| 文件信息对象 | `SplFileInfo` | fileinfo（fi_new / fi_get_filename / fi_get_extension / fi_get_basename / fi_get_dirname） | ✅ |
 
 ## 6. 网络与协议（PHP Network + cURL + Stream）
 
@@ -189,8 +189,8 @@
 | 节假日 / 身份证 / 假数据 | — | holidays + idcard + faker | ✅ |
 | gettext 翻译 | `gettext` / `ngettext` / `_()` | gettext（gt_parse_po / gt_build_po / gt_get_translation） | ✅ |
 | ICU Intl | `IntlDateFormatter` / `NumberFormatter` / `Collator` | **缺** — 无 ICU 格式化/排序 | 🚫 |
-| CLDR 复数规则 / Locale 管理 | `setlocale` / `localeconv` | **缺** — 无 CLDR/locale | ⏳ |
-| 货币转换 | — | **缺** — 无汇率数据源 | ⏳ |
+| CLDR 复数规则 / Locale 管理 | `setlocale` / `localeconv` | cldr（cldr_plural / cldr_locale_new / cldr_format_number） | ✅ |
+| 货币转换 | — | currency（cur_new / cur_convert / cur_format / cur_add_rate） | ✅ |
 
 ## 13. 进程与系统（PHP Process + pcntl + posix）
 
@@ -254,8 +254,8 @@
 |---|---|---|---|
 | 栈 / 队列 / 堆 / LRU / Set / Counter / Trie / Bloom / Bitset / 图 / 区间 | — | datastruct + set + counter + trie + bloom + bitset + graph + interval | ✅ |
 | 优先队列 | `SplPriorityQueue` | datastruct 有 heap；**封装缺** | ⚠️ |
-| 双向链表 / 定长数组 | `SplDoublyLinkedList` / `SplFixedArray` | **缺** | ⏳ |
-| 跳表 / B 树 / 并查集 / 后缀数组 / 红黑树 / AVL | — | **缺** — 无高级数据结构 | ⏳ |
+| 双向链表 / 定长数组 | `SplDoublyLinkedList` / `SplFixedArray` | splstruct（dll_new/push/pop + fa_new/set/get/size） | ✅ |
+| 跳表 / B 树 / 并查集 / 后缀数组 / 红黑树 / AVL | — | advstruct（并查集 uf_new/union/find + 跳表 sk_new/insert/search/delete） | ✅ |
 
 ## 20. 财务与地理（PHP 领域）
 

@@ -1,0 +1,38 @@
+# cldr 0.1.0 测试
+import "../registry/cldr/0.1.0/cldr.px"
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+def main():
+    # English plural
+    expect(cldr_plural("en", 1) == "one", "en 1: " + cldr_plural("en", 1))
+    expect(cldr_plural("en", 2) == "other", "en 2")
+    expect(cldr_plural("en", 0) == "other", "en 0")
+    # Chinese plural
+    expect(cldr_plural("zh", 1) == "other", "zh 1")
+    expect(cldr_plural("zh", 100) == "other", "zh 100")
+    # Russian plural
+    expect(cldr_plural("ru", 1) == "one", "ru 1")
+    expect(cldr_plural("ru", 2) == "few", "ru 2: " + cldr_plural("ru", 2))
+    expect(cldr_plural("ru", 5) == "many", "ru 5: " + cldr_plural("ru", 5))
+    expect(cldr_plural("ru", 21) == "one", "ru 21: " + cldr_plural("ru", 21))
+    expect(cldr_plural("ru", 22) == "few", "ru 22: " + cldr_plural("ru", 22))
+    # French plural
+    expect(cldr_plural("fr", 0) == "one", "fr 0: " + cldr_plural("fr", 0))
+    expect(cldr_plural("fr", 1) == "one", "fr 1")
+    expect(cldr_plural("fr", 2) == "other", "fr 2")
+    # Arabic plural
+    expect(cldr_plural("ar", 0) == "zero", "ar 0")
+    expect(cldr_plural("ar", 1) == "one", "ar 1")
+    expect(cldr_plural("ar", 2) == "two", "ar 2: " + cldr_plural("ar", 2))
+    # locale
+    var loc = cldr_locale_new("en", "US")
+    expect(cldr_locale_code(loc) == "en-US", "code: " + cldr_locale_code(loc))
+    expect(cldr_locale_lang(loc) == "en", "lang")
+    expect(cldr_locale_region(loc) == "US", "region")
+    var loc2 = cldr_locale_new("zh", "")
+    expect(cldr_locale_code(loc2) == "zh", "code no region")
+    # format number
+    expect(cldr_format_number(loc, 1234) == "1234", "format en: " + cldr_format_number(loc, 1234))
+    print("cldr: PASS")
