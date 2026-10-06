@@ -68,16 +68,16 @@
 |---|---|---|---|
 | 基础数学 | `abs` / `max` / `min` / `sqrt` / `pow` / `log` / `exp` | native math | ✅ |
 | 三角函数 | `sin` / `cos` / `tan` / `asin` / `acos` / `atan2` | native math | ✅ |
-| 双曲函数 | `sinh` / `cosh` / `tanh` | **缺** — 无双曲函数 | ⏳ |
+| 双曲函数 | `sinh` / `cosh` / `tanh` | mathx（mx_sinh / mx_cosh / mx_tanh / mx_asinh / mx_acosh / mx_atanh） | ✅ |
 | 取整 | `floor` / `ceil` / `round` | native | ✅ |
-| 浮点取模 | `fmod` | **缺** — 无浮点取模 | ⏳ |
-| 角度弧度 | `deg2rad` / `rad2deg` | **缺** — 无角度↔弧度转换 | ⏳ |
+| 浮点取模 | `fmod` | mathx（mx_fmod） | ✅ |
+| 角度弧度 | `deg2rad` / `rad2deg` | mathx（mx_deg2rad / mx_rad2deg）+ geo（geo_deg2rad / geo_rad2deg） | ✅ |
 | 大整数 | GMP | big（加减乘除模幂） | ✅ |
 | 任意精度小数 | BCMath | decimal | ✅ |
 | 分数 / 复数 | — | fractions + plex | ✅ |
 | 统计 | — | stats + statx + dist + metrics（⚠️ stats 与 statx 的 mean/median/var/stddev 重复，见末尾登记） | ✅ |
 | 随机 | `mt_rand` / `random_int` / `random_bytes` | secure_random + dist | ✅ |
-| 数学常数 | `M_PI` / `M_E` / `M_SQRT2` … | **缺** — 无数学常数常量 | ⏳ |
+| 数学常数 | `M_PI` / `M_E` / `M_SQRT2` … | mathx（MX_PI / MX_E / MX_SQRT2 / MX_GOLDEN 等 15 个） | ✅ |
 | 进制转换 | `base_convert` | numconv（nc_base_convert） | ✅ |
 
 ## 4. 日期与时间（PHP Date/Time + Calendar）
