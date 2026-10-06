@@ -41,4 +41,15 @@ def main():
     expect(sl_unslug("single") == "Single", "unslug single: " + sl_unslug("single"))
     # ---- 0.2.0 slug_id ----
     expect(sl_slug_id("Hello World", "2026") == "hello-world-2026", "slug_id: " + sl_slug_id("Hello World", "2026"))
+    # ---- 从 slugify 合并的函数 ----
+    expect(sl_slugify("Hello World") == "hello-world", "slugify basic: " + sl_slugify("Hello World"))
+    expect(sl_slugify("Hello World", "_") == "hello_world", "slugify sep: " + sl_slugify("Hello World", "_"))
+    expect(sl_strip_accents("cafe") == "cafe", "strip_accents no-op: " + sl_strip_accents("cafe"))
+    expect(sl_transliterate("Hello") == "Hello", "translit ascii: " + sl_transliterate("Hello"))
+    expect(sl_slugify_unicode("Hello World") == "hello-world", "slugify_unicode: " + sl_slugify_unicode("Hello World"))
+    expect(sl_truncate_slug("hello-world", 5) == "hello", "truncate: " + sl_truncate_slug("hello-world", 5))
+    var ex = ["hello-world", "foo"]
+    expect(sl_make_unique("hello-world", ex) == "hello-world-2", "make_unique: " + sl_make_unique("hello-world", ex))
+    var cm = {"a": "X"}
+    expect(sl_custom_map("abc", cm) == "Xbc", "custom_map: " + sl_custom_map("abc", cm))
     print("slug 0.2.0: PASS")

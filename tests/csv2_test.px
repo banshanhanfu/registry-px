@@ -69,4 +69,24 @@ def main():
     # ---- 0.2.0 序列化带选项 ----
     var r13 = csv_serialize_opts([["a", "b"], ["1", "2"]], {"delim": ";"})
     expect(r13.unwrap() == "a;b\n1;2\n", "serialize delim: " + str(r13))
+    # ---- 从 csvutil 合并的函数 ----
+    expect(csv_escape_field("hello") == "hello", "escape_field no-op")
+    expect(csv_escape_field("a,b") == "\"a,b\"", "escape_field comma: " + csv_escape_field("a,b"))
+    expect(csv_unescape_field("\"a,b\"") == "a,b", "unescape_field: " + csv_unescape_field("\"a,b\""))
+    var hdr_rows = [{"name": "Alice", "age": "30"}, {"name": "Bob", "age": "25"}]
+    var built = csv_build_header(hdr_rows, ["name", "age"])
+    expect(built.contains("Alice"), "build_header: " + built)
+    var parsed_r = csv_parse_header(built)
+    var parsed = parsed_r.unwrap()
+    expect(len(parsed) == 2, "parse_header len: " + str(len(parsed)))
+    expect(parsed[0]["name"] == "Alice", "parse_header val: " + parsed[0]["name"])
+    var filtered = csv_filter(hdr_rows, "name", "Alice")
+    expect(len(filtered) == 1, "filter: " + str(len(filtered)))
+    var sorted_rows = csv_sort(hdr_rows, "age", true)
+    expect(sorted_rows[0]["name"] == "Bob", "sort: " + sorted_rows[0]["name"])
+    var col = csv_column(hdr_rows, "name")
+    expect(col[0] == "Alice" and col[1] == "Bob", "column: " + str(col))
+    var dup_rows = [{"id": "1"}, {"id": "1"}, {"id": "2"}]
+    var uniq = csv_unique(dup_rows, "id")
+    expect(len(uniq) == 2, "unique: " + str(len(uniq)))
     print("csv 0.2.0: PASS")

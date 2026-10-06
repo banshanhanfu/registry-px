@@ -1,7 +1,7 @@
 # 类库缺口·对照 PHP 生态（2026-10-06）
 
 > 以 PHP 8.x 标准库（~80 内置扩展）+ Composer 生态 Top 100 包为参照，
-> 逐一比对 PuXian 现有 **122 个 registry 库** + **368 个 native 函数** + **13 个 stdlib 模块**。
+> 逐一比对 PuXian 现有 **140 个 registry 库** + **368 个 native 函数** + **13 个 stdlib 模块**。
 > 已覆盖的（含 native / stdlib / registry）标 ✅，缺失的标 ⏳，需先补 native 的标 🚫。
 >
 > **PuXian 已有底座概览**：
@@ -20,8 +20,8 @@
 | HTML 转义/反转义 | `htmlspecialchars` / `html_entity_decode` | native html + htmlparse | ✅ |
 | strip_tags | `strip_tags` | htmlparse 可提取纯文本 | ✅ |
 | 大小写转换 | `strtolower` / `strtoupper` / `ucfirst` / `ucwords` | strcase | ✅ |
-| slug 生成 | — | slug | ✅ |
-| 文本包裹 | `wordwrap` | textwrap | ✅ |
+| slug 生成 | — | slug（⚠️ slugify 异名同功能重复，见末尾登记） | ✅ |
+| 文本包裹 | `wordwrap` | textwrap（⚠️ textfmt 含 tf_wordwrap 部分重复，见末尾登记） | ✅ |
 | 编辑距离 | `levenshtein` | edist | ✅ |
 | 自然排序 | `natsort` | natsort | ✅ |
 | 复数化/单数化 | — | inflect | ✅ |
@@ -75,7 +75,7 @@
 | 大整数 | GMP | big（加减乘除模幂） | ✅ |
 | 任意精度小数 | BCMath | decimal | ✅ |
 | 分数 / 复数 | — | fractions + plex | ✅ |
-| 统计 | — | stats + statx + dist + metrics | ✅ |
+| 统计 | — | stats + statx + dist + metrics（⚠️ stats 与 statx 的 mean/median/var/stddev 重复，见末尾登记） | ✅ |
 | 随机 | `mt_rand` / `random_int` / `random_bytes` | secure_random + dist | ✅ |
 | 数学常数 | `M_PI` / `M_E` / `M_SQRT2` … | **缺** — 无数学常数常量 | ⏳ |
 | 进制转换 | `base_convert` | **缺** — 无任意进制转换 | ⏳ |
@@ -84,7 +84,7 @@
 
 | PHP 功能 | PHP 函数 | PuXian 现状 | 状态 |
 |---|---|---|---|
-| 格式化/解析 | `date` / `strtotime` / `date_create` | native time + datetime | ✅ |
+| 格式化/解析 | `date` / `strtotime` / `date_create` | native time + datetime（⚠️ dateutil 异名同功能重复，见末尾登记） | ✅ |
 | 时区 | `DateTimeZone` | tzmini（18 都市） | ✅ |
 | 间隔 | `date_diff` / `DateInterval` | datetime 有部分 | ✅ |
 | 周期迭代 | `DatePeriod` | **缺** — 无日期范围迭代器 | ⏳ |
@@ -149,7 +149,7 @@
 | Ed25519 | — (sodium) | native ed25519 | ✅ |
 | SHA / HMAC / PBKDF2 / Bcrypt | — | native + passhash + bcrypt | ✅ |
 | JWT / OAuth2 / TOTP / 证书 | — | jwt + oauth2 + totp + x509 | ✅ |
-| 随机 ID / 密码强度 / 验证码 / 校验码 | — | uuid + nanoid + ulid + snowflake + strength + pwgen + captcha + luhn + checksum | ✅ |
+| 随机 ID / 密码强度 / 验证码 / 校验码 | — | uuid + nanoid + ulid + snowflake + strength + pwgen + captcha + luhn + checksum（⚠️ hashutil 包含 checksum 的 CRC32/Adler32，见末尾登记） | ✅ |
 | libsodium 现代加密 | `sodium_crypto_secretbox` / `box` / `sign` | **缺** — 无 libsodium 封装 | 🚫 |
 | DES / 3DES / RC4 | `openssl_encrypt("DES")` | **缺** — 无 DES/3DES/RC4 | ⏳ |
 | 恒定时间比较 | `hash_equals` | **缺** — 需 native | 🚫 |
@@ -170,7 +170,7 @@
 | PHP 功能 | PHP 函数 / 扩展 | PuXian 现状 | 状态 |
 |---|---|---|---|
 | JSON / XML / YAML / Base64 / Hex | — | native | ✅ |
-| CSV / INI / TOML / Properties / MsgPack / BSON / Protobuf | — | registry 各库 | ✅ |
+| CSV / INI / TOML / Properties / MsgPack / BSON / Protobuf | — | registry 各库（⚠️ csv 与 csvutil 异名同功能重复，见末尾登记） | ✅ |
 | HTML 解析 / Markdown / JSONPath / Base58 / Punycode / XLSX / PDF | — | registry 各库 | ✅ |
 | PHP 序列化 | `serialize` / `unserialize` | **缺** — 无 PHP 序列化格式 | ⏳ |
 | var_export | `var_export` | **缺** — 无变量导出为代码 | ⏳ |
@@ -185,7 +185,7 @@
 
 | PHP 功能 | PHP 函数 / 扩展 | PuXian 现状 | 状态 |
 |---|---|---|---|
-| 中文拼音 / 简繁 / 分词 / 数字大写 / 英文数字 | — | pinyin + hant + seg + cnnum + num2words | ✅ |
+| 中文拼音 / 简繁 / 分词 / 数字大写 / 英文数字 | — | pinyin + hant + seg + cnnum + num2words（⚠️ numconv 的 nc_dec2words 与 num2words 轻微重复，见末尾登记） | ✅ |
 | 节假日 / 身份证 / 假数据 | — | holidays + idcard + faker | ✅ |
 | gettext 翻译 | `gettext` / `ngettext` / `_()` | **缺** — 无 .mo/.po 文件解析+翻译 | ⏳ |
 | ICU Intl | `IntlDateFormatter` / `NumberFormatter` / `Collator` | **缺** — 无 ICU 格式化/排序 | 🚫 |
@@ -277,6 +277,22 @@
 
 ---
 
+## 重复类库登记（异名同功能）
+
+> 2026-10-06 排查：registry 中存在异名但功能重复（或大幅重叠）的类库对。
+> 建议后续合并：保留功能更全/版本更高的库，将另一库标记 deprecated 或合并差异函数。
+> 2026-10-06 更新：4 对完全/大幅重复已实际合并（slugify→slug、csvutil→csv、dateutil→datetime、checksum→hashutil），3 对部分重叠保留两者。
+
+| 重复对 | 重叠程度 | 保留建议 | 差异说明 |
+|--------|---------|---------|---------|
+| **slug ↔ slugify** | 完全重复 | ✅ 已合并入 **slug** | slugify 独有函数（sl_strip_accents / sl_transliterate / sl_slugify_unicode / sl_custom_map / sl_slugify / sl_truncate_slug / sl_make_unique）已迁入 slug 0.2.0，slugify 库已删除 |
+| **csv ↔ csvutil** | 大幅重叠 | ✅ 已合并入 **csv** | csvutil 独有函数（csv_escape_field / csv_unescape_field / csv_sort / csv_unique / csv_build / csv_build_header / csv_filter / csv_column）已迁入 csv 0.2.0，csvutil 库已删除 |
+| **datetime ↔ dateutil** | 大幅重叠 | ✅ 已合并入 **datetime** | dateutil 全部 du_ 函数已迁入 datetime 0.2.0（保留 du_ 前缀兼容），dateutil 库已删除 |
+| **checksum ↔ hashutil** | hashutil ⊃ checksum | ✅ 已合并入 **hashutil** | checksum 独有函数（crc16 / crc16_hex / fletcher32 / checksum_verify / hex_digest / crc32_hex）已迁入 hashutil，checksum 库已删除 |
+| **textwrap ↔ textfmt** | 部分重叠 | 两者保留（定位不同） | textwrap 专注换行排版（wrap/fill/dedent/indent）；textfmt 是 PHP 文本格式化全家桶（nl2br/chunk_split/strtr/QP/wordwrap/strip_tags/addslashes）。仅 tf_wordwrap 与 tw_wrap/tw_fill 有功能交叉，建议 textfmt 文档注明"如需纯换行优先用 textwrap" |
+| **stats ↔ statx** | 部分重叠 | 两者保留（定位不同） | stats 是基础描述统计（min/max/sum/count/mean/median/var/stddev）；statx 是增强统计（quantile/pearson/linreg + Err 返回风格）。基础函数重复但 API 风格不同，建议 statx 文档注明"基础统计可用 stats" |
+| **numconv ↔ num2words** | 轻微重叠 | 两者保留（定位不同） | numconv 主打进制转换+罗马数字，nc_dec2words 是简易英文数字单词；num2words 是完整英文数字转单词（含连字符/and/千分位）。建议 numconv 文档注明"完整英文数字单词用 num2words" |
+
 ## 汇总
 
 | 类别 | ✅ 已覆盖 | ⏳ 缺失（纯 .px 可行） | 🚫 需先补 native |
@@ -347,3 +363,5 @@
 ## 实施记录
 
 - 2026-10-06：建档（对照 PHP 8.x 标准库 + Composer 生态 Top 100，逐项比对 122 registry + 368 native + 13 stdlib）。
+- 2026-10-06：排查异名同功能重复类库，发现 7 对（slug/slugify、csv/csvutil、datetime/dateutil、checksum/hashutil、textwrap/textfmt、stats/statx、numconv/num2words），已在各节标注 ⚠️ 并新增「重复类库登记」章节。registry 库数更新为 144。
+- 2026-10-06：合并 4 对完全/大幅重复库（slugify→slug、csvutil→csv、dateutil→datetime、checksum→hashutil），独有函数迁入保留库，双模式测试 PASS。registry 库数 144→140。

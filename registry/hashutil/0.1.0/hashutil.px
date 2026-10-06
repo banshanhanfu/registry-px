@@ -197,3 +197,85 @@ def hu_hamming(a, b):
         dist = dist + 1
         x = x & (x - 1)
     return dist
+# ============================================================
+# 从 checksum 合并的函数（2026-10-06 异名同功能合并）
+# 迁入 checksum 独有函数，保留原函数名以兼容旧代码
+# checksum 库已删除，全部功能由 hashutil 提供
+# 独有功能：crc16 / crc16_hex / fletcher32 / checksum_verify / hex_digest / crc32_hex
+# （crc32 / adler32 已有 hu_crc32 / hu_adler32 等价功能，此处补 crc32_hex）
+# ============================================================
+
+# 辅助：hex 数字
+def ck_hex_digit(v):
+    var d = "0123456789abcdef"
+    if v < 0 or v > 15:
+        return "0"
+    return d[v]
+
+# CRC-32 hex → str（与 checksum.crc32_hex 兼容）
+def crc32_hex(s):
+    var v = hu_crc32(s)
+    var out = ""
+    var k = 0
+    while k < 8:
+        out = ck_hex_digit(v % 16) + out
+        v = v // 16
+        k += 1
+    return out
+
+# CRC-32 兼容别名（与 checksum.crc32 兼容，使用 bytes 逐字节）
+def crc32(s):
+    return hu_crc32(s)
+
+# Adler-32 兼容别名
+def adler32(s):
+    return hu_adler32(s)
+
+# CRC-16-CCITT (0x1021, init 0xFFFF) → int
+def crc16(s):
+    var crc = 65535
+    var b = bytes(s)
+    var i = 0
+    while i < bytes_len(b):
+        var v = bytes_get(b, i)
+        crc = crc ^ (v << 8)
+        var j = 0
+        while j < 8:
+            if (crc & 32768) != 0:
+                crc = ((crc << 1) ^ 0x1021) & 65535
+            else:
+                crc = (crc << 1) & 65535
+            j += 1
+        i += 1
+    return crc
+
+# CRC-16 hex → str
+def crc16_hex(s):
+    var v = crc16(s)
+    var digits = "0123456789ABCDEF"
+    return digits[(v >> 12) & 15] + digits[(v >> 8) & 15] + digits[(v >> 4) & 15] + digits[v & 15]
+
+# Fletcher-32 校验和 → int
+def fletcher32(s):
+    var sum1 = 0
+    var sum2 = 0
+    var b = bytes(s)
+    var i = 0
+    while i < bytes_len(b) - 1:
+        var w = bytes_get(b, i) * 256 + bytes_get(b, i + 1)
+        sum1 = (sum1 + w) % 65535
+        sum2 = (sum2 + sum1) % 65535
+        i += 2
+    if i < bytes_len(b):
+        var w2 = bytes_get(b, i) * 256
+        sum1 = (sum1 + w2) % 65535
+        sum2 = (sum2 + sum1) % 65535
+    return (sum2 << 16) | sum1
+
+# 校验和验证：比较计算值与期望值 → bool
+def checksum_verify(s, expected_hex):
+    return crc32_hex(s) == expected_hex
+
+# 多算法摘要 → {crc32, crc16, adler32, fletcher32}
+def hex_digest(s):
+    return {"crc32": crc32_hex(s), "crc16": crc16_hex(s), "adler32": str(adler32(s)), "fletcher32": str(fletcher32(s))}
