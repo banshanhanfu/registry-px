@@ -173,7 +173,7 @@
 | CSV / INI / TOML / Properties / MsgPack / BSON / Protobuf | — | registry 各库（⚠️ csv 与 csvutil 异名同功能重复，见末尾登记） | ✅ |
 | HTML 解析 / Markdown / JSONPath / Base58 / Punycode / XLSX / PDF | — | registry 各库 | ✅ |
 | PHP 序列化 | `serialize` / `unserialize` | phpser | ✅ |
-| var_export | `var_export` | **缺** — 无变量导出为代码 | ⏳ |
+| var_export | `var_export` | vardump（vd_export） | ✅ |
 | DOM 全 API | `DOMDocument` / `DOMNode` | **缺** — 无完整 DOM 树操作 | ⏳ |
 | 流式 XML | `XMLReader` / `XMLWriter` | **缺** — 无流式 XML 读写 | ⏳ |
 | XSLT / XPath | `XSLTProcessor` / `DOMXPath` | **缺** — 无 XSLT/XPath | ⏳ |
@@ -205,7 +205,7 @@
 | PHP 功能 | PHP 函数 | PuXian 现状 | 状态 |
 |---|---|---|---|
 | 日志 | `error_log` / `syslog` | log | ✅ |
-| 调试输出 | `var_dump` / `print_r` | **缺** — 无结构化变量转储 | ⏳ |
+| 调试输出 | `var_dump` / `print_r` | vardump（vd_dump / vd_export / vd_print_r / vd_repr） | ✅ |
 | 调用栈 | `debug_backtrace` | **缺** — 无调用栈追踪 | 🚫 |
 | 错误处理器 / 错误级别 | `set_error_handler` / `error_reporting` | **缺** — 无自定义错误捕获 | ⏳ |
 
@@ -227,7 +227,7 @@
 | Memcached | `Memcached` | **缺** — 无 Memcached 客户端 | ⏳ |
 | APCu 本地缓存 | `apcu_*` | **缺** — 需 native | 🚫 |
 | Session 管理 | `session_start` / `$_SESSION` | **缺** — 无 Session 管理 | ⏳ |
-| CSRF 令牌 | — | **缺** — 无 CSRF 生成/验证 | ⏳ |
+| CSRF 令牌 | — | csrf（csrf_generate / csrf_verify 恒定时间比较 / HTML 标签生成） | ✅ |
 | MIME 邮件构造 | — (PHPMailer) | mimebuilder | ✅ |
 
 ## 17. 并发与异步（PHP Parallel + Event + Fiber）
