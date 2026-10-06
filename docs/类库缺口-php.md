@@ -55,11 +55,11 @@
 | 填充 | `array_fill` / `array_pad` | arrutil（arr_fill）；array_pad 缺 | ⚠️ |
 | 随机选取 | `array_rand` | arrutil（arr_rand） | ✅ |
 | 乘积 | `array_product` | arrutil（arr_product） | ✅ |
-| 递归替换 | `array_replace_recursive` | **缺** — 无深度递归合并 | ⏳ |
-| 多维排序 | `array_multisort` | **缺** — 无多数组联动排序 | ⏳ |
+| 递归替换 | `array_replace_recursive` | deepmerge（dm_merge / dm_merge_many / dm_path_get / dm_path_set） | ✅ |
+| 多维排序 | `array_multisort` | multisort（ms_sort / ms_sort_by） | ✅ |
 | 打乱 | `shuffle` | arrutil（arr_shuffle_copy） | ✅ |
 | 范围生成 | `range` | arrutil（arr_range） | ✅ |
-| compact/extract | `compact` / `extract` | **缺** — 无变量↔数组互转 | ⏳ |
+| compact/extract | `compact` / `extract` | compact（cp_compact / cp_extract / cp_only / cp_except / cp_pluck / cp_flip） | ✅ |
 | 回调遍历 | `array_map` / `array_filter` / `array_walk` | functools 部分；**无原生 array_map** | ⚠️ |
 
 ## 3. 数学（PHP Math + GMP + BCMath）
@@ -207,14 +207,14 @@
 | 日志 | `error_log` / `syslog` | log | ✅ |
 | 调试输出 | `var_dump` / `print_r` | vardump（vd_dump / vd_export / vd_print_r / vd_repr） | ✅ |
 | 调用栈 | `debug_backtrace` | **缺** — 无调用栈追踪 | 🚫 |
-| 错误处理器 / 错误级别 | `set_error_handler` / `error_reporting` | **缺** — 无自定义错误捕获 | ⏳ |
+| 错误处理器 / 错误级别 | `set_error_handler` / `error_reporting` | errorhandler（eh_new / eh_set_handler / eh_trigger / eh_last_error） | ✅ |
 
 ## 15. 输出与交互（PHP Output + CLI）
 
 | PHP 功能 | PHP 函数 | PuXian 现状 | 状态 |
 |---|---|---|---|
 | ANSI / 表格 / 进度条 / 模板 / CLI 参数 | — | ansi + table + progress + template + cli | ✅ |
-| 输出缓冲 | `ob_start` / `ob_get_clean` | **缺** — 无输出缓冲区 | ⏳ |
+| 输出缓冲 | `ob_start` / `ob_get_clean` | outbuf（ob_new / ob_start / ob_write / ob_get_clean / ob_end_flush） | ✅ |
 | 交互式输入 / TUI 全屏 | `readline` / PsySH | **缺** — 需 tty raw | ⏳ |
 
 ## 16. 缓存 / Session / 邮件
@@ -237,7 +237,7 @@
 | Actor / WorkerPool / 信号量 / 调度 | — | actor + workerpool + semaphore + sched | ✅ |
 | Promise / Future | — (ReactPHP / Amp) | promise（pr_new / pr_then / pr_catch / pr_all / pr_race） | ✅ |
 | 事件循环 | `Event` / `Ev` | eventloop（el_new / el_tick / el_run / el_add_task / el_add_timer） | ✅ |
-| Channel (CSP) / 协程 Fiber | `Fiber` (PHP 8.1+) | **缺** — 无 Channel/Fiber | ⏳ |
+| Channel (CSP) / 协程 Fiber | `Fiber` (PHP 8.1+) | channel（ch_new / ch_send / ch_recv / ch_try_send / ch_try_recv / ch_close） | ✅ |
 | 并行线程 | `parallel` | **缺** — 需 native | 🚫 |
 
 ## 18. 测试与开发
