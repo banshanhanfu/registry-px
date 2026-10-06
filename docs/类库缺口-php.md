@@ -1,0 +1,349 @@
+# 类库缺口·对照 PHP 生态（2026-10-06）
+
+> 以 PHP 8.x 标准库（~80 内置扩展）+ Composer 生态 Top 100 包为参照，
+> 逐一比对 PuXian 现有 **122 个 registry 库** + **368 个 native 函数** + **13 个 stdlib 模块**。
+> 已覆盖的（含 native / stdlib / registry）标 ✅，缺失的标 ⏳，需先补 native 的标 🚫。
+>
+> **PuXian 已有底座概览**：
+> - native：json / xml / regex(PCRE) / http / sqlite / AES+RSA+Ed25519+SHA+HMAC / zip / zlib / gzip
+>   / os / time / smtp / html / cookiejar / multipart / yaml / semver / lunar / url / path / strings
+>   / collections / gfx+png / img(decode+jpeg+scale) / ws(WebSocket) / quic+h3 / route / onnx
+> - registry：见 `registry/` 目录 122 库（全部 0.2.0）
+
+---
+
+## 1. 字符串处理（PHP ~60 个字符串函数）
+
+| PHP 功能 | PHP 函数 / 扩展 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| 正则匹配/替换/分割 | `preg_match` / `preg_replace` / `preg_split` | native regex (PCRE) | ✅ |
+| HTML 转义/反转义 | `htmlspecialchars` / `html_entity_decode` | native html + htmlparse | ✅ |
+| strip_tags | `strip_tags` | htmlparse 可提取纯文本 | ✅ |
+| 大小写转换 | `strtolower` / `strtoupper` / `ucfirst` / `ucwords` | strcase | ✅ |
+| slug 生成 | — | slug | ✅ |
+| 文本包裹 | `wordwrap` | textwrap | ✅ |
+| 编辑距离 | `levenshtein` | edist | ✅ |
+| 自然排序 | `natsort` | natsort | ✅ |
+| 复数化/单数化 | — | inflect | ✅ |
+| 千分位 | `number_format` | thousep + money | ✅ |
+| C 格式化字符串 | `sprintf` / `printf` / `vsprintf` | **缺** — 无 C 风格 `%d %s %.2f` 格式化 | ⏳ |
+| 字符串填充 | `str_pad` | **缺** — 无左/右/两侧填充到指定宽度 | ⏳ |
+| 字符串重复 | `str_repeat` | **缺** — 无重复 N 次（可循环拼，但高频） | ⏳ |
+| 翻译表替换 | `strtr` | **缺** — 无字符/串映射表批量替换 | ⏳ |
+| 语音算法 | `soundex` / `metaphone` | **缺** — 无语音编码（英文模糊匹配） | ⏳ |
+| 相似度百分比 | `similar_text` | **缺** — edist 有 Levenshtein，无 similar_text 递归 LCS | ⏳ |
+| 换行转 br | `nl2br` | **缺** — 无 \n→`<br>` 转换 | ⏳ |
+| 分块分割 | `chunk_split` | **缺** — 无按固定宽度+分隔符分块 | ⏳ |
+| quoted-printable | `quoted_printable_encode` / `decode` | **缺** — QP 编解码（邮件 MIME 用） | ⏳ |
+| uuencode | `convert_uuencode` / `convert_uudecode` | **缺** — uu 编解码 | ⏳ |
+| 字符编码转换 | `iconv` | **缺** — 无编码转换（GBK↔UTF-8 等） | 🚫 |
+| 编码检测 | `mb_detect_encoding` | **缺** — 无编码自动检测 | 🚫 |
+| C 类型检查 | `ctype_alpha` / `ctype_digit` … | validator 部分覆盖；**ctype_\* 全族缺** | ⏳ |
+
+## 2. 数组处理（PHP ~70 个数组函数）
+
+| PHP 功能 | PHP 函数 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| 排序 | `sort` / `asort` / `ksort` / `usort` | native sorted（无 key/comparator，PX-DEF-034） | ⚠️ |
+| 集合运算 | `array_diff` / `array_intersect` / `array_merge` | set + itertools | ✅ |
+| 计数/频率 | `array_count_values` | counter | ✅ |
+| 分块 | `array_chunk` | itertools `it_chunk` | ✅ |
+| 去重 | `array_unique` | itertools `it_unique` | ✅ |
+| 翻转键值 | `array_flip` | **缺** — 无 dict 键值翻转 | ⏳ |
+| 提取列 | `array_column` | **缺** — 无从二维数组提取指定列 | ⏳ |
+| 组合键值 | `array_combine` | **缺** — 无两数组→键值 dict | ⏳ |
+| 填充 | `array_fill` / `array_pad` | **缺** — 无定长填充 | ⏳ |
+| 随机选取 | `array_rand` | **缺** — 无随机取 N 个元素 | ⏳ |
+| 乘积 | `array_product` | **缺** — 无所有元素乘积 | ⏳ |
+| 递归替换 | `array_replace_recursive` | **缺** — 无深度递归合并 | ⏳ |
+| 多维排序 | `array_multisort` | **缺** — 无多数组联动排序 | ⏳ |
+| 打乱 | `shuffle` | **缺** — 无 Fisher-Yates 洗牌 | ⏳ |
+| 范围生成 | `range` | **缺** — 无 `range(1,10,2)` 步长序列 | ⏳ |
+| compact/extract | `compact` / `extract` | **缺** — 无变量↔数组互转 | ⏳ |
+| 回调遍历 | `array_map` / `array_filter` / `array_walk` | functools 部分；**无原生 array_map** | ⚠️ |
+
+## 3. 数学（PHP Math + GMP + BCMath）
+
+| PHP 功能 | PHP 函数 / 扩展 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| 基础数学 | `abs` / `max` / `min` / `sqrt` / `pow` / `log` / `exp` | native math | ✅ |
+| 三角函数 | `sin` / `cos` / `tan` / `asin` / `acos` / `atan2` | native math | ✅ |
+| 双曲函数 | `sinh` / `cosh` / `tanh` | **缺** — 无双曲函数 | ⏳ |
+| 取整 | `floor` / `ceil` / `round` | native | ✅ |
+| 浮点取模 | `fmod` | **缺** — 无浮点取模 | ⏳ |
+| 角度弧度 | `deg2rad` / `rad2deg` | **缺** — 无角度↔弧度转换 | ⏳ |
+| 大整数 | GMP | big（加减乘除模幂） | ✅ |
+| 任意精度小数 | BCMath | decimal | ✅ |
+| 分数 / 复数 | — | fractions + plex | ✅ |
+| 统计 | — | stats + statx + dist + metrics | ✅ |
+| 随机 | `mt_rand` / `random_int` / `random_bytes` | secure_random + dist | ✅ |
+| 数学常数 | `M_PI` / `M_E` / `M_SQRT2` … | **缺** — 无数学常数常量 | ⏳ |
+| 进制转换 | `base_convert` | **缺** — 无任意进制转换 | ⏳ |
+
+## 4. 日期与时间（PHP Date/Time + Calendar）
+
+| PHP 功能 | PHP 函数 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| 格式化/解析 | `date` / `strtotime` / `date_create` | native time + datetime | ✅ |
+| 时区 | `DateTimeZone` | tzmini（18 都市） | ✅ |
+| 间隔 | `date_diff` / `DateInterval` | datetime 有部分 | ✅ |
+| 周期迭代 | `DatePeriod` | **缺** — 无日期范围迭代器 | ⏳ |
+| 自然语言解析 | `strtotime("next Thursday")` | **缺** — 无英文相对时间解析 | ⏳ |
+| 日历 / 中国农历 / 节假日 / 调度 | — | datetime + lunar + holidays + sched | ✅ |
+
+## 5. 文件与目录（PHP Filesystem + SPL）
+
+| PHP 功能 | PHP 函数 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| 读写 / 存在 / 路径 / 遍历 / 通配 / 复制 / 临时 / 监控 | — | native + walk + glob + shutil + tempfile + fsnotify | ✅ |
+| 文件锁 | `flock` | **缺** — 需 native | 🚫 |
+| 权限操作 | `chmod` / `chown` / `chgrp` | **缺** — 需 native | 🚫 |
+| touch / 符号链接 / 磁盘空间 | `touch` / `symlink` / `disk_free_space` | **缺** — 需 native | 🚫 |
+| 文件信息对象 | `SplFileInfo` | **缺** — 无统一文件元信息对象 | ⏳ |
+
+## 6. 网络与协议（PHP Network + cURL + Stream）
+
+| PHP 功能 | PHP 函数 / 扩展 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| HTTP / HTTP3 / WebSocket / DNS / FTP / POP3 / IMAP / SMTP | — | native http + quic + ws + dns + ftp + pop3 + imap + smtp | ✅ |
+| Redis / MySQL / PostgreSQL / MongoDB / MQTT / OAuth2 | — | registry 各库 | ✅ |
+| URL 解析 / 百分号编码 | `parse_url` / `urlencode` | native url + percent | ✅ |
+| SSH / SFTP | `ssh2_*` | **缺** — 需 native 密码学 | 🚫 |
+| gRPC | — | **缺** — 需 HTTP/2（protobuf 有，HTTP/2 缺） | ⏳ |
+| SOAP | `SoapClient` / `SoapServer` | **缺** — 无 SOAP 协议 | ⏳ |
+| XML-RPC | `xmlrpc_*` | **缺** — 无 XML-RPC | ⏳ |
+| LDAP | `ldap_*` | **缺** — 无 LDAP 客户端 | ⏳ |
+| SNMP | `snmp_*` | **缺** — 无 SNMP 协议 | ⏳ |
+| NTP / Whois / Telnet | — | **缺** — 无对应客户端 | ⏳ |
+| ICMP Ping | — | netprobe TCP 探测；**ICMP raw 缺** | 🚫 |
+
+## 7. 数据库（PHP Database Extensions）
+
+| PHP 功能 | PHP 扩展 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| MySQL / PostgreSQL / SQLite / MongoDB / Redis | — | mysql + pg + native sqlite + mongodb + redis | ✅ |
+| SQL 解析 | — | sqlparse | ✅ |
+| 数据库抽象层 | `PDO`（统一接口+预编译+事务） | **缺** — 无统一 DB 抽象层 | ⏳ |
+| 查询构建器 | — (Illuminate/Database) | **缺** — 无链式 SQL 构造器 | ⏳ |
+| 迁移工具 | — (Phinx / Doctrine) | **缺** — 无 schema 迁移 | ⏳ |
+| ORM | — (Eloquent / Doctrine) | **缺** — 无对象关系映射 | ⏳ |
+| 连接池 | — | **缺** — 无 DB 连接池 | ⏳ |
+
+## 8. 图像处理（PHP GD + Imagick + EXIF）
+
+| PHP 功能 | PHP 函数 / 扩展 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| 解码 / JPEG 编码 / 缩放 / PNG | — | native img + png + gfx | ✅ |
+| 条形码 / 二维码 / PDF | — | barcode + qrcode + pdf | ✅ |
+| EXIF 元数据 | `exif_read_data` | **缺** — 无 EXIF 读取 | ⏳ |
+| 裁剪 / 旋转 / 滤镜 / 水印 / TTF 文字 | `imagecrop` / `imagerotate` … | **缺** — 需 native GD | 🚫 |
+| GIF 动画 / WebP / AVIF | — | **缺** — 需 native | 🚫 |
+| 颜色空间操作 | `imagecolorallocate` … | **缺** — 无颜色空间转换 | ⏳ |
+
+## 9. 密码与安全（PHP Crypto + Sodium + OpenSSL）
+
+| PHP 功能 | PHP 函数 / 扩展 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| AES 对称加密 | `openssl_encrypt` / `decrypt` | native aes (ECB + GCM) | ✅ |
+| RSA 非对称 | `openssl_public_encrypt` … | native rsa_encrypt / decrypt / sign / verify | ✅ |
+| Ed25519 | — (sodium) | native ed25519 | ✅ |
+| SHA / HMAC / PBKDF2 / Bcrypt | — | native + passhash + bcrypt | ✅ |
+| JWT / OAuth2 / TOTP / 证书 | — | jwt + oauth2 + totp + x509 | ✅ |
+| 随机 ID / 密码强度 / 验证码 / 校验码 | — | uuid + nanoid + ulid + snowflake + strength + pwgen + captcha + luhn + checksum | ✅ |
+| libsodium 现代加密 | `sodium_crypto_secretbox` / `box` / `sign` | **缺** — 无 libsodium 封装 | 🚫 |
+| DES / 3DES / RC4 | `openssl_encrypt("DES")` | **缺** — 无 DES/3DES/RC4 | ⏳ |
+| 恒定时间比较 | `hash_equals` | **缺** — 需 native | 🚫 |
+| 自签证书生成 | `openssl_csr_new` / `openssl_sign` | **缺** — 需 native X.509 生成 | 🚫 |
+| AES-CBC / CTR 模式 | `openssl_encrypt("AES-256-CBC")` | native 有 ECB+GCM；**CBC/CTR 缺** | ⏳ |
+
+## 10. 压缩与归档（PHP Compression）
+
+| PHP 功能 | PHP 扩展 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| zlib / gzip / ZIP / tar / LZ4 | — | native + zlib + tar + targz + lz4 | ✅ |
+| bzip2 | `bzcompress` / `bzdecompress` | **缺** — 无 BZ2 压缩 | 🚫 |
+| Zstandard / Brotli / xz / Snappy | — | **缺** — 需 native | 🚫 |
+| Phar 归档 | `Phar` | **缺** — 无 Phar 格式（PHP 专属） | ⏳ |
+
+## 11. 数据格式与序列化（PHP Encoding）
+
+| PHP 功能 | PHP 函数 / 扩展 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| JSON / XML / YAML / Base64 / Hex | — | native | ✅ |
+| CSV / INI / TOML / Properties / MsgPack / BSON / Protobuf | — | registry 各库 | ✅ |
+| HTML 解析 / Markdown / JSONPath / Base58 / Punycode / XLSX / PDF | — | registry 各库 | ✅ |
+| PHP 序列化 | `serialize` / `unserialize` | **缺** — 无 PHP 序列化格式 | ⏳ |
+| var_export | `var_export` | **缺** — 无变量导出为代码 | ⏳ |
+| DOM 全 API | `DOMDocument` / `DOMNode` | **缺** — 无完整 DOM 树操作 | ⏳ |
+| 流式 XML | `XMLReader` / `XMLWriter` | **缺** — 无流式 XML 读写 | ⏳ |
+| XSLT / XPath | `XSLTProcessor` / `DOMXPath` | **缺** — 无 XSLT/XPath | ⏳ |
+| vCard / iCalendar / RSS / Atom | — | **缺** — 无通讯录/日历/Feed 格式 | ⏳ |
+| JSON Schema | — (json-schema) | **缺** — 无 JSON Schema 验证 | ⏳ |
+| Avro / Thrift / Cap'n Proto / Pickle | — | **缺** — 无跨语言序列化 | 🚫 |
+
+## 12. 国际化与本地化（PHP i18n）
+
+| PHP 功能 | PHP 函数 / 扩展 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| 中文拼音 / 简繁 / 分词 / 数字大写 / 英文数字 | — | pinyin + hant + seg + cnnum + num2words | ✅ |
+| 节假日 / 身份证 / 假数据 | — | holidays + idcard + faker | ✅ |
+| gettext 翻译 | `gettext` / `ngettext` / `_()` | **缺** — 无 .mo/.po 文件解析+翻译 | ⏳ |
+| ICU Intl | `IntlDateFormatter` / `NumberFormatter` / `Collator` | **缺** — 无 ICU 格式化/排序 | 🚫 |
+| CLDR 复数规则 / Locale 管理 | `setlocale` / `localeconv` | **缺** — 无 CLDR/locale | ⏳ |
+| 货币转换 | — | **缺** — 无汇率数据源 | ⏳ |
+
+## 13. 进程与系统（PHP Process + pcntl + posix）
+
+| PHP 功能 | PHP 函数 / 扩展 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| 执行外部命令 / 环境变量 | `exec` / `shell_exec` / `getenv` | native | ✅ |
+| 进程信息 / fork / 信号 / POSIX | `getmypid` / `pcntl_fork` / `pcntl_signal` / `posix_*` | **缺** — 需 native | 🚫 |
+| proc_open 管道 / 共享内存 | `proc_open` / `shmop_*` | **缺** — 需 native | 🚫 |
+
+## 14. 错误与调试（PHP Error / Debug）
+
+| PHP 功能 | PHP 函数 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| 日志 | `error_log` / `syslog` | log | ✅ |
+| 调试输出 | `var_dump` / `print_r` | **缺** — 无结构化变量转储 | ⏳ |
+| 调用栈 | `debug_backtrace` | **缺** — 无调用栈追踪 | 🚫 |
+| 错误处理器 / 错误级别 | `set_error_handler` / `error_reporting` | **缺** — 无自定义错误捕获 | ⏳ |
+
+## 15. 输出与交互（PHP Output + CLI）
+
+| PHP 功能 | PHP 函数 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| ANSI / 表格 / 进度条 / 模板 / CLI 参数 | — | ansi + table + progress + template + cli | ✅ |
+| 输出缓冲 | `ob_start` / `ob_get_clean` | **缺** — 无输出缓冲区 | ⏳ |
+| 交互式输入 / TUI 全屏 | `readline` / PsySH | **缺** — 需 tty raw | ⏳ |
+
+## 16. 缓存 / Session / 邮件
+
+| PHP 功能 | PHP 扩展 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| LRU / TTL / 布隆 / 限流 / Redis | — | cache + bloom + rate + redis | ✅ |
+| Cookie 管理 | `setcookie` / `$_COOKIE` | native cookiejar | ✅ |
+| 邮件解析 / POP3 / IMAP / SMTP | — | mailparse + pop3 + imap + native smtp | ✅ |
+| Memcached | `Memcached` | **缺** — 无 Memcached 客户端 | ⏳ |
+| APCu 本地缓存 | `apcu_*` | **缺** — 需 native | 🚫 |
+| Session 管理 | `session_start` / `$_SESSION` | **缺** — 无 Session 管理 | ⏳ |
+| CSRF 令牌 | — | **缺** — 无 CSRF 生成/验证 | ⏳ |
+| MIME 邮件构造 | — (PHPMailer) | **缺** — 无 MIME 多部分邮件构造 | ⏳ |
+
+## 17. 并发与异步（PHP Parallel + Event + Fiber）
+
+| PHP 功能 | PHP 扩展 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| Actor / WorkerPool / 信号量 / 调度 | — | actor + workerpool + semaphore + sched | ✅ |
+| Promise / Future | — (ReactPHP / Amp) | **缺** — 无 Promise/Future | ⏳ |
+| 事件循环 | `Event` / `Ev` | **缺** — 无事件循环 | ⏳ |
+| Channel (CSP) / 协程 Fiber | `Fiber` (PHP 8.1+) | **缺** — 无 Channel/Fiber | ⏳ |
+| 并行线程 | `parallel` | **缺** — 需 native | 🚫 |
+
+## 18. 测试与开发
+
+| PHP 功能 | PHP 工具 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| 单测 / Mock / 基准 / 属性测试 / 假数据 | PHPUnit / Mockery / Faker | testkit + tdtest + mock + bench + quickcheck + faker | ✅ |
+| 代码覆盖率 | xdebug / pcov | **缺** — 需 native | 🚫 |
+| 快照测试 | — | **缺** — 无快照比对 | ⏳ |
+
+## 19. 数据结构与算法（PHP SPL）
+
+| PHP 功能 | PHP SPL 类 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| 栈 / 队列 / 堆 / LRU / Set / Counter / Trie / Bloom / Bitset / 图 / 区间 | — | datastruct + set + counter + trie + bloom + bitset + graph + interval | ✅ |
+| 优先队列 | `SplPriorityQueue` | datastruct 有 heap；**封装缺** | ⚠️ |
+| 双向链表 / 定长数组 | `SplDoublyLinkedList` / `SplFixedArray` | **缺** | ⏳ |
+| 跳表 / B 树 / 并查集 / 后缀数组 / 红黑树 / AVL | — | **缺** — 无高级数据结构 | ⏳ |
+
+## 20. 财务与地理（PHP 领域）
+
+| PHP 功能 | PHP 包 / 扩展 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| 货币格式化 / 百分比 / 单位换算 | — | money + percent + units | ✅ |
+| 摊销 / 利率 / 税务 | — | **缺** — 无财务计算 | ⏳ |
+| GeoIP / 大圆距离 / GeoJSON / 坐标转换 | `geoip_*` | **缺** — 无地理计算 | ⏳ |
+
+## 21. Web 安全与爬虫
+
+| PHP 功能 | PHP 函数 / 包 | PuXian 现状 | 状态 |
+|---|---|---|---|
+| 路由 / 中间件 | — | native route + middleware | ✅ |
+| 验证器 | — (Respect/Validation) | validator | ✅ |
+| HTML 清洗 | — (HTML Purifier) | **缺** — 无 HTML 消毒（XSS 防护） | ⏳ |
+| 爬虫 / 抓取 | — (Goutte / Spatie) | **缺** — 无网页爬虫框架 | ⏳ |
+| Filter 变量过滤 | `filter_var` / `filter_input` | validator 部分覆盖；**filter_var 全族缺** | ⚠️ |
+
+---
+
+## 汇总
+
+| 类别 | ✅ 已覆盖 | ⏳ 缺失（纯 .px 可行） | 🚫 需先补 native |
+|---|---|---|---|
+| 字符串 | 10 | 11 | 2 |
+| 数组 | 5 | 10 | 0 |
+| 数学 | 10 | 4 | 0 |
+| 日期时间 | 7 | 2 | 0 |
+| 文件目录 | 7 | 1 | 3 |
+| 网络协议 | 12 | 7 | 2 |
+| 数据库 | 6 | 4 | 0 |
+| 图像 | 5 | 2 | 3 |
+| 密码安全 | 10 | 3 | 3 |
+| 压缩归档 | 5 | 1 | 3 |
+| 数据格式 | 13 | 8 | 2 |
+| 国际化 | 5 | 4 | 1 |
+| 进程系统 | 2 | 0 | 3 |
+| 错误调试 | 1 | 3 | 1 |
+| 输出交互 | 5 | 2 | 0 |
+| 缓存/Session/邮件 | 7 | 4 | 1 |
+| 并发异步 | 4 | 3 | 1 |
+| 测试 | 5 | 1 | 1 |
+| 数据结构 | 11 | 3 | 0 |
+| 财务地理 | 3 | 4 | 0 |
+| Web 安全 | 3 | 2 | 0 |
+| **合计** | **117** | **79** | **26** |
+
+## 建议优先级（纯 .px 可行的 79 项）
+
+### P0 — 高频通用，几十至几百行可成
+1. **sprintf** — C 格式化字符串（`%d %s %.2f %x`），PHP/Go/Python 都有，使用频率极高
+2. **str_pad / str_repeat** — 字符串填充/重复，极简但高频
+3. **array_flip / array_column / array_combine** — dict 操作三件套
+4. **range** — 步长序列生成，`range(1,10,2)`
+5. **shuffle** — Fisher-Yates 洗牌
+6. **soundex / metaphone** — 语音编码，英文模糊匹配
+7. **similar_text** — 递归 LCS 相似度
+8. **nl2br / chunk_split** — 文本格式化小件
+9. **quoted_printable** — QP 编解码（邮件 MIME）
+10. **base_convert** — 任意进制转换
+
+### P1 — 中等复杂度，协议/格式类
+11. **PDO 抽象层** — 统一 mysql/pg/sqlite 接口
+12. **查询构建器** — 链式 SQL 构造
+13. **Memcached 客户端** — TCP + 文本协议
+14. **vCard / iCalendar** — 文本格式解析
+15. **RSS / Atom Feed** — XML 之上
+16. **JSON Schema** — JSON 结构验证
+17. **gettext (.mo/.po)** — 翻译文件解析
+18. **PHP serialize** — PHP 序列化格式
+19. **DOM API** — xml_parse 之上建完整 DOM
+20. **XPath** — XML 路径查询
+
+### P2 — 大件或需设计决策
+21. **SOAP / XML-RPC** — 协议栈
+22. **gRPC** — 需 HTTP/2
+23. **ORM** — 对象关系映射
+24. **Promise / Event Loop** — 异步模型
+25. **爬虫框架** — HTTP + 解析 + 调度
+26. **HTML 清洗** — XSS 防护
+27. **Session 管理** — 状态管理
+28. **MIME 邮件构造** — 多部分邮件
+29. **GeoIP / 坐标转换** — 地理计算
+30. **财务计算** — 摊销/利率/税务
+
+---
+
+## 实施记录
+
+- 2026-10-06：建档（对照 PHP 8.x 标准库 + Composer 生态 Top 100，逐项比对 122 registry + 368 native + 13 stdlib）。
