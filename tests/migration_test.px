@@ -1,0 +1,32 @@
+# migration 0.1.0 测试
+import "../registry/migration/0.1.0/migration.px"
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+def main():
+    var m = mig_new()
+    mig_add(m, 1, "create_users", "CREATE TABLE users (id INT);", "DROP TABLE users;")
+    mig_add(m, 2, "add_email", "ALTER TABLE users ADD email TEXT;", "ALTER TABLE users DROP email;")
+    mig_add(m, 3, "add_index", "CREATE INDEX idx_email ON users(email);", "DROP INDEX idx_email;")
+    expect(mig_count(m) == 3, "3 migrations")
+    # pending (none applied)
+    var pending = mig_get_pending(m, [])
+    expect(len(pending) == 3, "3 pending")
+    # pending (1 applied)
+    var pending2 = mig_get_pending(m, [1])
+    expect(len(pending2) == 2, "2 pending: " + str(len(pending2)))
+    # up plan
+    var plan = mig_plan_up(m, [1])
+    expect(len(plan) == 2, "plan 2")
+    expect(plan[0]["version"] == 2, "plan first version 2")
+    expect(plan[0]["sql"].find("ALTER TABLE") >= 0, "plan up sql")
+    # down plan
+    var rollback = mig_plan_rollback(m, 1, [1, 2, 3])
+    expect(len(rollback) == 2, "rollback 2")
+    expect(rollback[0]["version"] == 3, "rollback first version 3")
+    expect(rollback[0]["sql"].find("DROP INDEX") >= 0, "rollback down sql")
+    # get sql
+    expect(mig_get_up_sql(m, 1).find("CREATE TABLE") >= 0, "up sql")
+    expect(mig_get_down_sql(m, 1).find("DROP TABLE") >= 0, "down sql")
+    print("migration: PASS")

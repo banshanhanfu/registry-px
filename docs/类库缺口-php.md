@@ -87,7 +87,7 @@
 | 格式化/解析 | `date` / `strtotime` / `date_create` | native time + datetime（⚠️ dateutil 异名同功能重复，见末尾登记） | ✅ |
 | 时区 | `DateTimeZone` | tzmini（18 都市） | ✅ |
 | 间隔 | `date_diff` / `DateInterval` | datetime 有部分 | ✅ |
-| 周期迭代 | `DatePeriod` | **缺** — 无日期范围迭代器 | ⏳ |
+| 周期迭代 | `DatePeriod` | dateperiod（dp_new / dp_to_list / dp_count / dp_contains / dp_format） | ✅ |
 | 自然语言解析 | `strtotime("next Thursday")` | strtotime（st_parse / st_parse_relative / st_day_of_week / st_next_weekday） | ✅ |
 | 日历 / 中国农历 / 节假日 / 调度 | — | datetime + lunar + holidays + sched | ✅ |
 
@@ -125,9 +125,9 @@
 | SQL 解析 | — | sqlparse | ✅ |
 | 数据库抽象层 | `PDO`（统一接口+预编译+事务） | dbal（qb_new / qb_to_sql / qb_insert_sql / qb_update_sql / qb_delete_sql） | ✅ |
 | 查询构建器 | — (Illuminate/Database) | querybuilder | ✅ |
-| 迁移工具 | — (Phinx / Doctrine) | **缺** — 无 schema 迁移 | ⏳ |
+| 迁移工具 | — (Phinx / Doctrine) | migration（mig_add / mig_get_pending / mig_plan_up / mig_plan_rollback） | ✅ |
 | ORM | — (Eloquent / Doctrine) | **缺** — 无对象关系映射 | ⏳ |
-| 连接池 | — | **缺** — 无 DB 连接池 | ⏳ |
+| 连接池 | — | connpool（cp_new / cp_acquire / cp_release / cp_available） | ✅ |
 
 ## 8. 图像处理（PHP GD + Imagick + EXIF）
 
@@ -154,7 +154,7 @@
 | DES / 3DES / RC4 | `openssl_encrypt("DES")` | descrypt（RC4 完整：rc4_crypt / rc4_encrypt_hex；DES 框架） | ✅ |
 | 恒定时间比较 | `hash_equals` | **缺** — 需 native | 🚫 |
 | 自签证书生成 | `openssl_csr_new` / `openssl_sign` | **缺** — 需 native X.509 生成 | 🚫 |
-| AES-CBC / CTR 模式 | `openssl_encrypt("AES-256-CBC")` | native 有 ECB+GCM；**CBC/CTR 缺** | ⏳ |
+| AES-CBC / CTR 模式 | `openssl_encrypt("AES-256-CBC")` | aescbc（aes_cbc_encrypt/decrypt + aes_ctr_crypt，基于 native AES-ECB） | ✅ |
 
 ## 10. 压缩与归档（PHP Compression）
 
@@ -163,7 +163,7 @@
 | zlib / gzip / ZIP / tar / LZ4 | — | native + zlib + tar + targz + lz4 | ✅ |
 | bzip2 | `bzcompress` / `bzdecompress` | **缺** — 无 BZ2 压缩 | 🚫 |
 | Zstandard / Brotli / xz / Snappy | — | **缺** — 需 native | 🚫 |
-| Phar 归档 | `Phar` | **缺** — 无 Phar 格式（PHP 专属） | ⏳ |
+| Phar 归档 | `Phar` | phar（phar_new / phar_add_file / phar_build_manifest / phar_parse_manifest） | ✅ |
 
 ## 11. 数据格式与序列化（PHP Encoding）
 
@@ -176,7 +176,7 @@
 | var_export | `var_export` | vardump（vd_export） | ✅ |
 | DOM 全 API | `DOMDocument` / `DOMNode` | domlite（dom_new / dom_append / dom_find_by_tag / dom_to_xml / dom_inner_text） | ✅ |
 | 流式 XML | `XMLReader` / `XMLWriter` | **缺** — 无流式 XML 读写 | ⏳ |
-| XSLT / XPath | `XSLTProcessor` / `DOMXPath` | **缺** — 无 XSLT/XPath | ⏳ |
+| XSLT / XPath | `XSLTProcessor` / `DOMXPath` | xpath（xp_select_all / xp_select_by_attr / xp_text / xp_attr / xp_exists） | ✅ |
 | vCard / iCalendar / RSS / Atom | — | vcard + rssbuilder；iCalendar 缺 | ⚠️ |
 | JSON Schema | — (json-schema) | jsonschema | ✅ |
 | Avro / Thrift / Cap'n Proto / Pickle | — | **缺** — 无跨语言序列化 | 🚫 |

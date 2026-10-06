@@ -1,0 +1,21 @@
+# dateperiod 0.1.0 测试
+import "../registry/dateperiod/0.1.0/dateperiod.px"
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+def main():
+    var dp = dp_new(1000, 5000, 1000)
+    var lst = dp_to_list(dp)
+    expect(lst == [1000, 2000, 3000, 4000, 5000], "list: " + str(lst))
+    expect(dp_count(dp) == 5, "count 5")
+    expect(dp_contains(dp, 3000) == true, "contains 3000")
+    expect(dp_contains(dp, 3500) == false, "not contains 3500")
+    expect(dp_contains(dp, 6000) == false, "not contains 6000 (out of range)")
+    # days
+    var dpd = dp_days(0, 2 * 86400)
+    expect(dp_count(dpd) == 3, "3 days: " + str(dp_count(dpd)))
+    # hours
+    var dph = dp_hours(0, 5 * 3600)
+    expect(dp_count(dph) == 6, "6 hours: " + str(dp_count(dph)))
+    print("dateperiod: PASS")

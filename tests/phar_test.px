@@ -1,0 +1,27 @@
+# phar 0.1.0 测试
+import "../registry/phar/0.1.0/phar.px"
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+def main():
+    var p = phar_new("app.phar")
+    phar_add_file(p, "index.php", "<?php echo 'hello';")
+    phar_add_file(p, "config.php", "<?php return [];")
+    expect(phar_file_count(p) == 2, "2 files")
+    expect(phar_get_file(p, "index.php") == "<?php echo 'hello';", "get index.php")
+    expect(phar_get_file(p, "missing.php") == null, "get missing")
+    var files = phar_list_files(p)
+    expect(len(files) == 2, "list 2 files")
+    # stub
+    phar_set_stub(p, "<?php __HALT_COMPILER();")
+    expect(phar_get_stub(p) == "<?php __HALT_COMPILER();", "stub")
+    # manifest
+    var m = phar_build_manifest(p)
+    expect(m.find("index.php") >= 0, "manifest has index.php")
+    expect(m.find("config.php") >= 0, "manifest has config.php")
+    # parse manifest
+    var parsed = phar_parse_manifest(m)
+    expect(parsed.has("index.php"), "parsed has index.php")
+    expect(parsed.has("config.php"), "parsed has config.php")
+    print("phar: PASS")
