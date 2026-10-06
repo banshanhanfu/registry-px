@@ -226,7 +226,7 @@
 | 邮件解析 / POP3 / IMAP / SMTP | — | mailparse + pop3 + imap + native smtp | ✅ |
 | Memcached | `Memcached` | **缺** — 无 Memcached 客户端 | ⏳ |
 | APCu 本地缓存 | `apcu_*` | **缺** — 需 native | 🚫 |
-| Session 管理 | `session_start` / `$_SESSION` | **缺** — 无 Session 管理 | ⏳ |
+| Session 管理 | `session_start` / `$_SESSION` | session（ss_start / ss_get / ss_set / ss_destroy / ss_gc / ss_regenerate） | ✅ |
 | CSRF 令牌 | — | csrf（csrf_generate / csrf_verify 恒定时间比较 / HTML 标签生成） | ✅ |
 | MIME 邮件构造 | — (PHPMailer) | mimebuilder | ✅ |
 
@@ -235,8 +235,8 @@
 | PHP 功能 | PHP 扩展 | PuXian 现状 | 状态 |
 |---|---|---|---|
 | Actor / WorkerPool / 信号量 / 调度 | — | actor + workerpool + semaphore + sched | ✅ |
-| Promise / Future | — (ReactPHP / Amp) | **缺** — 无 Promise/Future | ⏳ |
-| 事件循环 | `Event` / `Ev` | **缺** — 无事件循环 | ⏳ |
+| Promise / Future | — (ReactPHP / Amp) | promise（pr_new / pr_then / pr_catch / pr_all / pr_race） | ✅ |
+| 事件循环 | `Event` / `Ev` | eventloop（el_new / el_tick / el_run / el_add_task / el_add_timer） | ✅ |
 | Channel (CSP) / 协程 Fiber | `Fiber` (PHP 8.1+) | **缺** — 无 Channel/Fiber | ⏳ |
 | 并行线程 | `parallel` | **缺** — 需 native | 🚫 |
 
