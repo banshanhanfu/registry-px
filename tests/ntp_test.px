@@ -1,0 +1,37 @@
+# ntp 0.1.0 测试
+import "../registry/ntp/0.1.0/ntp.px"
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+def main():
+    var pkt = ntp_build_request()
+    expect(len(pkt) == 48, "packet len: " + str(len(pkt)))
+    expect(pkt[0] == 0x1B, "first byte: " + str(pkt[0]))
+    # parse a fake response
+    var resp_data = []
+    var i = 0
+    while i < 48:
+        resp_data.append(0)
+        i += 1
+    resp_data[0] = 0x24  # LI=0, VN=4, Mode=4 (server)
+    resp_data[1] = 1     # Stratum=1
+    # Set transmit timestamp
+    var tx_secs = 3918720000  # some NTP timestamp
+    resp_data[40] = (tx_secs >> 24) & 0xFF
+    resp_data[41] = (tx_secs >> 16) & 0xFF
+    resp_data[42] = (tx_secs >> 8) & 0xFF
+    resp_data[43] = tx_secs & 0xFF
+    var rx_secs = 3918720005
+    resp_data[32] = (rx_secs >> 24) & 0xFF
+    resp_data[33] = (rx_secs >> 16) & 0xFF
+    resp_data[34] = (rx_secs >> 8) & 0xFF
+    resp_data[35] = rx_secs & 0xFF
+    var resp = ntp_parse_response(resp_data)
+    expect(resp["vn"] == 4, "version: " + str(resp["vn"]))
+    expect(resp["mode"] == 4, "mode: " + str(resp["mode"]))
+    expect(resp["stratum"] == 1, "stratum: " + str(resp["stratum"]))
+    # NTP to Unix
+    var unix_ts = ntp_to_unix([tx_secs, 0])
+    expect(unix_ts > 0, "unix ts: " + str(unix_ts))
+    print("ntp: PASS")
