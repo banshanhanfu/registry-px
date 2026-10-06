@@ -26,19 +26,19 @@
 | 自然排序 | `natsort` | natsort | ✅ |
 | 复数化/单数化 | — | inflect | ✅ |
 | 千分位 | `number_format` | thousep + money | ✅ |
-| C 格式化字符串 | `sprintf` / `printf` / `vsprintf` | **缺** — 无 C 风格 `%d %s %.2f` 格式化 | ⏳ |
-| 字符串填充 | `str_pad` | **缺** — 无左/右/两侧填充到指定宽度 | ⏳ |
-| 字符串重复 | `str_repeat` | **缺** — 无重复 N 次（可循环拼，但高频） | ⏳ |
-| 翻译表替换 | `strtr` | **缺** — 无字符/串映射表批量替换 | ⏳ |
-| 语音算法 | `soundex` / `metaphone` | **缺** — 无语音编码（英文模糊匹配） | ⏳ |
-| 相似度百分比 | `similar_text` | **缺** — edist 有 Levenshtein，无 similar_text 递归 LCS | ⏳ |
-| 换行转 br | `nl2br` | **缺** — 无 \n→`<br>` 转换 | ⏳ |
-| 分块分割 | `chunk_split` | **缺** — 无按固定宽度+分隔符分块 | ⏳ |
-| quoted-printable | `quoted_printable_encode` / `decode` | **缺** — QP 编解码（邮件 MIME 用） | ⏳ |
+| C 格式化字符串 | `sprintf` / `printf` / `vsprintf` | sprintf | ✅ |
+| 字符串填充 | `str_pad` | strpad（sp_pad / sp_pad_left / sp_pad_right / sp_pad_both） | ✅ |
+| 字符串重复 | `str_repeat` | strpad（sp_repeat / sp_truncate / sp_zeropad） | ✅ |
+| 翻译表替换 | `strtr` | textfmt（tf_strtr / tf_strtr_table） | ✅ |
+| 语音算法 | `soundex` / `metaphone` | phonetic（ph_soundex / ph_metaphone / ph_nysiis） | ✅ |
+| 相似度百分比 | `similar_text` | simtext（st_similar 递归 LCS） | ✅ |
+| 换行转 br | `nl2br` | textfmt（tf_nl2br / tf_nl2br_xhtml） | ✅ |
+| 分块分割 | `chunk_split` | textfmt（tf_chunk_split） | ✅ |
+| quoted-printable | `quoted_printable_encode` / `decode` | textfmt（tf_qp_encode / tf_qp_decode） | ✅ |
 | uuencode | `convert_uuencode` / `convert_uudecode` | **缺** — uu 编解码 | ⏳ |
 | 字符编码转换 | `iconv` | **缺** — 无编码转换（GBK↔UTF-8 等） | 🚫 |
 | 编码检测 | `mb_detect_encoding` | **缺** — 无编码自动检测 | 🚫 |
-| C 类型检查 | `ctype_alpha` / `ctype_digit` … | validator 部分覆盖；**ctype_\* 全族缺** | ⏳ |
+| C 类型检查 | `ctype_alpha` / `ctype_digit` … | ctype（ct_is_alpha / ct_is_digit / ct_is_alnum / ct_is_upper / ct_is_lower / ct_is_space / ct_is_punct / ct_is_xdigit） | ✅ |
 
 ## 2. 数组处理（PHP ~70 个数组函数）
 
@@ -49,16 +49,16 @@
 | 计数/频率 | `array_count_values` | counter | ✅ |
 | 分块 | `array_chunk` | itertools `it_chunk` | ✅ |
 | 去重 | `array_unique` | itertools `it_unique` | ✅ |
-| 翻转键值 | `array_flip` | **缺** — 无 dict 键值翻转 | ⏳ |
-| 提取列 | `array_column` | **缺** — 无从二维数组提取指定列 | ⏳ |
-| 组合键值 | `array_combine` | **缺** — 无两数组→键值 dict | ⏳ |
-| 填充 | `array_fill` / `array_pad` | **缺** — 无定长填充 | ⏳ |
-| 随机选取 | `array_rand` | **缺** — 无随机取 N 个元素 | ⏳ |
-| 乘积 | `array_product` | **缺** — 无所有元素乘积 | ⏳ |
+| 翻转键值 | `array_flip` | arrutil（arr_flip） | ✅ |
+| 提取列 | `array_column` | arrutil（arr_column） | ✅ |
+| 组合键值 | `array_combine` | arrutil（arr_combine） | ✅ |
+| 填充 | `array_fill` / `array_pad` | arrutil（arr_fill）；array_pad 缺 | ⚠️ |
+| 随机选取 | `array_rand` | arrutil（arr_rand） | ✅ |
+| 乘积 | `array_product` | arrutil（arr_product） | ✅ |
 | 递归替换 | `array_replace_recursive` | **缺** — 无深度递归合并 | ⏳ |
 | 多维排序 | `array_multisort` | **缺** — 无多数组联动排序 | ⏳ |
-| 打乱 | `shuffle` | **缺** — 无 Fisher-Yates 洗牌 | ⏳ |
-| 范围生成 | `range` | **缺** — 无 `range(1,10,2)` 步长序列 | ⏳ |
+| 打乱 | `shuffle` | arrutil（arr_shuffle_copy） | ✅ |
+| 范围生成 | `range` | arrutil（arr_range） | ✅ |
 | compact/extract | `compact` / `extract` | **缺** — 无变量↔数组互转 | ⏳ |
 | 回调遍历 | `array_map` / `array_filter` / `array_walk` | functools 部分；**无原生 array_map** | ⚠️ |
 
@@ -78,7 +78,7 @@
 | 统计 | — | stats + statx + dist + metrics（⚠️ stats 与 statx 的 mean/median/var/stddev 重复，见末尾登记） | ✅ |
 | 随机 | `mt_rand` / `random_int` / `random_bytes` | secure_random + dist | ✅ |
 | 数学常数 | `M_PI` / `M_E` / `M_SQRT2` … | **缺** — 无数学常数常量 | ⏳ |
-| 进制转换 | `base_convert` | **缺** — 无任意进制转换 | ⏳ |
+| 进制转换 | `base_convert` | numconv（nc_base_convert） | ✅ |
 
 ## 4. 日期与时间（PHP Date/Time + Calendar）
 
@@ -124,7 +124,7 @@
 | MySQL / PostgreSQL / SQLite / MongoDB / Redis | — | mysql + pg + native sqlite + mongodb + redis | ✅ |
 | SQL 解析 | — | sqlparse | ✅ |
 | 数据库抽象层 | `PDO`（统一接口+预编译+事务） | **缺** — 无统一 DB 抽象层 | ⏳ |
-| 查询构建器 | — (Illuminate/Database) | **缺** — 无链式 SQL 构造器 | ⏳ |
+| 查询构建器 | — (Illuminate/Database) | querybuilder | ✅ |
 | 迁移工具 | — (Phinx / Doctrine) | **缺** — 无 schema 迁移 | ⏳ |
 | ORM | — (Eloquent / Doctrine) | **缺** — 无对象关系映射 | ⏳ |
 | 连接池 | — | **缺** — 无 DB 连接池 | ⏳ |
@@ -138,7 +138,7 @@
 | EXIF 元数据 | `exif_read_data` | **缺** — 无 EXIF 读取 | ⏳ |
 | 裁剪 / 旋转 / 滤镜 / 水印 / TTF 文字 | `imagecrop` / `imagerotate` … | **缺** — 需 native GD | 🚫 |
 | GIF 动画 / WebP / AVIF | — | **缺** — 需 native | 🚫 |
-| 颜色空间操作 | `imagecolorallocate` … | **缺** — 无颜色空间转换 | ⏳ |
+| 颜色空间操作 | `imagecolorallocate` … | colorutil（hex↔RGB）；HSL/HSV 缺 | ⚠️ |
 
 ## 9. 密码与安全（PHP Crypto + Sodium + OpenSSL）
 
@@ -172,13 +172,13 @@
 | JSON / XML / YAML / Base64 / Hex | — | native | ✅ |
 | CSV / INI / TOML / Properties / MsgPack / BSON / Protobuf | — | registry 各库（⚠️ csv 与 csvutil 异名同功能重复，见末尾登记） | ✅ |
 | HTML 解析 / Markdown / JSONPath / Base58 / Punycode / XLSX / PDF | — | registry 各库 | ✅ |
-| PHP 序列化 | `serialize` / `unserialize` | **缺** — 无 PHP 序列化格式 | ⏳ |
+| PHP 序列化 | `serialize` / `unserialize` | phpser | ✅ |
 | var_export | `var_export` | **缺** — 无变量导出为代码 | ⏳ |
 | DOM 全 API | `DOMDocument` / `DOMNode` | **缺** — 无完整 DOM 树操作 | ⏳ |
 | 流式 XML | `XMLReader` / `XMLWriter` | **缺** — 无流式 XML 读写 | ⏳ |
 | XSLT / XPath | `XSLTProcessor` / `DOMXPath` | **缺** — 无 XSLT/XPath | ⏳ |
-| vCard / iCalendar / RSS / Atom | — | **缺** — 无通讯录/日历/Feed 格式 | ⏳ |
-| JSON Schema | — (json-schema) | **缺** — 无 JSON Schema 验证 | ⏳ |
+| vCard / iCalendar / RSS / Atom | — | vcard + rssbuilder；iCalendar 缺 | ⚠️ |
+| JSON Schema | — (json-schema) | jsonschema | ✅ |
 | Avro / Thrift / Cap'n Proto / Pickle | — | **缺** — 无跨语言序列化 | 🚫 |
 
 ## 12. 国际化与本地化（PHP i18n）
@@ -187,7 +187,7 @@
 |---|---|---|---|
 | 中文拼音 / 简繁 / 分词 / 数字大写 / 英文数字 | — | pinyin + hant + seg + cnnum + num2words（⚠️ numconv 的 nc_dec2words 与 num2words 轻微重复，见末尾登记） | ✅ |
 | 节假日 / 身份证 / 假数据 | — | holidays + idcard + faker | ✅ |
-| gettext 翻译 | `gettext` / `ngettext` / `_()` | **缺** — 无 .mo/.po 文件解析+翻译 | ⏳ |
+| gettext 翻译 | `gettext` / `ngettext` / `_()` | gettext（gt_parse_po / gt_build_po / gt_get_translation） | ✅ |
 | ICU Intl | `IntlDateFormatter` / `NumberFormatter` / `Collator` | **缺** — 无 ICU 格式化/排序 | 🚫 |
 | CLDR 复数规则 / Locale 管理 | `setlocale` / `localeconv` | **缺** — 无 CLDR/locale | ⏳ |
 | 货币转换 | — | **缺** — 无汇率数据源 | ⏳ |
@@ -228,7 +228,7 @@
 | APCu 本地缓存 | `apcu_*` | **缺** — 需 native | 🚫 |
 | Session 管理 | `session_start` / `$_SESSION` | **缺** — 无 Session 管理 | ⏳ |
 | CSRF 令牌 | — | **缺** — 无 CSRF 生成/验证 | ⏳ |
-| MIME 邮件构造 | — (PHPMailer) | **缺** — 无 MIME 多部分邮件构造 | ⏳ |
+| MIME 邮件构造 | — (PHPMailer) | mimebuilder | ✅ |
 
 ## 17. 并发与异步（PHP Parallel + Event + Fiber）
 
@@ -262,8 +262,8 @@
 | PHP 功能 | PHP 包 / 扩展 | PuXian 现状 | 状态 |
 |---|---|---|---|
 | 货币格式化 / 百分比 / 单位换算 | — | money + percent + units | ✅ |
-| 摊销 / 利率 / 税务 | — | **缺** — 无财务计算 | ⏳ |
-| GeoIP / 大圆距离 / GeoJSON / 坐标转换 | `geoip_*` | **缺** — 无地理计算 | ⏳ |
+| 摊销 / 利率 / 税务 | — | finance（fin_pmt / fin_pv / fin_fv / fin_amortize / fin_simple_interest / fin_compound_interest） | ✅ |
+| GeoIP / 大圆距离 / GeoJSON / 坐标转换 | `geoip_*` | geo（geo_haversine / geo_bearing / geo_wgs84_to_gcj02）；GeoIP 库/GeoJSON 缺 | ⚠️ |
 
 ## 21. Web 安全与爬虫
 
@@ -271,7 +271,7 @@
 |---|---|---|---|
 | 路由 / 中间件 | — | native route + middleware | ✅ |
 | 验证器 | — (Respect/Validation) | validator | ✅ |
-| HTML 清洗 | — (HTML Purifier) | **缺** — 无 HTML 消毒（XSS 防护） | ⏳ |
+| HTML 清洗 | — (HTML Purifier) | htmlsanitizer | ✅ |
 | 爬虫 / 抓取 | — (Goutte / Spatie) | **缺** — 无网页爬虫框架 | ⏳ |
 | Filter 变量过滤 | `filter_var` / `filter_input` | validator 部分覆盖；**filter_var 全族缺** | ⚠️ |
 
