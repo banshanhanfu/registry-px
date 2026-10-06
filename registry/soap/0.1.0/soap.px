@@ -1,0 +1,54 @@
+# soap.px — SOAP 协议构造/解析（纯函数）
+# 版本: 0.1.0
+def soap_build_envelope(body_xml, header_xml):
+    var env = "<?xml version=\"1.0\"?>"
+    env = env + "<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">"
+    if header_xml != "":
+        env = env + "<soap:Header>" + header_xml + "</soap:Header>"
+    env = env + "<soap:Body>" + body_xml + "</soap:Body>"
+    env = env + "</soap:Envelope>"
+    return env
+def soap_build_request(method, params, namespace):
+    var body = "<ns:" + method + " xmlns:ns=\"" + namespace + "\">"
+    var ks = params.keys()
+    var i = 0
+    while i < len(ks):
+        body = body + "<ns:" + ks[i] + ">" + str(params[ks[i]]) + "</ns:" + ks[i] + ">"
+        i += 1
+    body = body + "</ns:" + method + ">"
+    return soap_build_envelope(body, "")
+def soap_extract_body(envelope):
+    var start = envelope.find("<soap:Body>")
+    if start < 0:
+        start = envelope.find("<Body>")
+        if start < 0:
+            return ""
+        start += 6
+    else:
+        start += 11
+    var end = envelope.find("</soap:Body>")
+    if end < 0:
+        end = envelope.find("</Body>")
+    if end < 0:
+        return ""
+    return envelope[start:end]
+def soap_extract_fault(envelope):
+    var body = soap_extract_body(envelope)
+    var fault_start = body.find("<Fault>")
+    if fault_start < 0:
+        return null
+    fault_start += 7
+    var fault_end = body.find("</Fault>")
+    if fault_end < 0:
+        return null
+    var fault_xml = body[fault_start:fault_end]
+    var result = {}
+    var fc = fault_xml.find("<faultcode>")
+    if fc >= 0:
+        var fc_end = fault_xml.find("</faultcode>")
+        result.set("code", fault_xml[fc + 11:fc_end])
+    var fs = fault_xml.find("<faultstring>")
+    if fs >= 0:
+        var fs_end = fault_xml.find("</faultstring>")
+        result.set("string", fault_xml[fs + 13:fs_end])
+    return result

@@ -1,0 +1,30 @@
+# descrypt 0.1.0 测试
+import "../registry/descrypt/0.1.0/descrypt.px"
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+def main():
+    # RC4
+    var key = [1, 2, 3, 4, 5]
+    var data = [0x48, 0x65, 0x6C, 0x6C, 0x6F]  # "Hello"
+    var enc = rc4_crypt(key, data)
+    expect(len(enc) == 5, "rc4 enc len: " + str(len(enc)))
+    # decrypt = encrypt again (RC4 is symmetric)
+    var dec = rc4_crypt(key, enc)
+    expect(dec == data, "rc4 decrypt: " + str(dec))
+    # hex interface
+    var hex_enc = rc4_encrypt_hex("0102030405", "48656c6c6f")
+    expect(hex_enc.len() == 10, "hex enc len: " + str(hex_enc.len()))
+    # hex utils
+    var bytes = _ds_hex_to_bytes("48656c6c6f")
+    expect(bytes == [72, 101, 108, 108, 111], "hex to bytes: " + str(bytes))
+    var hex = _ds_bytes_to_hex([72, 101, 108, 108, 111])
+    expect(hex == "48656c6c6f", "bytes to hex: " + hex)
+    # empty
+    var empty_enc = rc4_crypt(key, [])
+    expect(len(empty_enc) == 0, "rc4 empty")
+    # permute
+    var p = des_permute([1, 2, 3, 4], [3, 1, 4, 2])
+    expect(p == [3, 1, 4, 2], "permute: " + str(p))
+    print("descrypt: PASS")

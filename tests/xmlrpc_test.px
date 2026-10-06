@@ -1,0 +1,28 @@
+# xmlrpc 0.1.0 测试
+import "../registry/xmlrpc/0.1.0/xmlrpc.px"
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+def main():
+    var req = xr_build_request("examples.getStateName", [41])
+    expect(req.find("examples.getStateName") >= 0, "has method")
+    expect(req.find("<int>41</int>") >= 0, "has int param")
+    # response
+    var resp = xr_build_response("Tennessee")
+    expect(resp.find("Tennessee") >= 0, "response has value")
+    expect(resp.find("<methodResponse>") >= 0, "has methodResponse")
+    # fault
+    var fault = xr_build_fault(404, "Not found")
+    expect(fault.find("404") >= 0, "fault has code")
+    expect(fault.find("Not found") >= 0, "fault has msg")
+    # extract method
+    var m = xr_extract_method(req)
+    expect(m == "examples.getStateName", "extract method: " + m)
+    # encode values
+    expect(xr_encode_value(42).find("<int>42</int>") >= 0, "encode int")
+    expect(xr_encode_value("hello").find("hello") >= 0, "encode string")
+    expect(xr_encode_value(true).find("<boolean>1</boolean>") >= 0, "encode bool true")
+    expect(xr_encode_value([1, 2]).find("<array>") >= 0, "encode list")
+    expect(xr_encode_value({"a": 1}).find("<struct>") >= 0, "encode dict")
+    print("xmlrpc: PASS")

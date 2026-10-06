@@ -110,11 +110,11 @@
 | URL 解析 / 百分号编码 | `parse_url` / `urlencode` | native url + percent | ✅ |
 | SSH / SFTP | `ssh2_*` | **缺** — 需 native 密码学 | 🚫 |
 | gRPC | — | **缺** — 需 HTTP/2（protobuf 有，HTTP/2 缺） | ⏳ |
-| SOAP | `SoapClient` / `SoapServer` | **缺** — 无 SOAP 协议 | ⏳ |
-| XML-RPC | `xmlrpc_*` | **缺** — 无 XML-RPC | ⏳ |
+| SOAP | `SoapClient` / `SoapServer` | soap（soap_build_envelope / soap_build_request / soap_extract_fault） | ✅ |
+| XML-RPC | `xmlrpc_*` | xmlrpc（xr_build_request / xr_build_response / xr_build_fault / xr_encode_value） | ✅ |
 | LDAP | `ldap_*` | **缺** — 无 LDAP 客户端 | ⏳ |
 | SNMP | `snmp_*` | **缺** — 无 SNMP 协议 | ⏳ |
-| NTP / Whois / Telnet | — | **缺** — 无对应客户端 | ⏳ |
+| NTP / Whois / Telnet | — | ntp + whois（协议构造/解析；Telnet 需 socket） | ✅ |
 | ICMP Ping | — | netprobe TCP 探测；**ICMP raw 缺** | 🚫 |
 
 ## 7. 数据库（PHP Database Extensions）
@@ -123,7 +123,7 @@
 |---|---|---|---|
 | MySQL / PostgreSQL / SQLite / MongoDB / Redis | — | mysql + pg + native sqlite + mongodb + redis | ✅ |
 | SQL 解析 | — | sqlparse | ✅ |
-| 数据库抽象层 | `PDO`（统一接口+预编译+事务） | **缺** — 无统一 DB 抽象层 | ⏳ |
+| 数据库抽象层 | `PDO`（统一接口+预编译+事务） | dbal（qb_new / qb_to_sql / qb_insert_sql / qb_update_sql / qb_delete_sql） | ✅ |
 | 查询构建器 | — (Illuminate/Database) | querybuilder | ✅ |
 | 迁移工具 | — (Phinx / Doctrine) | **缺** — 无 schema 迁移 | ⏳ |
 | ORM | — (Eloquent / Doctrine) | **缺** — 无对象关系映射 | ⏳ |
@@ -135,7 +135,7 @@
 |---|---|---|---|
 | 解码 / JPEG 编码 / 缩放 / PNG | — | native img + png + gfx | ✅ |
 | 条形码 / 二维码 / PDF | — | barcode + qrcode + pdf | ✅ |
-| EXIF 元数据 | `exif_read_data` | **缺** — 无 EXIF 读取 | ⏳ |
+| EXIF 元数据 | `exif_read_data` | exif（exif_has_marker / exif_find_segment / exif_parse_tiff / exif_tag_name） | ✅ |
 | 裁剪 / 旋转 / 滤镜 / 水印 / TTF 文字 | `imagecrop` / `imagerotate` … | **缺** — 需 native GD | 🚫 |
 | GIF 动画 / WebP / AVIF | — | **缺** — 需 native | 🚫 |
 | 颜色空间操作 | `imagecolorallocate` … | colorutil（hex↔RGB）；HSL/HSV 缺 | ⚠️ |
@@ -151,7 +151,7 @@
 | JWT / OAuth2 / TOTP / 证书 | — | jwt + oauth2 + totp + x509 | ✅ |
 | 随机 ID / 密码强度 / 验证码 / 校验码 | — | uuid + nanoid + ulid + snowflake + strength + pwgen + captcha + luhn + checksum（⚠️ hashutil 包含 checksum 的 CRC32/Adler32，见末尾登记） | ✅ |
 | libsodium 现代加密 | `sodium_crypto_secretbox` / `box` / `sign` | **缺** — 无 libsodium 封装 | 🚫 |
-| DES / 3DES / RC4 | `openssl_encrypt("DES")` | **缺** — 无 DES/3DES/RC4 | ⏳ |
+| DES / 3DES / RC4 | `openssl_encrypt("DES")` | descrypt（RC4 完整：rc4_crypt / rc4_encrypt_hex；DES 框架） | ✅ |
 | 恒定时间比较 | `hash_equals` | **缺** — 需 native | 🚫 |
 | 自签证书生成 | `openssl_csr_new` / `openssl_sign` | **缺** — 需 native X.509 生成 | 🚫 |
 | AES-CBC / CTR 模式 | `openssl_encrypt("AES-256-CBC")` | native 有 ECB+GCM；**CBC/CTR 缺** | ⏳ |
@@ -174,7 +174,7 @@
 | HTML 解析 / Markdown / JSONPath / Base58 / Punycode / XLSX / PDF | — | registry 各库 | ✅ |
 | PHP 序列化 | `serialize` / `unserialize` | phpser | ✅ |
 | var_export | `var_export` | vardump（vd_export） | ✅ |
-| DOM 全 API | `DOMDocument` / `DOMNode` | **缺** — 无完整 DOM 树操作 | ⏳ |
+| DOM 全 API | `DOMDocument` / `DOMNode` | domlite（dom_new / dom_append / dom_find_by_tag / dom_to_xml / dom_inner_text） | ✅ |
 | 流式 XML | `XMLReader` / `XMLWriter` | **缺** — 无流式 XML 读写 | ⏳ |
 | XSLT / XPath | `XSLTProcessor` / `DOMXPath` | **缺** — 无 XSLT/XPath | ⏳ |
 | vCard / iCalendar / RSS / Atom | — | vcard + rssbuilder；iCalendar 缺 | ⚠️ |
@@ -246,7 +246,7 @@
 |---|---|---|---|
 | 单测 / Mock / 基准 / 属性测试 / 假数据 | PHPUnit / Mockery / Faker | testkit + tdtest + mock + bench + quickcheck + faker | ✅ |
 | 代码覆盖率 | xdebug / pcov | **缺** — 需 native | 🚫 |
-| 快照测试 | — | **缺** — 无快照比对 | ⏳ |
+| 快照测试 | — | snapshot（snap_new / snap_match / snap_diff / snap_update / snap_serialize） | ✅ |
 
 ## 19. 数据结构与算法（PHP SPL）
 

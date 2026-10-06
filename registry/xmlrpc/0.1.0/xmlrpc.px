@@ -1,0 +1,56 @@
+# xmlrpc.px — XML-RPC 协议构造/解析（纯函数）
+# 版本: 0.1.0
+def xr_build_request(method, params):
+    var xml = "<?xml version=\"1.0\"?>"
+    xml = xml + "<methodCall><methodName>" + method + "</methodName><params>"
+    var i = 0
+    while i < len(params):
+        xml = xml + "<param>" + xr_encode_value(params[i]) + "</param>"
+        i += 1
+    xml = xml + "</params></methodCall>"
+    return xml
+def xr_encode_value(val):
+    var t = type(val)
+    if t == "null":
+        return "<value><nil/></value>"
+    if t == "bool":
+        if val:
+            return "<value><boolean>1</boolean></value>"
+        return "<value><boolean>0</boolean></value>"
+    if t == "int":
+        return "<value><int>" + str(val) + "</int></value>"
+    if t == "float":
+        return "<value><double>" + str(val) + "</double></value>"
+    if t == "string":
+        return "<value><string>" + val + "</string></value>"
+    if t == "list":
+        var s = "<value><array><data>"
+        var i = 0
+        while i < len(val):
+            s = s + xr_encode_value(val[i])
+            i += 1
+        return s + "</data></array></value>"
+    if t == "dict":
+        var s = "<value><struct>"
+        var ks = val.keys()
+        var i = 0
+        while i < len(ks):
+            s = s + "<member><name>" + ks[i] + "</name>" + xr_encode_value(val[ks[i]]) + "</member>"
+            i += 1
+        return s + "</struct></value>"
+    return "<value><string>" + str(val) + "</string></value>"
+def xr_build_response(value):
+    var xml = "<?xml version=\"1.0\"?>"
+    xml = xml + "<methodResponse><params><param>" + xr_encode_value(value) + "</param></params></methodResponse>"
+    return xml
+def xr_build_fault(code, msg):
+    return "<?xml version=\"1.0\"?><methodResponse><fault><value><struct><member><name>faultCode</name><value><int>" + str(code) + "</int></value></member><member><name>faultString</name><value><string>" + msg + "</string></value></member></struct></value></fault></methodResponse>"
+def xr_extract_method(xml):
+    var start = xml.find("<methodName>")
+    if start < 0:
+        return ""
+    start += 12
+    var end = xml.find("</methodName>")
+    if end < 0:
+        return ""
+    return xml[start:end]

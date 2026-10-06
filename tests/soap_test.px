@@ -1,0 +1,27 @@
+# soap 0.1.0 测试
+import "../registry/soap/0.1.0/soap.px"
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+def main():
+    var req = soap_build_request("GetPrice", {"item": "book", "qty": 2}, "http://example.com/ns")
+    var bs = req.find("<soap:Envelope")
+    expect(bs >= 0, "has envelope")
+    var bm = req.find("GetPrice")
+    expect(bm >= 0, "has method")
+    var bi = req.find("<ns:item>book</ns:item>")
+    expect(bi >= 0, "has item param")
+    # extract body
+    var body = soap_extract_body(req)
+    expect(body.find("GetPrice") >= 0, "body has method: " + body)
+    # fault
+    var fault_env = soap_build_envelope("<Fault><faultcode>Server</faultcode><faultstring>Oops</faultstring></Fault>", "")
+    var fault = soap_extract_fault(fault_env)
+    expect(fault != null, "fault found")
+    expect(fault["code"] == "Server", "fault code: " + fault["code"])
+    expect(fault["string"] == "Oops", "fault string: " + fault["string"])
+    # no fault
+    var no_fault = soap_extract_fault(req)
+    expect(no_fault == null, "no fault in request")
+    print("soap: PASS")
