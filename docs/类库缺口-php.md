@@ -109,7 +109,7 @@
 | Redis / MySQL / PostgreSQL / MongoDB / MQTT / OAuth2 | — | registry 各库 | ✅ |
 | URL 解析 / 百分号编码 | `parse_url` / `urlencode` | native url + percent | ✅ |
 | SSH / SFTP | `ssh2_*` | **缺** — 需 native 密码学 | 🚫 |
-| gRPC | — | **缺** — 需 HTTP/2（protobuf 有，HTTP/2 缺） | ⏳ |
+| gRPC | — | protobuf 有，HTTP/2 需 native | 🚫 |
 | SOAP | `SoapClient` / `SoapServer` | soap（soap_build_envelope / soap_build_request / soap_extract_fault） | ✅ |
 | XML-RPC | `xmlrpc_*` | xmlrpc（xr_build_request / xr_build_response / xr_build_fault / xr_encode_value） | ✅ |
 | LDAP | `ldap_*` | ldap（ldap_ber_encode + ldap_bind_request + ldap_search_request + ldap_parse_dn） | ✅ |
@@ -215,7 +215,7 @@
 |---|---|---|---|
 | ANSI / 表格 / 进度条 / 模板 / CLI 参数 | — | ansi + table + progress + template + cli | ✅ |
 | 输出缓冲 | `ob_start` / `ob_get_clean` | outbuf（ob_new / ob_start / ob_write / ob_get_clean / ob_end_flush） | ✅ |
-| 交互式输入 / TUI 全屏 | `readline` / PsySH | **缺** — 需 tty raw | ⏳ |
+| 交互式输入 / TUI 全屏 | `readline` / PsySH | 需 tty raw mode（native） | 🚫 |
 
 ## 16. 缓存 / Session / 邮件
 
