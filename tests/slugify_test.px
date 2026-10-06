@@ -1,0 +1,42 @@
+# slugify 0.1.0 测试
+import "../registry/slugify/0.1.0/slugify.px"
+
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+
+def main():
+    # 基本 slugify
+    expect(sl_slugify("Hello World") == "hello-world", "basic: " + sl_slugify("Hello World"))
+    expect(sl_slugify("Hello, World!") == "hello-world", "punctuation: " + sl_slugify("Hello, World!"))
+    expect(sl_slugify("  Multiple   Spaces  ") == "multiple-spaces", "spaces: " + sl_slugify("  Multiple   Spaces  "))
+    expect(sl_slugify("CamelCase") == "camelcase", "camelcase: " + sl_slugify("CamelCase"))
+    expect(sl_slugify("UPPER CASE") == "upper-case", "uppercase: " + sl_slugify("UPPER CASE"))
+    expect(sl_slugify("123 Numbers 456") == "123-numbers-456", "numbers: " + sl_slugify("123 Numbers 456"))
+    expect(sl_slugify("---dashes---") == "dashes", "dashes: " + sl_slugify("---dashes---"))
+    expect(sl_slugify("") == "", "empty: " + sl_slugify(""))
+    expect(sl_slugify("!!!") == "", "only punctuation: " + sl_slugify("!!!"))
+    # 自定义分隔符
+    expect(sl_slugify("Hello World", "_") == "hello_world", "underscore: " + sl_slugify("Hello World", "_"))
+    expect(sl_slugify("Hello World", ".") == "hello.world", "dot: " + sl_slugify("Hello World", "."))
+    # 去重音
+    expect(sl_strip_accents("cafe") == "cafe", "no accent: " + sl_strip_accents("cafe"))
+    # 音译
+    expect(sl_transliterate("Hello") == "Hello", "translit ascii: " + sl_transliterate("Hello"))
+    # Unicode slugify
+    expect(sl_slugify_unicode("Hello World") == "hello-world", "unicode basic: " + sl_slugify_unicode("Hello World"))
+    # 截断
+    expect(sl_truncate_slug("hello-world", 5) == "hello", "truncate: " + sl_truncate_slug("hello-world", 5))
+    expect(sl_truncate_slug("hi", 10) == "hi", "truncate no-op: " + sl_truncate_slug("hi", 10))
+    # 唯一
+    expect(sl_make_unique("hello", ["world"]) == "hello", "unique no conflict: " + sl_make_unique("hello", ["world"]))
+    expect(sl_make_unique("hello", ["hello"]) == "hello-2", "unique conflict: " + sl_make_unique("hello", ["hello"]))
+    expect(sl_make_unique("hello", ["hello", "hello-2"]) == "hello-3", "unique multi: " + sl_make_unique("hello", ["hello", "hello-2"]))
+    # 自定义映射
+    var result = sl_custom_map("abc", {"a": "X", "b": "Y"})
+    expect(result == "XYc", "custom map: " + result)
+    # 复杂
+    expect(sl_slugify("The Quick Brown Fox!") == "the-quick-brown-fox", "complex: " + sl_slugify("The Quick Brown Fox!"))
+    expect(sl_slugify("foo & bar == baz") == "foo-bar-baz", "symbols: " + sl_slugify("foo & bar == baz"))
+    print("slugify: PASS")
