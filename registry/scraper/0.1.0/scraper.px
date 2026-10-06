@@ -21,6 +21,35 @@ def sc_extract_links(html):
         links.append(html[start:end])
         pos = end + 1
     return links
+def sc_extract_src(html):
+    var srcs = []
+    var pos = 0
+    while pos < len(html):
+        var start = _sc_find_from(html, "src=", pos)
+        if start < 0:
+            break
+        start += 4
+        if start >= len(html):
+            break
+        var quote = html[start]
+        if quote != "\"" and quote != "'":
+            pos = start
+            continue
+        start += 1
+        var end = _sc_find_from(html, quote, start)
+        if end < 0:
+            break
+        srcs.append(html[start:end])
+        pos = end + 1
+    return srcs
+def sc_extract_images(html):
+    var result = []
+    var srcs = sc_extract_src(html)
+    var i = 0
+    while i < len(srcs):
+        result.append({"src": srcs[i]})
+        i += 1
+    return result
 def sc_extract_text(html):
     var result = ""
     var in_tag = false
@@ -60,12 +89,37 @@ def sc_extract_meta(html, name):
         var tag = html[tag_start:tag_end]
         var ci = tag.find("content=\"")
         if ci >= 0:
-            ci += 8
+            ci += 9
             var cend = _sc_find_from(tag, "\"", ci)
             if cend >= 0:
                 return tag[ci:cend]
         pos = tag_end + 1
     return ""
+def sc_extract_meta_all(html):
+    var result = {}
+    var pos = 0
+    while pos < len(html):
+        var start = _sc_find_from(html, "<meta", pos)
+        if start < 0:
+            break
+        var tag_end = _sc_find_from(html, ">", start)
+        if tag_end < 0:
+            break
+        var tag = html[start:tag_end]
+        var ni = tag.find("name=\"")
+        if ni >= 0:
+            ni += 6
+            var nend = _sc_find_from(tag, "\"", ni)
+            if nend >= 0:
+                var meta_name = tag[ni:nend]
+                var ci = tag.find("content=\"")
+                if ci >= 0:
+                    ci += 9
+                    var cend = _sc_find_from(tag, "\"", ci)
+                    if cend >= 0:
+                        result.set(meta_name, tag[ci:cend])
+        pos = tag_end + 1
+    return result
 def sc_strip_tags(html):
     return sc_extract_text(html)
 def _sc_find_from(s, sub, start):

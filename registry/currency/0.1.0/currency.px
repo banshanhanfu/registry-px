@@ -19,12 +19,26 @@ def cur_convert(c, from_code, to_code, amount):
         return float(amount) * c["_rates"][to_usd] * c["_rates"][usd_to]
     return null
 def cur_format(amount, code):
-    var s = str(float(amount))
+    var neg = false
+    var val = float(amount)
+    if val < 0:
+        neg = true
+        val = -val
+    var s = str(val)
     var dot = s.find(".")
     if dot < 0:
         s = s + ".00"
     elif s.len() - dot < 3:
         s = s + "0"
+    if neg:
+        s = "-" + s
     return s + " " + code
+def cur_round(amount):
+    return float(int(float(amount) * 100 + 0.5)) / 100.0
+def cur_format_signed(amount, code):
+    var s = cur_format(amount, code)
+    if float(amount) >= 0:
+        return "+" + s
+    return s
 def cur_list(c):
     return c["_rates"].keys()

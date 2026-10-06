@@ -34,6 +34,23 @@ def snmp_ber_encode_string(s):
         result.append(ord(s[i]))
         i += 1
     return result
+# BER 编码 OID 单个分量（处理 > 127 的多字节编码）
+def _snmp_encode_oid_component(val):
+    if val < 0x80:
+        return [val]
+    var bytes = []
+    bytes.append(val & 0x7F)
+    val = val >> 7
+    while val > 0:
+        bytes.append((val & 0x7F) | 0x80)
+        val = val >> 7
+    # 反转
+    var result = []
+    var i = len(bytes) - 1
+    while i >= 0:
+        result.append(bytes[i])
+        i -= 1
+    return result
 def snmp_ber_encode_oid(oid_str):
     var parts = oid_str.split(".")
     var result = [0x06]
@@ -42,7 +59,11 @@ def snmp_ber_encode_oid(oid_str):
         encoded.append(int(parts[0]) * 40 + int(parts[1]))
     var i = 2
     while i < len(parts):
-        encoded.append(int(parts[i]))
+        var comp = _snmp_encode_oid_component(int(parts[i]))
+        var j = 0
+        while j < len(comp):
+            encoded.append(comp[j])
+            j += 1
         i += 1
     var lb = snmp_ber_encode_length(len(encoded))
     var j = 0
@@ -64,6 +85,19 @@ def snmp_build_get_request(community, oid_str, request_id):
     pdu = pdu + snmp_ber_encode_int(0)
     pdu = pdu + snmp_ber_encode_oid(oid_str)
     msg = msg + [0xA0]
+    msg = msg + snmp_ber_encode_length(len(pdu))
+    msg = msg + pdu
+    return msg
+def snmp_build_getnext_request(community, oid_str, request_id):
+    var msg = []
+    msg = msg + snmp_ber_encode_int(0)
+    msg = msg + snmp_ber_encode_string(community)
+    var pdu = []
+    pdu = pdu + snmp_ber_encode_int(request_id)
+    pdu = pdu + snmp_ber_encode_int(0)
+    pdu = pdu + snmp_ber_encode_int(0)
+    pdu = pdu + snmp_ber_encode_oid(oid_str)
+    msg = msg + [0xA1]
     msg = msg + snmp_ber_encode_length(len(pdu))
     msg = msg + pdu
     return msg

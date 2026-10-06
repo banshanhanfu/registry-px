@@ -26,3 +26,8 @@ def cp_total_count(pool):
     return pool["_created"]
 def cp_available(pool):
     return len(pool["_idle"]) > 0 or pool["_created"] < pool["_max"]
+
+def cp_max_size(pool):
+    return pool["_max"]
+def cp_stats(pool):
+    return {"idle": len(pool["_idle"]), "active": pool["_active"], "total": pool["_created"], "max": pool["_max"]}

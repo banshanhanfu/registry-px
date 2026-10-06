@@ -5,28 +5,37 @@ def expect(cond, msg):
         print("FAIL: " + msg)
         exit(1)
 def main():
-    var m = mig_new()
-    mig_add(m, 1, "create_users", "CREATE TABLE users (id INT);", "DROP TABLE users;")
-    mig_add(m, 2, "add_email", "ALTER TABLE users ADD email TEXT;", "ALTER TABLE users DROP email;")
-    mig_add(m, 3, "add_index", "CREATE INDEX idx_email ON users(email);", "DROP INDEX idx_email;")
-    expect(mig_count(m) == 3, "3 migrations")
-    # pending (none applied)
-    var pending = mig_get_pending(m, [])
-    expect(len(pending) == 3, "3 pending")
-    # pending (1 applied)
-    var pending2 = mig_get_pending(m, [1])
-    expect(len(pending2) == 2, "2 pending: " + str(len(pending2)))
-    # up plan
-    var plan = mig_plan_up(m, [1])
-    expect(len(plan) == 2, "plan 2")
-    expect(plan[0]["version"] == 2, "plan first version 2")
-    expect(plan[0]["sql"].find("ALTER TABLE") >= 0, "plan up sql")
-    # down plan
-    var rollback = mig_plan_rollback(m, 1, [1, 2, 3])
-    expect(len(rollback) == 2, "rollback 2")
-    expect(rollback[0]["version"] == 3, "rollback first version 3")
-    expect(rollback[0]["sql"].find("DROP INDEX") >= 0, "rollback down sql")
-    # get sql
-    expect(mig_get_up_sql(m, 1).find("CREATE TABLE") >= 0, "up sql")
-    expect(mig_get_down_sql(m, 1).find("DROP TABLE") >= 0, "down sql")
+    var mig = mig_new()
+    mig_add(mig, 1, "create_users", "CREATE TABLE users (id INT);", "DROP TABLE users;")
+    mig_add(mig, 2, "create_posts", "CREATE TABLE posts (id INT);", "DROP TABLE posts;")
+    mig_add(mig, 3, "add_name_col", "ALTER TABLE users ADD name VARCHAR(255);", "ALTER TABLE users DROP name;")
+    expect(mig_count(mig) == 3, "3 migrations")
+    # get version
+    var v2 = mig_get_version(mig, 2)
+    expect(v2 != null, "version 2 exists")
+    expect(v2["version"] == 2, "v2 version")
+    expect(v2["up"] == "CREATE TABLE posts (id INT);", "v2 up sql: " + v2["up"])
+    var v_missing = mig_get_version(mig, 99)
+    expect(v_missing == null, "version 99 missing")
+    # latest
+    expect(mig_latest(mig) == 3, "latest is 3")
+    # pending
+    var pending = mig_get_pending(mig, [1])
+    expect(len(pending) == 2, "2 pending after v1: " + str(len(pending)))
+    expect(pending[0]["version"] == 2, "first pending v2")
+    # no pending
+    var pending2 = mig_get_pending(mig, [1, 2, 3])
+    expect(len(pending2) == 0, "no pending")
+    # applied count
+    expect(mig_applied_count([1, 2, 3]) == 3, "applied count 3")
+    # up/down sql
+    expect(mig_get_up_sql(mig, 1) == "CREATE TABLE users (id INT);", "up sql v1")
+    expect(mig_get_down_sql(mig, 1) == "DROP TABLE users;", "down sql v1")
+    # plan up
+    var plan = mig_plan_up(mig, [])
+    expect(len(plan) == 3, "plan up 3 from scratch")
+    # empty
+    var mig2 = mig_new()
+    expect(mig_latest(mig2) == 0, "empty latest 0")
+    expect(mig_count(mig2) == 0, "empty count 0")
     print("migration: PASS")

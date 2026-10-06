@@ -33,3 +33,15 @@ def dp_days(start_sec, end_sec):
     return dp_new(start_sec, end_sec, 86400)
 def dp_hours(start_sec, end_sec):
     return dp_new(start_sec, end_sec, 3600)
+
+def dp_weeks(start_sec, end_sec):
+    return dp_new(start_sec, end_sec, 604800)
+def dp_months(start_sec, end_sec):
+    return dp_new(start_sec, end_sec, 2592000)
+def dp_next(dp, current):
+    var next_ts = current + dp["_interval"]
+    if next_ts > dp["_end"]:
+        return null
+    return next_ts
+def dp_at(dp, ts):
+    return ts >= dp["_start"] and ts <= dp["_end"]

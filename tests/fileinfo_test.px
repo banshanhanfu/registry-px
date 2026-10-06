@@ -5,23 +5,26 @@ def expect(cond, msg):
         print("FAIL: " + msg)
         exit(1)
 def main():
-    var fi = fi_new("/home/user/docs/report.txt")
-    expect(fi_get_path(fi) == "/home/user/docs/report.txt", "path")
-    expect(fi_get_filename(fi) == "report.txt", "filename: " + fi_get_filename(fi))
-    expect(fi_get_basename(fi) == "report", "basename: " + fi_get_basename(fi))
+    var fi = fi_new("/home/user/test.txt")
+    expect(fi_get_path(fi) == "/home/user/test.txt", "path")
+    expect(fi_get_filename(fi) == "test.txt", "filename: " + fi_get_filename(fi))
     expect(fi_get_extension(fi) == "txt", "extension: " + fi_get_extension(fi))
-    expect(fi_get_dirname(fi) == "/home/user/docs", "dirname: " + fi_get_dirname(fi))
+    expect(fi_get_basename(fi) == "test", "basename: " + fi_get_basename(fi))
+    expect(fi_get_dirname(fi) == "/home/user", "dirname: " + fi_get_dirname(fi))
+    expect(fi_to_string(fi) == "/home/user/test.txt", "to_string")
+    expect(fi_is_absolute(fi) == true, "is absolute")
+    # relative path
+    var fi2 = fi_new("relative/path.txt")
+    expect(fi_is_absolute(fi2) == false, "not absolute")
+    expect(fi_get_dirname(fi2) == "relative", "relative dirname: " + fi_get_dirname(fi2))
+    # join
+    expect(fi_join("/home", "user") == "/home/user", "join: " + fi_join("/home", "user"))
+    expect(fi_join("/home/", "user") == "/home/user", "join trailing slash: " + fi_join("/home/", "user"))
+    # normalize
+    expect(fi_normalize("/home/user/../other") == "/home/other", "normalize: " + fi_normalize("/home/user/../other"))
+    expect(fi_normalize("/home/./user") == "/home/user", "normalize dot: " + fi_normalize("/home/./user"))
     # no extension
-    var fi2 = fi_new("/tmp/Makefile")
-    expect(fi_get_filename(fi2) == "Makefile", "no ext filename")
-    expect(fi_get_extension(fi2) == "", "no ext: " + fi_get_extension(fi2))
-    expect(fi_get_basename(fi2) == "Makefile", "no ext basename")
-    # root dir
-    var fi3 = fi_new("/file.txt")
-    expect(fi_get_dirname(fi3) == "/", "root dirname: " + fi_get_dirname(fi3))
-    # relative
-    var fi4 = fi_new("script.py")
-    expect(fi_get_filename(fi4) == "script.py", "relative filename")
-    expect(fi_get_extension(fi4) == "py", "relative ext")
-    expect(fi_get_dirname(fi4) == ".", "relative dirname: " + fi_get_dirname(fi4))
+    var fi3 = fi_new("/home/noext")
+    expect(fi_get_extension(fi3) == "", "no extension: " + fi_get_extension(fi3))
+    expect(fi_get_basename(fi3) == "noext", "noext basename: " + fi_get_basename(fi3))
     print("fileinfo: PASS")

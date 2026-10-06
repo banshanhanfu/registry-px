@@ -53,3 +53,15 @@ def cldr_format_number(loc, n):
     if lang == "de":
         return s.replace(".", ",")
     return s
+
+def cldr_format_currency(loc, amount, code):
+    var s = cldr_format_number(loc, amount)
+    if loc["_lang"] == "en":
+        return code + " " + s
+    return s + " " + code
+def cldr_list_separator(loc):
+    if loc["_lang"] == "en":
+        return ", "
+    if loc["_lang"] == "zh" or loc["_lang"] == "ja":
+        return "、"
+    return ", "

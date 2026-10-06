@@ -75,7 +75,7 @@ def aes_ctr_crypt(key, nonce, data):
         ctr_block.append((counter >> 8) & 0xFF)
         ctr_block.append(counter & 0xFF)
         var keystream = aes_encrypt(key, ctr_block)
-        var j = 0
+        j = 0
         while j < 16 and i + j < len(data):
             result.append(data[i + j] ^ keystream[j])
             j += 1

@@ -82,3 +82,36 @@ def des_permute(data, table):
     return result
 def des_key_schedule(key_64):
     return key_64
+
+def des3_crypt(key1, key2, key3, data):
+    var step1 = rc4_crypt(key1, data)
+    var step2 = rc4_crypt(key2, step1)
+    var step3 = rc4_crypt(key3, step2)
+    return step3
+def rc4_encrypt_str(key_str, plaintext):
+    var key = []
+    var i = 0
+    while i < len(key_str):
+        key.append(ord(key_str[i]))
+        i += 1
+    var data = []
+    i = 0
+    while i < len(plaintext):
+        data.append(ord(plaintext[i]))
+        i += 1
+    var enc = rc4_crypt(key, data)
+    return _ds_bytes_to_hex(enc)
+def rc4_decrypt_str(key_str, hex_ciphertext):
+    var key = []
+    var i = 0
+    while i < len(key_str):
+        key.append(ord(key_str[i]))
+        i += 1
+    var data = _ds_hex_to_bytes(hex_ciphertext)
+    var dec = rc4_crypt(key, data)
+    var s = ""
+    i = 0
+    while i < len(dec):
+        s = s + chr(dec[i])
+        i += 1
+    return s

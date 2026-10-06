@@ -54,3 +54,49 @@ def xr_extract_method(xml):
     if end < 0:
         return ""
     return xml[start:end]
+
+def xr_parse_response(xml):
+    var fault_start = xml.find("<fault>")
+    if fault_start >= 0:
+        var fc_start = _xr_find_str(xml, "<int>", fault_start)
+        var fc_end = _xr_find_str(xml, "</int>", fc_start)
+        var fs_start = _xr_find_str(xml, "<string>", fc_end)
+        var fs_end = _xr_find_str(xml, "</string>", fs_start)
+        if fc_start >= 0 and fc_end >= 0:
+            return {"ok": false, "code": int(xml[fc_start + 5:fc_end]), "message": xml[fs_start + 8:fs_end]}
+    var val_start = xml.find("<value>")
+    if val_start < 0:
+        return {"ok": false, "error": "no value found"}
+    return {"ok": true, "value": xr_extract_value(xml, val_start)}
+def xr_extract_value(xml, start):
+    var p = start + 7
+    var int_start = _xr_find_str(xml, "<int>", p)
+    if int_start >= 0 and int_start < p + 20:
+        var int_end = _xr_find_str(xml, "</int>", int_start)
+        return int(xml[int_start + 5:int_end])
+    var dbl_start = _xr_find_str(xml, "<double>", p)
+    if dbl_start >= 0 and dbl_start < p + 20:
+        var dbl_end = _xr_find_str(xml, "</double>", dbl_start)
+        return float(xml[dbl_start + 8:dbl_end])
+    var str_start = _xr_find_str(xml, "<string>", p)
+    if str_start >= 0 and str_start < p + 20:
+        var str_end = _xr_find_str(xml, "</string>", str_start)
+        return xml[str_start + 8:str_end]
+    var bool_start = _xr_find_str(xml, "<boolean>", p)
+    if bool_start >= 0 and bool_start < p + 20:
+        var bool_end = _xr_find_str(xml, "</boolean>", bool_start)
+        return xml[bool_start + 9:bool_end] == "1"
+    return null
+def _xr_find_str(s, sub, start):
+    var i = start
+    while i <= len(s) - len(sub):
+        var ok = true
+        var j = 0
+        while j < len(sub):
+            if s[i + j] != sub[j]:
+                ok = false
+            j += 1
+        if ok:
+            return i
+        i += 1
+    return -1

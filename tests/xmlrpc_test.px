@@ -4,25 +4,51 @@ def expect(cond, msg):
     if not cond:
         print("FAIL: " + msg)
         exit(1)
+def _find_from(s, sub, start):
+    var i = start
+    while i <= len(s) - len(sub):
+        var ok = true
+        var j = 0
+        while j < len(sub):
+            if s[i + j] != sub[j]:
+                ok = false
+            j += 1
+        if ok:
+            return i
+        i += 1
+    return -1
 def main():
-    var req = xr_build_request("examples.getStateName", [41])
-    expect(req.find("examples.getStateName") >= 0, "has method")
-    expect(req.find("<int>41</int>") >= 0, "has int param")
-    # response
-    var resp = xr_build_response("Tennessee")
-    expect(resp.find("Tennessee") >= 0, "response has value")
-    expect(resp.find("<methodResponse>") >= 0, "has methodResponse")
-    # fault
-    var fault = xr_build_fault(404, "Not found")
-    expect(fault.find("404") >= 0, "fault has code")
-    expect(fault.find("Not found") >= 0, "fault has msg")
-    # extract method
-    var m = xr_extract_method(req)
-    expect(m == "examples.getStateName", "extract method: " + m)
+    # build request
+    var req = xr_build_request("add", [1, 2])
+    expect(req.find("<methodName>add</methodName>") >= 0, "method name")
+    expect(req.find("<int>1</int>") >= 0, "int 1")
+    expect(req.find("<int>2</int>") >= 0, "int 2")
     # encode values
-    expect(xr_encode_value(42).find("<int>42</int>") >= 0, "encode int")
-    expect(xr_encode_value("hello").find("hello") >= 0, "encode string")
-    expect(xr_encode_value(true).find("<boolean>1</boolean>") >= 0, "encode bool true")
-    expect(xr_encode_value([1, 2]).find("<array>") >= 0, "encode list")
-    expect(xr_encode_value({"a": 1}).find("<struct>") >= 0, "encode dict")
+    expect(xr_encode_value(42) == "<value><int>42</int></value>", "encode int")
+    expect(xr_encode_value(true) == "<value><boolean>1</boolean></value>", "encode bool true")
+    expect(xr_encode_value(false) == "<value><boolean>0</boolean></value>", "encode bool false")
+    expect(xr_encode_value("hello") == "<value><string>hello</string></value>", "encode string")
+    # build response
+    var resp = xr_build_response(42)
+    expect(resp.find("<methodResponse>") >= 0, "response has methodResponse")
+    expect(resp.find("<int>42</int>") >= 0, "response has int 42")
+    # build fault
+    var fault = xr_build_fault(404, "Not Found")
+    expect(fault.find("<int>404</int>") >= 0, "fault code")
+    expect(fault.find("Not Found") >= 0, "fault message")
+    # extract method
+    expect(xr_extract_method(req) == "add", "extract method: " + xr_extract_method(req))
+    # parse response
+    var parsed = xr_parse_response(resp)
+    expect(parsed["ok"] == true, "parsed ok")
+    expect(parsed["value"] == 42, "parsed value: " + str(parsed["value"]))
+    # parse fault
+    var parsed_fault = xr_parse_response(fault)
+    expect(parsed_fault["ok"] == false, "parsed fault not ok")
+    expect(parsed_fault["code"] == 404, "parsed fault code: " + str(parsed_fault["code"]))
+    # parse string response
+    var str_resp = xr_build_response("hello")
+    var parsed_str = xr_parse_response(str_resp)
+    expect(parsed_str["ok"] == true, "parsed str ok")
+    expect(parsed_str["value"] == "hello", "parsed str value: " + str(parsed_str["value"]))
     print("xmlrpc: PASS")

@@ -38,3 +38,36 @@ def fi_get_dirname(fi):
     return "."
 def fi_to_string(fi):
     return fi["_path"]
+
+def fi_is_absolute(fi):
+    var path = fi["_path"]
+    if len(path) > 0 and path[0] == "/":
+        return true
+    return false
+def fi_join(base, sub):
+    if len(base) > 0 and base[len(base) - 1] == "/":
+        return base + sub
+    return base + "/" + sub
+def fi_normalize(path):
+    var parts = path.split("/")
+    var result = []
+    var i = 0
+    while i < len(parts):
+        if parts[i] == "..":
+            if len(result) > 0:
+                result = result[:len(result) - 1]
+        elif parts[i] == "." or parts[i] == "":
+            0
+        else:
+            result.append(parts[i])
+        i += 1
+    var out = ""
+    if len(path) > 0 and path[0] == "/":
+        out = "/"
+    var j = 0
+    while j < len(result):
+        if j > 0:
+            out = out + "/"
+        out = out + result[j]
+        j += 1
+    return out

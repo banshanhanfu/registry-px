@@ -54,3 +54,23 @@ def mig_plan_rollback(migrator, target_version, applied_versions):
     return result
 def mig_count(migrator):
     return len(migrator["_migrations"])
+
+def mig_get_version(migrator, version):
+    var i = 0
+    while i < len(migrator["_migrations"]):
+        if migrator["_migrations"][i]["version"] == version:
+            return migrator["_migrations"][i]
+        i += 1
+    return null
+def mig_latest(migrator):
+    if len(migrator["_migrations"]) == 0:
+        return 0
+    var latest = 0
+    var i = 0
+    while i < len(migrator["_migrations"]):
+        if migrator["_migrations"][i]["version"] > latest:
+            latest = migrator["_migrations"][i]["version"]
+        i += 1
+    return latest
+def mig_applied_count(applied_versions):
+    return len(applied_versions)

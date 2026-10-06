@@ -17,18 +17,45 @@ def soap_build_request(method, params, namespace):
         i += 1
     body = body + "</ns:" + method + ">"
     return soap_build_envelope(body, "")
+def _soap_find_body_open(envelope):
+    var i = 0
+    while i < len(envelope) - 5:
+        if envelope[i] == "<" and envelope[i + 1] != "/":
+            var j = i + 1
+            while j < len(envelope) and envelope[j] != ":" and envelope[j] != "B" and envelope[j] != " " and envelope[j] != ">":
+                j += 1
+            if j < len(envelope) and envelope[j] == ":" and j + 5 <= len(envelope):
+                if envelope[j + 1:j + 5] == "Body":
+                    var gt = _soap_find_str(envelope, ">", j + 5)
+                    if gt >= 0:
+                        return gt + 1
+            if j < len(envelope) and envelope[j] == "B" and j + 4 <= len(envelope):
+                if envelope[j:j + 4] == "Body":
+                    var gt = _soap_find_str(envelope, ">", j + 4)
+                    if gt >= 0:
+                        return gt + 1
+        i += 1
+    return -1
+def _soap_find_body_close(envelope, after):
+    var i = after
+    while i < len(envelope) - 7:
+        if envelope[i] == "<" and envelope[i + 1] == "/":
+            var j = i + 2
+            while j < len(envelope) and envelope[j] != ":" and envelope[j] != "B" and envelope[j] != ">":
+                j += 1
+            if j < len(envelope) and envelope[j] == ":" and j + 5 <= len(envelope):
+                if envelope[j + 1:j + 5] == "Body":
+                    return i
+            if j < len(envelope) and envelope[j] == "B" and j + 4 <= len(envelope):
+                if envelope[j:j + 4] == "Body":
+                    return i
+        i += 1
+    return -1
 def soap_extract_body(envelope):
-    var start = envelope.find("<soap:Body>")
+    var start = _soap_find_body_open(envelope)
     if start < 0:
-        start = envelope.find("<Body>")
-        if start < 0:
-            return ""
-        start += 6
-    else:
-        start += 11
-    var end = envelope.find("</soap:Body>")
-    if end < 0:
-        end = envelope.find("</Body>")
+        return ""
+    var end = _soap_find_body_close(envelope, start)
     if end < 0:
         return ""
     return envelope[start:end]
@@ -36,9 +63,18 @@ def soap_extract_fault(envelope):
     var body = soap_extract_body(envelope)
     var fault_start = body.find("<Fault>")
     if fault_start < 0:
+        fault_start = body.find(":Fault>")
+        if fault_start >= 0:
+            fault_start += 7
+    if fault_start < 0:
         return null
-    fault_start += 7
+    if body[fault_start] == ">":
+        fault_start += 1
+    else:
+        fault_start = _soap_find_str(body, ">", fault_start) + 1
     var fault_end = body.find("</Fault>")
+    if fault_end < 0:
+        fault_end = body.find(":Fault>")
     if fault_end < 0:
         return null
     var fault_xml = body[fault_start:fault_end]
@@ -52,3 +88,17 @@ def soap_extract_fault(envelope):
         var fs_end = fault_xml.find("</faultstring>")
         result.set("string", fault_xml[fs + 13:fs_end])
     return result
+
+def _soap_find_str(s, sub, start):
+    var i = start
+    while i <= len(s) - len(sub):
+        var ok = true
+        var j = 0
+        while j < len(sub):
+            if s[i + j] != sub[j]:
+                ok = false
+            j += 1
+        if ok:
+            return i
+        i += 1
+    return -1

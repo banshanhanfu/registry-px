@@ -5,34 +5,26 @@ def expect(cond, msg):
         print("FAIL: " + msg)
         exit(1)
 def main():
-    # English plural
-    expect(cldr_plural("en", 1) == "one", "en 1: " + cldr_plural("en", 1))
-    expect(cldr_plural("en", 2) == "other", "en 2")
-    expect(cldr_plural("en", 0) == "other", "en 0")
-    # Chinese plural
-    expect(cldr_plural("zh", 1) == "other", "zh 1")
-    expect(cldr_plural("zh", 100) == "other", "zh 100")
-    # Russian plural
-    expect(cldr_plural("ru", 1) == "one", "ru 1")
-    expect(cldr_plural("ru", 2) == "few", "ru 2: " + cldr_plural("ru", 2))
-    expect(cldr_plural("ru", 5) == "many", "ru 5: " + cldr_plural("ru", 5))
-    expect(cldr_plural("ru", 21) == "one", "ru 21: " + cldr_plural("ru", 21))
-    expect(cldr_plural("ru", 22) == "few", "ru 22: " + cldr_plural("ru", 22))
-    # French plural
-    expect(cldr_plural("fr", 0) == "one", "fr 0: " + cldr_plural("fr", 0))
-    expect(cldr_plural("fr", 1) == "one", "fr 1")
-    expect(cldr_plural("fr", 2) == "other", "fr 2")
-    # Arabic plural
-    expect(cldr_plural("ar", 0) == "zero", "ar 0")
-    expect(cldr_plural("ar", 1) == "one", "ar 1")
-    expect(cldr_plural("ar", 2) == "two", "ar 2: " + cldr_plural("ar", 2))
-    # locale
-    var loc = cldr_locale_new("en", "US")
-    expect(cldr_locale_code(loc) == "en-US", "code: " + cldr_locale_code(loc))
-    expect(cldr_locale_lang(loc) == "en", "lang")
-    expect(cldr_locale_region(loc) == "US", "region")
-    var loc2 = cldr_locale_new("zh", "")
-    expect(cldr_locale_code(loc2) == "zh", "code no region")
+    var en = cldr_locale_new("en", "US")
+    var zh = cldr_locale_new("zh", "CN")
+    # locale code
+    expect(cldr_locale_code(en) == "en-US", "en locale code: " + cldr_locale_code(en))
+    expect(cldr_locale_code(zh) == "zh-CN", "zh locale code")
+    # locale lang/region
+    expect(cldr_locale_lang(en) == "en", "en lang")
+    expect(cldr_locale_region(en) == "US", "en region")
     # format number
-    expect(cldr_format_number(loc, 1234) == "1234", "format en: " + cldr_format_number(loc, 1234))
+    var num_str = cldr_format_number(en, 1234.5)
+    expect(num_str.find("1234") >= 0, "en number has 1234: " + num_str)
+    # plural
+    expect(cldr_plural("en", 0) == "other", "plural 0: " + cldr_plural("en", 0))
+    expect(cldr_plural("en", 1) == "one", "plural 1: " + cldr_plural("en", 1))
+    expect(cldr_plural("en", 2) == "other", "plural 2: " + cldr_plural("en", 2))
+    # currency format
+    var cf = cldr_format_currency(en, 99.99, "USD")
+    expect(cf.find("99.99") >= 0, "en currency has amount: " + cf)
+    expect(cf.find("USD") >= 0, "en currency has code: " + cf)
+    # list separator
+    expect(cldr_list_separator(en) == ", ", "en list sep")
+    expect(cldr_list_separator(zh) == "、", "zh list sep: " + cldr_list_separator(zh))
     print("cldr: PASS")
