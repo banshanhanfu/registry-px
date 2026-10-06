@@ -1,0 +1,28 @@
+# scraper 0.1.0 测试
+import "../registry/scraper/0.1.0/scraper.px"
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+def main():
+    var html = "<html><head><title>Test Page</title></head><body>"
+    html = html + "<a href=\"http://a.com\">A</a>"
+    html = html + "<a href=\"http://b.com\">B</a>"
+    html = html + "</body></html>"
+    # extract links
+    var links = sc_extract_links(html)
+    expect(len(links) == 2, "2 links: " + str(links))
+    expect(links[0] == "http://a.com", "first link: " + links[0])
+    expect(links[1] == "http://b.com", "second link: " + links[1])
+    # extract title
+    var title = sc_extract_title(html)
+    expect(title == "Test Page", "title: " + title)
+    # extract text
+    var text = sc_extract_text(html)
+    expect(text.find("Test Page") >= 0, "text has title")
+    expect(text.find("A") >= 0, "text has A")
+    expect(text.find("<") == -1, "text no tags: " + text)
+    # strip tags
+    var stripped = sc_strip_tags("<p>Hello <b>World</b></p>")
+    expect(stripped == "Hello World", "stripped: " + stripped)
+    print("scraper: PASS")

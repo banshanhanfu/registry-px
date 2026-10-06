@@ -1,0 +1,71 @@
+# xmlstream.px — 流式 XML 读写（对应 PHP XMLReader/XMLWriter）
+# 版本: 0.1.0
+def xw_new():
+    return {"_buf": "", "_depth": 0}
+def xw_start_document(w):
+    w["_buf"] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    return w
+def xw_start_element(w, name, attrs):
+    w["_buf"] = w["_buf"] + "<" + name
+    var ks = attrs.keys()
+    var i = 0
+    while i < len(ks):
+        w["_buf"] = w["_buf"] + " " + ks[i] + "=\"" + str(attrs[ks[i]]) + "\""
+        i += 1
+    w["_buf"] = w["_buf"] + ">"
+    w["_depth"] = w["_depth"] + 1
+    return w
+def xw_end_element(w, name):
+    w["_buf"] = w["_buf"] + "</" + name + ">"
+    w["_depth"] = w["_depth"] - 1
+    return w
+def xw_write_element(w, name, content):
+    w["_buf"] = w["_buf"] + "<" + name + ">" + str(content) + "</" + name + ">"
+    return w
+def xw_text(w, text):
+    w["_buf"] = w["_buf"] + text
+    return w
+def xw_comment(w, text):
+    w["_buf"] = w["_buf"] + "<!-- " + text + " -->"
+    return w
+def xw_end_document(w):
+    w["_buf"] = w["_buf"] + "\n"
+    return w
+def xw_get_output(w):
+    return w["_buf"]
+def _xs_find_from(s, ch, start):
+    var i = start
+    while i < len(s):
+        if s[i] == ch:
+            return i
+        i += 1
+    return -1
+def xr_new(xml):
+    return {"_xml": xml, "_pos": 0}
+def xr_read_next(r):
+    var start = _xs_find_from(r["_xml"], "<", r["_pos"])
+    if start < 0:
+        return null
+    var end = _xs_find_from(r["_xml"], ">", start)
+    if end < 0:
+        return null
+    var tag_text = r["_xml"][start + 1:end]
+    r["_pos"] = end + 1
+    if tag_text[0] == "/":
+        return {"type": "end", "name": tag_text[1:]}
+    if tag_text[0] == "?":
+        return {"type": "pi", "text": tag_text}
+    if tag_text[0] == "!":
+        return {"type": "comment", "text": tag_text}
+    var space = tag_text.find(" ")
+    var name = tag_text
+    var attrs = {}
+    if space > 0:
+        name = tag_text[:space]
+    var self_closing = false
+    if name.len() > 0 and name[name.len() - 1] == "/":
+        name = name[:name.len() - 1]
+        self_closing = true
+    return {"type": "start", "name": name, "attrs": attrs, "self_closing": self_closing}
+def xr_is_done(r):
+    return r["_pos"] >= len(r["_xml"])

@@ -1,0 +1,33 @@
+# xmlstream 0.1.0 测试
+import "../registry/xmlstream/0.1.0/xmlstream.px"
+def expect(cond, msg):
+    if not cond:
+        print("FAIL: " + msg)
+        exit(1)
+def main():
+    var w = xw_new()
+    xw_start_document(w)
+    xw_start_element(w, "root", {"version": "1.0"})
+    xw_write_element(w, "name", "test")
+    xw_start_element(w, "items", {})
+    xw_write_element(w, "item", "a")
+    xw_write_element(w, "item", "b")
+    xw_end_element(w, "items")
+    xw_end_element(w, "root")
+    xw_end_document(w)
+    var out = xw_get_output(w)
+    expect(out.find("<?xml") >= 0, "has declaration: " + out)
+    expect(out.find("<root version=\"1.0\">") >= 0, "has root with attr")
+    expect(out.find("<name>test</name>") >= 0, "has name element")
+    expect(out.find("<item>a</item>") >= 0, "has item a")
+    expect(out.find("</root>") >= 0, "has closing root")
+    # reader
+    var r = xr_new(out)
+    var tag1 = xr_read_next(r)
+    expect(tag1 != null, "read first tag")
+    expect(tag1["type"] == "pi", "first is PI: " + tag1["type"])
+    var tag2 = xr_read_next(r)
+    expect(tag2 != null, "read second tag")
+    expect(tag2["type"] == "start", "second is start")
+    expect(tag2["name"] == "root", "root name: " + tag2["name"])
+    print("xmlstream: PASS")

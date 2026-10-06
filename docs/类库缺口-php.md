@@ -112,8 +112,8 @@
 | gRPC | — | **缺** — 需 HTTP/2（protobuf 有，HTTP/2 缺） | ⏳ |
 | SOAP | `SoapClient` / `SoapServer` | soap（soap_build_envelope / soap_build_request / soap_extract_fault） | ✅ |
 | XML-RPC | `xmlrpc_*` | xmlrpc（xr_build_request / xr_build_response / xr_build_fault / xr_encode_value） | ✅ |
-| LDAP | `ldap_*` | **缺** — 无 LDAP 客户端 | ⏳ |
-| SNMP | `snmp_*` | **缺** — 无 SNMP 协议 | ⏳ |
+| LDAP | `ldap_*` | ldap（ldap_ber_encode + ldap_bind_request + ldap_search_request + ldap_parse_dn） | ✅ |
+| SNMP | `snmp_*` | snmp（snmp_ber_encode + snmp_build_get_request + snmp_version_name） | ✅ |
 | NTP / Whois / Telnet | — | ntp + whois（协议构造/解析；Telnet 需 socket） | ✅ |
 | ICMP Ping | — | netprobe TCP 探测；**ICMP raw 缺** | 🚫 |
 
@@ -126,7 +126,7 @@
 | 数据库抽象层 | `PDO`（统一接口+预编译+事务） | dbal（qb_new / qb_to_sql / qb_insert_sql / qb_update_sql / qb_delete_sql） | ✅ |
 | 查询构建器 | — (Illuminate/Database) | querybuilder | ✅ |
 | 迁移工具 | — (Phinx / Doctrine) | migration（mig_add / mig_get_pending / mig_plan_up / mig_plan_rollback） | ✅ |
-| ORM | — (Eloquent / Doctrine) | **缺** — 无对象关系映射 | ⏳ |
+| ORM | — (Eloquent / Doctrine) | orm（orm_new / orm_field / orm_to_row / orm_from_row / orm_to_json / orm_validate） | ✅ |
 | 连接池 | — | connpool（cp_new / cp_acquire / cp_release / cp_available） | ✅ |
 
 ## 8. 图像处理（PHP GD + Imagick + EXIF）
@@ -175,7 +175,7 @@
 | PHP 序列化 | `serialize` / `unserialize` | phpser | ✅ |
 | var_export | `var_export` | vardump（vd_export） | ✅ |
 | DOM 全 API | `DOMDocument` / `DOMNode` | domlite（dom_new / dom_append / dom_find_by_tag / dom_to_xml / dom_inner_text） | ✅ |
-| 流式 XML | `XMLReader` / `XMLWriter` | **缺** — 无流式 XML 读写 | ⏳ |
+| 流式 XML | `XMLReader` / `XMLWriter` | xmlstream（xw_start_element / xw_end_element / xw_write_element + xr_read_next） | ✅ |
 | XSLT / XPath | `XSLTProcessor` / `DOMXPath` | xpath（xp_select_all / xp_select_by_attr / xp_text / xp_attr / xp_exists） | ✅ |
 | vCard / iCalendar / RSS / Atom | — | vcard + rssbuilder；iCalendar 缺 | ⚠️ |
 | JSON Schema | — (json-schema) | jsonschema | ✅ |
@@ -224,7 +224,7 @@
 | LRU / TTL / 布隆 / 限流 / Redis | — | cache + bloom + rate + redis | ✅ |
 | Cookie 管理 | `setcookie` / `$_COOKIE` | native cookiejar | ✅ |
 | 邮件解析 / POP3 / IMAP / SMTP | — | mailparse + pop3 + imap + native smtp | ✅ |
-| Memcached | `Memcached` | **缺** — 无 Memcached 客户端 | ⏳ |
+| Memcached | `Memcached` | memcached（mc_build_set / mc_build_get / mc_build_delete / mc_parse_response） | ✅ |
 | APCu 本地缓存 | `apcu_*` | **缺** — 需 native | 🚫 |
 | Session 管理 | `session_start` / `$_SESSION` | session（ss_start / ss_get / ss_set / ss_destroy / ss_gc / ss_regenerate） | ✅ |
 | CSRF 令牌 | — | csrf（csrf_generate / csrf_verify 恒定时间比较 / HTML 标签生成） | ✅ |
@@ -272,7 +272,7 @@
 | 路由 / 中间件 | — | native route + middleware | ✅ |
 | 验证器 | — (Respect/Validation) | validator | ✅ |
 | HTML 清洗 | — (HTML Purifier) | htmlsanitizer | ✅ |
-| 爬虫 / 抓取 | — (Goutte / Spatie) | **缺** — 无网页爬虫框架 | ⏳ |
+| 爬虫 / 抓取 | — (Goutte / Spatie) | scraper（sc_extract_links / sc_extract_text / sc_extract_title / sc_strip_tags） | ✅ |
 | Filter 变量过滤 | `filter_var` / `filter_input` | validator 部分覆盖；**filter_var 全族缺** | ⚠️ |
 
 ---
