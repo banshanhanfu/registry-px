@@ -63,8 +63,8 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | fsnotify | ✅ 0.1.0 / 0.2.0 | 轮询快照 diff | 双模式 PASS · 0.1.0 单层；0.2.0 递归快照 + 事件序列 + 扩展名/子串过滤 |
 | idcard | ✅ 0.1.0 / 0.2.0 | 身份证校验 GB 11643-1999 | 双模式 PASS · 0.1.0 仅 18 位；0.2.0 新增 15 位旧号 + 地区码表(34省级+城市) + 15→18 升级 |
 | cnnum | ✅ | 中文数字转换 + 人民币金额大写 cn_amount_str |
-| hant | 0.1.0 | OpenCC / hanziconv | 双模式 PASS · 简繁保守单字子集（双向可逆+语境敏感过滤） |
-| richmd | 0.1.0 | rich / glamour | 双模式 PASS · Markdown→ANSI 富文本（标题/列表/引用/代码块/行内样式/链接 + 剥 ANSI） |
+| hant | ✅ 0.1.0 / 0.2.0 | OpenCC / hanziconv | 双模式 PASS · 简繁保守单字子集（双向可逆+语境敏感过滤）· 0.2.0 修复 count_traditional/simplified Result 比较和 is_traditional 逻辑错误 |
+| richmd | ✅ 0.1.0 / 0.2.0 | rich / glamour | 双模式 PASS · Markdown→ANSI 富文本（标题/列表/引用/代码块/行内样式/链接 + 剥 ANSI）· 0.2.0 修复 mdr_render_html 行内渲染 + 新增 mdr_strip_md 剥 Markdown 标记 |
 | mongodb | 0.1.0 | go-mongo-driver / pymongo | 双模式 PASS · OP_MSG 客户端（hello/ping/insert/find+getMore/count，真实 mongod 7.0） |
 | sched | 0.1.0 | schedule / robfig/cron | 双模式 PASS · 时间片轮询调度器（周期任务+计数） |
 | tempfile | 0.1.0 | tempfile / ioutil.TempFile | 双模式 PASS · 临时目录/文件/写读/清理 |
@@ -184,6 +184,8 @@ config ✓ template ✓ validator ✓ retry ✓ toml ✓ datetime ✓ passhash �
 | actor | 0.1.0 | Akka / actix / erlang | 编译模式 PASS · Actor 邮箱模式（ac_new/send/call/stop，FIFO 免锁） |
 | mock | 0.1.0 | httptest / unittest.mock | 编译模式 PASS · HTTP 桩服务器 + 测试请求客户端（路由/404/405/请求日志/注入式假时钟） |
 > ⚠️ 写库中暴露的语言缺陷持续登记：见 [`docs/语言缺陷.md`](docs/语言缺陷.md)（PX-DEF 系列，实测基线 0.2.274；M201/M202 修复项 m274 复查保持，PX-DEF-036/037 官方速查表已记载（详见该文件））。
+>
+> 📋 库级缺陷修复记录（依据 [pkg-defects.html](https://px.dzty.club/pkg-defects.html) 清单，PuXian v0.2.375 校验）：见 [`docs/缺陷修复记录.md`](docs/缺陷修复记录.md)（15 个提交，覆盖 13 个库）。
 
 ## 写库规范（引用 PuXian 官方）
 
