@@ -319,4 +319,4 @@ def pb_size(schema, obj):
     var r = pb_encode(schema, obj)
     if r.is_err():
         return 0
-    return len(r.unwrap())
+    return bytes_len(r.unwrap())
